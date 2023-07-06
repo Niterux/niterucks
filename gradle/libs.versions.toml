@@ -1,9 +1,9 @@
 [versions]
 # The latest versions are available at https://meta.ornithemc.net/v3/versions/feather/
-minecraft = "1.2.5"
+minecraft = "b1.7.3"
 quilt_loader = "0.18.10"
-feather_mappings = "1.2.5-client+build.1"
-nests = "1.2.5-client+build.1"
+feather_mappings = "b1.7.3-client+build.6"
+nests = "b1.7.3-client+build.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
