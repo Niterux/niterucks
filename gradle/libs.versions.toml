@@ -1,0 +1,16 @@
+[versions]
+# The latest versions are available at https://meta.ornithemc.net/v3/versions/feather/
+minecraft = "1.2.5"
+quilt_loader = "0.18.10"
+feather_mappings = "1.2.5-client+build.1"
+nests = "1.2.5-client+build.1"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
+feather_mappings = { module = "net.ornithemc:feather", version.ref = "feather_mappings" }
+nests = { module = "net.ornithemc:nests", version.ref = "nests" }
+
+[plugins]
+quilt_loom = { id = "org.quiltmc.loom", version = "1.2.+" }
+ploceus = { id = "ploceus", version = "1.2.+" }
