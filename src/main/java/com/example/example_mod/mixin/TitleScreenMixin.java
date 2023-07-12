@@ -12,6 +12,6 @@ public class TitleScreenMixin extends Screen {
 
 	@Inject(method = "render", at = @At("TAIL"))
 	public void exampleMod$onInit(CallbackInfo ci) {
-		this.drawString(this.textRenderer, "crrepper aww sman hahahahaha am i rirght ellow minecrafers????:)))))))", 2, 10, 5263440);
+		this.drawString(this.textRenderer, "crrepper aww sman hahahahaha am i rirght ellow minecrafers????:)))))))", 2, 10, 0xff0000);
 	}
 }
