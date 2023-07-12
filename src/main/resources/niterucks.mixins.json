@@ -6,7 +6,8 @@
 	"mixins": [],
 	"client": [
 		"TitleScreenMixin",
-    "HudModify"
+    "HudModify",
+    "ForcePiracy"
 	],
 	"injectors": {
 		"defaultRequire": 1
