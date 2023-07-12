@@ -14,7 +14,8 @@
 				"issues": "https://github.com/Niterux/niterucks/issues",
 				"sources": "https://github.com/Niterux/niterucks"
 			},
-			"icon": "assets/niterucks/icon.png"
+			"icon": "assets/niterucks/icon.png",
+			"license": "MIT"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"depends": [
