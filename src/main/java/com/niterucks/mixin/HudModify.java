@@ -1,4 +1,4 @@
-package com.niterucks.mixin;
+package com.niterux.niterucks.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;

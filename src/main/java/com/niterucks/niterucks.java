@@ -1,4 +1,4 @@
-package com.niterucks;
+package com.niterux.niterucks;
 
 
 
