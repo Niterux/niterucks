@@ -1,3 +1,4 @@
+//force the anti piracy message to appear for lulz
 package com.niterux.niterucks.mixin;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
