@@ -1,8 +1,8 @@
-package com.example.example_mod;
+package com.niterucks;
 
 
 
-public class ExampleMod {
+public class niterucks {
 
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod name as the logger's name.
