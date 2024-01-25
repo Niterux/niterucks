@@ -1,5 +1,7 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import io.github.niterux.niterucks.Niterucks;
+import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.InputPlayerEntity;
@@ -36,41 +38,33 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 		if (flying) {
 			flyingTouchedGround = false;
 			velocityY = 0;
-		} else if (this.onGround){
+		} else if (this.onGround) {
 			flyingTouchedGround = true;
 		}
-		if (keyboardPressed()) {
-			if (Keyboard.isKeyDown(19)) {
-				if(flyAllowed & !flyingButtonHeld)
-					flying = !flying;
+		if (MinecraftInstanceAccessor.getMinecraft().screen == null) {
+			if (flyingControls[0]) {
+				if (flyAllowed & !flyingButtonHeld) flying = !flying;
 				flyingButtonHeld = true;
-			} else {flyingButtonHeld = false;}
+			} else {
+				Niterucks.logger.info("flying button unheld");
+				flyingButtonHeld = false;
+			}
 			if (flying) {
-				if (Keyboard.isKeyDown(minecraft.options.jumpKey.keyCode)) {
-					velocityY = flySpeed * 2.5;
+				if (flyingControls[1]) {
+					velocityY = flySpeed * 0.15625;
 				}
-				if (Keyboard.isKeyDown(minecraft.options.sneakKey.keyCode)) {
-					velocityY = flySpeed * -2.5;
+				if (flyingControls[2]) {
+					velocityY = flySpeed * -0.15625;
 				}
 			}
-		} else {flyingButtonHeld = false;}
+		}
 
 
 	}
 
-	@Redirect(
-		method = "updateMovement()V",
-		at = @At(value = "FIELD",
-		target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z",
-		opcode = Opcodes.GETFIELD),
-		slice = @Slice(to =
-	@At(
-		value = "INVOKE",
-		shift = At.Shift.AFTER,
-		target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
+	@Redirect(method = "updateMovement()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), slice = @Slice(to = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
 	public boolean onGroundOverride(LocalPlayerEntity instance) {
-		if (!flyingTouchedGround)
-			return true;
+		if (!flyingTouchedGround) return true;
 		return instance.onGround;
 	}
 }

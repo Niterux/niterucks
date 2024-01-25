@@ -24,6 +24,6 @@
 		"fabricloader": ">=0.15.2",
 		"minecraft": "1.0.0-beta.7.3",
 		"osl-entrypoints": ">=0.4.0",
-    "modmenu": ">=0.2.0+mcb1.7.3"
+    "modmenu": ">=0.2.0"
 	}
 }

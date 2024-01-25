@@ -10,13 +10,17 @@
     "GameRendererMixin",
     "MinecraftMixin",
     "TitleScreenMixin",
+    "GameMenuScreenMixin",
+    "EntityMixin",
     "bevofeatures.PacketMixin",
     "bevofeatures.ClientNetworkHandlerMixin",
     "bevofeatures.LoginPacketMixin",
     "bevofeatures.LocalPlayerEntityMixin",
     "bevofeatures.GameInputMixin",
     "bevofeatures.PlayerEntityMixin",
-    "bevofeatures.ConnectionMixin"
+    "bevofeatures.ConnectionMixin",
+    "bevofeatures.EntityMixin",
+    "bevofeatures.MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1
