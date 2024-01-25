@@ -1,9 +1,0 @@
-configure(project)
-
-loom {
-	clientOnlyMinecraftJar()
-}
-
-ploceus {
-	clientOnlyMappings()
-}

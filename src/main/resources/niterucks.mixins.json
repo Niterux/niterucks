@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.niterux.niterucks.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "accessors.MinecraftInstanceAccessor",
+    "GameOptionsMixin",
+    "GameGuiMixin",
+    "GameRendererMixin",
+    "MinecraftMixin",
+    "TitleScreenMixin",
+    "bevofeatures.PacketMixin",
+    "bevofeatures.ClientNetworkHandlerMixin",
+    "bevofeatures.LoginPacketMixin",
+    "bevofeatures.LocalPlayerEntityMixin",
+    "bevofeatures.GameInputMixin",
+    "bevofeatures.PlayerEntityMixin",
+    "bevofeatures.ConnectionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+
+}

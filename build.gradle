@@ -1,8 +1,9 @@
+
 plugins {
 	id 'java'
 	id 'maven-publish'
-	id 'fabric-loom' version '1.5-SNAPSHOT' apply false
-	id 'ploceus' version '1.5-SNAPSHOT' apply false
+	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'ploceus' version '1.5-SNAPSHOT'
 }
 
 def configure(project) {
@@ -14,7 +15,7 @@ def configure(project) {
 	project.base {
 		archivesName = "${project.rootProject.archives_base_name}-${project.environment}"
 	}
-	project.version = "${project.rootProject.version}+mc${project.rootProject.minecraft_version}"
+	project.version = "${project.rootProject.version}"
 	project.maven_group = project.rootProject.maven_group
 
 	project.repositories {
@@ -35,20 +36,11 @@ def configure(project) {
 
 		modImplementation "net.fabricmc:fabric-loader:${project.rootProject.loader_version}"
 
-		project.ploceus.addCommonLibraries();
+		modImplementation "com.terraformersmc:modmenu:0.2.0+mcb1.7.3"
+		project.ploceus.addCommonLibraries()
 		project.ploceus.dependOsl(project.osl_version, project.environment)
 	}
 
-	project.sourceSets {
-		main {
-			java {
-				srcDirs += project.rootProject.sourceSets.main.java.srcDirs
-			}
-			resources {
-				srcDirs += project.rootProject.sourceSets.main.resources.srcDirs
-			}
-		}
-	}
 
 	project.processResources {
 		filesMatching('fabric.mod.json') {
@@ -98,4 +90,14 @@ def configure(project) {
 			// retrieving dependencies.
 		}
 	}
+}
+
+configure(project)
+
+loom {
+	clientOnlyMinecraftJar()
+}
+
+ploceus {
+	clientOnlyMappings()
 }

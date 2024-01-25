@@ -1,30 +1,29 @@
 {
 	"schemaVersion": 1,
-	"id": "example_mod",
+	"id": "niterucks",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Niterucks",
+	"description": "A multi-function mod for beta 1.7.3!",
 	"authors": [
-		"Me!"
+		"Niterux"
 	],
 	"contact": {
-		"homepage": "https://example.com/",
-		"sources": "https://github.com/OrnitheMC/ornithe-template-mod"
+		"sources": "https://github.com/Niterux/niterucks"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/example_mod/icon.png",
-	"environment": "${environment}",
-	"entrypoints": {
-		"init": [
-			"com.example.example_mod.ExampleMod"
-		]
-	},
+	"license": "MIT",
+	"icon": "assets/niterucks/icon.png",
+	"environment": "client",
 	"mixins": [
-		"example_mod.mixins.json"
+		"niterucks.mixins.json"
 	],
+  "entrypoints": {
+    "modmenu": [ "io.github.niterux.niterucks.ModMenuConfig" ],
+    "client-init": ["io.github.niterux.niterucks.Niterucks"]
+  },
 	"depends": {
-		"fabricloader": ">=0.14.21",
-		"minecraft": "1.2.5",
-		"osl-entrypoints": ">=0.4.0"
+		"fabricloader": ">=0.15.2",
+		"minecraft": "1.0.0-beta.7.3",
+		"osl-entrypoints": ">=0.4.0",
+    "modmenu": ">=0.2.0+mcb1.7.3"
 	}
 }
