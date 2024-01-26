@@ -4,3 +4,5 @@ language.code=en_US
 
 niterucks=Niterucks
 options.fov=FOV
+fly_button=Fly
+adjust_fly_speed=Adjust fly speed
