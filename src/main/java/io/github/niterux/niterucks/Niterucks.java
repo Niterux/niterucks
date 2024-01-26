@@ -2,9 +2,7 @@ package io.github.niterux.niterucks;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
-import io.github.axolotlclient.AxolotlClientConfig.impl.AxolotlClientConfigImpl;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
 import net.fabricmc.loader.api.FabricLoader;
@@ -38,7 +36,7 @@ public class Niterucks implements ClientModInitializer {
 		LOGGER.info("initialized Niterucks!");
 	}
 
-	public static Screen getConfigScreen(Screen parent){
+	public static Screen getConfigScreen(Screen parent) {
 		return ConfigUI.getInstance().getScreen(Niterucks.class.getClassLoader(),
 			CONFIG.ROOT, parent);
 	}
