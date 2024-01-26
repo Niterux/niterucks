@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
-@Debug(export = true)
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends LivingEntity {
 	public PlayerEntityMixin(World world) {
@@ -22,16 +21,12 @@ public class PlayerEntityMixin extends LivingEntity {
 
 	@Redirect(method = "tickAi()V", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
 		target = "Lnet/minecraft/entity/living/player/PlayerEntity;cameraPitch:F"))
-	private void fixPitch(PlayerEntity instance, float value){
-		this.cameraPitch = value;
-		if(flying && instance instanceof LocalPlayerEntity)
-			this.cameraPitch = 0F;
+	private void fixPitch(PlayerEntity instance, float value) {
+		this.cameraPitch = (flying && instance instanceof LocalPlayerEntity) ? 0F : value;
 	}
 
 	@ModifyExpressionValue(method = "getMiningSpeed(Lnet/minecraft/block/Block;)F", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;onGround:Z"))
-	private boolean fixFlyMiningSpeed(boolean original){
-		if (flying)
-			return true;
-		return original;
+	private boolean fixFlyMiningSpeed(boolean original) {
+		return flying || original;
 	}
 }

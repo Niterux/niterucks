@@ -9,14 +9,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Debug(export = true)
 @Mixin(Packet.class)
 public class PacketMixin {
 	@Shadow
-	static void register(int id, boolean s2c, boolean c2s, Class type){}
+	static void register(int id, boolean s2c, boolean c2s, Class type) {
+	}
+
 	@Inject(method = "<clinit>",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/Packet;register(IZZLjava/lang/Class;)V", ordinal = 0))
-	private static void newPacket(CallbackInfo info){
+	private static void newPacket(CallbackInfo info) {
 		register(220, true, true, BetaEvoPacket.class);
 	}
 }

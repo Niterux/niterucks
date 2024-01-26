@@ -19,7 +19,6 @@ import static io.github.niterux.niterucks.Niterucks.logger;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flySpeed;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
-@Debug(export = true)
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
 	@Unique
@@ -55,7 +54,8 @@ public class GameGuiMixin extends GuiElement {
 			@At(
 				value = "INVOKE",
 				ordinal = 0,
-				target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V"
+				target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V",
+				remap = false
 			)
 		),
 		index = 3
@@ -156,7 +156,8 @@ public class GameGuiMixin extends GuiElement {
 			@At(
 				value = "INVOKE",
 				ordinal = 0,
-				target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V"
+				target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V",
+				remap = false
 			)
 		),
 		index = 1
@@ -219,7 +220,8 @@ public class GameGuiMixin extends GuiElement {
 		at = @At(
 			value = "INVOKE",
 			ordinal = 3,
-			target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V"
+			target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V",
+			remap = false
 		)
 	)
 	private void addFlyText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height) {

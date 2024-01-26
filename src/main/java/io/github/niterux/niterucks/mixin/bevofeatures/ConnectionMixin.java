@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Connection.class)
 public class ConnectionMixin {
 	@Inject(method = "disconnect(Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"))
-	private void revokeFly(String args, Object[] par2, CallbackInfo ci){
+	private void revokeFly(String args, Object[] par2, CallbackInfo ci) {
 		BetaEVOFlyHelper.resetFly();
 	}
 }

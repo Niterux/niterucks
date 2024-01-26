@@ -20,7 +20,8 @@
     "bevofeatures.PlayerEntityMixin",
     "bevofeatures.ConnectionMixin",
     "bevofeatures.EntityMixin",
-    "bevofeatures.MinecraftMixin"
+    "bevofeatures.MinecraftMixin",
+    "bevofeatures.LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

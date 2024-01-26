@@ -13,9 +13,6 @@ import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 public class EntityMixin {
 	@ModifyExpressionValue(method = "move(DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlock(III)I"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlock(III)I", ordinal = 0), to = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlock(III)I", ordinal = 1)))
 	private int noGroundUnderPlayerIfFlying(int original) {
-		if (flying && ((Entity) (Object) this) instanceof InputPlayerEntity) { // false warning
-			return 0;
-		}
-		return original;
+		return (flying && ((Entity) (Object) this) instanceof InputPlayerEntity) ? 0 : original; // false warning
 	}
 }

@@ -5,7 +5,6 @@ import com.google.gson.JsonSyntaxException;
 import io.github.niterux.niterucks.NiteLogger;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
-import org.apache.logging.log4j.Logger;
 
 public class BetaEvoPacketDecoder {
 	private static final NiteLogger logger = Niterucks.logger;
@@ -31,11 +30,17 @@ public class BetaEvoPacketDecoder {
 			case "fly":
 				BetaEVOFlyHelper.flyAllowed = data.enabled;
 				break;
+			case "mouseEars":
+				//todo
+				break;
+			case "basicNameTagUpdate":
+				//todo
+				break;
 			case "none":
 				logger.warn("No update type provided in betaevo packet! Outdated client?");
 				break;
-            default:
+			default:
 				logger.warn("Unexpected updateType: " + data.updateType);
-        }
+		}
 	}
 }

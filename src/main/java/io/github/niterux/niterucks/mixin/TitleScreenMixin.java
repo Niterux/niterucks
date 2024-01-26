@@ -20,10 +20,10 @@ public class TitleScreenMixin extends Screen {
 		if (var1.get(Calendar.MONTH) == Calendar.NOVEMBER) {
 			splashText = "Trans Rights!";
 		}
-
 	}
+
 	@Inject(method = "render(IIF)V", at = @At("TAIL"))
-	private void vdf(CallbackInfo ci){
+	private void vdf(CallbackInfo ci) {
 		this.drawString(this.textRenderer, "Niterucks Client", 2, this.height - 10, 5453474);
 	}
 }

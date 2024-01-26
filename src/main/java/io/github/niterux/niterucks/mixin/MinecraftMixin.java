@@ -2,7 +2,6 @@ package io.github.niterux.niterucks.mixin;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Debug;
@@ -12,10 +11,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import static io.github.niterux.niterucks.Niterucks.keyboardPressed;
 
-@Debug(export = true)
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-	@Redirect(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V"))
+	@Redirect(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false))
 	private void test() throws LWJGLException {
 		PixelFormat pixelformat = new PixelFormat();
 		pixelformat = pixelformat.withDepthBits(24);

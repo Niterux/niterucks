@@ -1,13 +1,11 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
-import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.InputPlayerEntity;
 import net.minecraft.client.entity.living.player.LocalPlayerEntity;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,14 +15,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static io.github.niterux.niterucks.Niterucks.keyboardPressed;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.*;
-import static io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor.getMinecraft;
 
-@Debug(export = true)
 @Mixin(LocalPlayerEntity.class)
 public class LocalPlayerEntityMixin extends InputPlayerEntity {
-	Minecraft minecraft = getMinecraft();
 
 	public LocalPlayerEntityMixin(Minecraft minecraft, World world, Session session, int dimensionId) {
 		super(minecraft, world, session, dimensionId);
@@ -46,15 +40,14 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 				if (flyAllowed & !flyingButtonHeld) flying = !flying;
 				flyingButtonHeld = true;
 			} else {
-				Niterucks.logger.info("flying button unheld");
 				flyingButtonHeld = false;
 			}
 			if (flying) {
 				if (flyingControls[1]) {
-					velocityY = flySpeed * 0.15625;
+					velocityY = (flySpeed + 1) * 0.15625;
 				}
 				if (flyingControls[2]) {
-					velocityY = flySpeed * -0.15625;
+					velocityY = (flySpeed + 1) * -0.15625;
 				}
 			}
 		}
@@ -64,7 +57,6 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 
 	@Redirect(method = "updateMovement()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), slice = @Slice(to = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
 	public boolean onGroundOverride(LocalPlayerEntity instance) {
-		if (!flyingTouchedGround) return true;
-		return instance.onGround;
+		return !flyingTouchedGround || instance.onGround;
 	}
 }

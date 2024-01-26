@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Debug(export = true)
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 	@Unique
@@ -43,7 +42,7 @@ public class GameRendererMixin {
 		this.handFov = false;
 	}
 
-	@Inject(method = "renderItemInHand(FI)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V"))
+	@Inject(method = "renderItemInHand(FI)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V", remap = false))
 	private void changePerspective(float tickDelta, int anaglyphFilter, CallbackInfo ci) {
 		this.handFov = true;
 		if (zoom != 1.0) {
@@ -60,13 +59,6 @@ public class GameRendererMixin {
 	@Inject(method = "renderItemInHand(FI)V", at = @At("HEAD"))
 	private void injectGlMode(CallbackInfo info) {
 		GL11.glMatrixMode(5889);
-	}
-
-	//Rain sound adjustments
-	@ModifyArg(method = "tickRain()V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;playSound(DDDLjava/lang/String;FF)V"), index = 4)
-	private float rainVolumeFix(float volume) {
-		return volume * 0.5f;
 	}
 
 }

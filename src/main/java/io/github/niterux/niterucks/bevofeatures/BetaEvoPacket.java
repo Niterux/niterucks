@@ -1,10 +1,10 @@
 package io.github.niterux.niterucks.bevofeatures;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import net.minecraft.network.PacketHandler;
 import net.minecraft.network.packet.Packet;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 
 public class BetaEvoPacket extends Packet {
 	public String message;

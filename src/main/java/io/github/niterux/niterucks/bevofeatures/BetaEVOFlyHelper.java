@@ -3,7 +3,7 @@ package io.github.niterux.niterucks.bevofeatures;
 public class BetaEVOFlyHelper {
 	public static boolean flyAllowed = false;
 	public static boolean flying = false;
-	public static int flySpeed = 16;
+	public static int flySpeed = 6;
 	public static boolean flyingButtonHeld = false;
 	public static boolean flyingTouchedGround = true;
 	public static boolean[] flyingControls = {
@@ -13,10 +13,10 @@ public class BetaEVOFlyHelper {
 		false //speed modifier
 	};
 
-	public static void resetFly(){
+	public static void resetFly() {
 		flyAllowed = false;
 		flying = false;
-		flySpeed = 16;
+		flySpeed = 6;
 		flyingButtonHeld = false;
 		flyingTouchedGround = true;
 
