@@ -24,11 +24,11 @@ public class Niterucks implements ClientModInitializer {
 	static {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
 			logger.level = 4;
-		OptionCategory Niterucks = OptionCategory.create("Niterucks");
-		Niterucks.add(fov);
-		Niterucks.add(brightness);
-		Niterucks.add(cloudHeight);
-		AxolotlClientConfig.getInstance().register(new JsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve("niterucks" + ".json"), Niterucks));
+		OptionCategory niterucks = OptionCategory.create("niterucks");
+		niterucks.add(fov);
+		niterucks.add(brightness);
+		niterucks.add(cloudHeight);
+		AxolotlClientConfig.getInstance().register(new JsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve("niterucks" + ".json"), niterucks));
 	}
 
 	@Override
