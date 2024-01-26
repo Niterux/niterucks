@@ -17,6 +17,7 @@
 		"niterucks.mixins.json"
 	],
   "entrypoints": {
+    "modmenu": ["io.github.niterux.niterucks.config.NiterucksModmenu"],
     "client-init": ["io.github.niterux.niterucks.Niterucks"]
   },
 	"depends": {

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static io.github.niterux.niterucks.Niterucks.logger;
+import static io.github.niterux.niterucks.Niterucks.LOGGER;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flySpeed;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
@@ -37,7 +37,7 @@ public class GameGuiMixin extends GuiElement {
 
 	@Inject(method = "addChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
 	private void printChatMessage(String text, CallbackInfo ci) {
-		logger.info(text);
+		LOGGER.info(text);
 	}
 
 	@ModifyConstant(method = "render",

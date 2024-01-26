@@ -7,7 +7,7 @@ import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
 public class BetaEvoPacketDecoder {
-	private static final NiteLogger logger = Niterucks.logger;
+	private static final NiteLogger logger = Niterucks.LOGGER;
 	private static final Gson gson = new Gson();
 
 	public static void decode(String PacketData) {
