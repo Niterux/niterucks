@@ -7,8 +7,9 @@ import net.minecraft.client.entity.living.player.InputPlayerEntity;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.item.ItemStack;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,8 +28,12 @@ public class GameGuiMixin extends GuiElement {
 		"West (Towards Negative X)",
 		"North (Towards Negative Z)",
 		"East (Towards Positive X)"};
+
 	@Shadow
 	private Minecraft minecraft;
+
+	@Shadow
+	private static ItemRenderer ITEM_RENDERER;
 
 	@Inject(method = "addChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
 	private void printChatMessage(String text, CallbackInfo ci) {
@@ -228,6 +233,35 @@ public class GameGuiMixin extends GuiElement {
 		if (flying) {
 			this.drawString(var8, "Flying", 2, height - 25, 0x55FF55);
 			this.drawString(var8, "Fly Speed: " + flySpeed, 2, height - 15, 0x55FF55);
+		}
+	}
+
+	@Inject(
+		method = "render",
+		at = @At(
+			value = "INVOKE",
+			ordinal = 0,
+			target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V",
+			shift = At.Shift.AFTER,
+			remap = false
+		)
+	)
+	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
+		ItemStack heldItem = minecraft.player.inventory.getMainHandStack();
+		String damageText;
+		if (heldItem != null) {
+			String itemIdText = String.valueOf(heldItem.itemId);
+			if (heldItem.getMaxDamage() > 0) {
+				damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
+			} else {
+				damageText = String.valueOf(heldItem.getDamage());
+			}
+			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - 130, height - 31);
+			if (heldItem.size > 1) {
+				this.drawString(var8, String.valueOf(heldItem.size), width / 2 - var8.getWidth(String.valueOf(heldItem.size)) / 2 - 122, height - 40, 0x55FF55);
+			}
+			this.drawString(var8, damageText, width / 2 - var8.getWidth(damageText) / 2 - 122, height - 15, 0x55FF55);
+			this.drawString(var8, itemIdText, width / 2 - var8.getWidth(itemIdText) - 130, height - 27, 0x55FF55);
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
 import net.minecraft.client.network.handler.ClientNetworkHandler;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;

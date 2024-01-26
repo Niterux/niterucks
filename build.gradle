@@ -24,6 +24,8 @@ def configure(project) {
 		// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 		// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 		// for more information about repositories.
+		maven { url = "https://jitpack.io" }
+		maven { url = "https://moehreag.duckdns.org/maven/snapshots"}
 	}
 
 	project.dependencies {
@@ -37,6 +39,8 @@ def configure(project) {
 		modImplementation "net.fabricmc:fabric-loader:${project.rootProject.loader_version}"
 
 		modImplementation "com.terraformersmc:modmenu:0.2.0+mcb1.7.3"
+		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
+		modImplementation "io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.1+b1.7.3"
 		project.ploceus.addCommonLibraries()
 		project.ploceus.dependOsl(project.osl_version, project.environment)
 	}

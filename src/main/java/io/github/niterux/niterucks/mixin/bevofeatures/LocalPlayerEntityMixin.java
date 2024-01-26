@@ -7,7 +7,6 @@ import net.minecraft.client.entity.living.player.InputPlayerEntity;
 import net.minecraft.client.entity.living.player.LocalPlayerEntity;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +18,6 @@ import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.*;
 
 @Mixin(LocalPlayerEntity.class)
 public class LocalPlayerEntityMixin extends InputPlayerEntity {
-
 	public LocalPlayerEntityMixin(Minecraft minecraft, World world, Session session, int dimensionId) {
 		super(minecraft, world, session, dimensionId);
 	}

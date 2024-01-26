@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TexturePackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.lwjgl.Sys;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -22,8 +21,8 @@ import java.io.File;
 public class GameMenuScreenMixin extends Screen {
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addTextureButton(CallbackInfo ci) {
-		this.buttons.add(new ButtonWidget(700009, this.width / 2 - 100, this.height / 4 + 56, 98, 20, "Texture Packs"));
-		this.buttons.add(new ButtonWidget(800009, this.width / 2 + 2, this.height / 4 + 56, 98, 20, ModMenuApi.createModsButtonText()));
+		this.buttons.add(new ButtonWidget(700009, this.width / 2 + 2, this.height / 4 + 56, 98, 20, "Texture Packs"));
+		this.buttons.add(new ButtonWidget(800009, this.width / 2 - 100, this.height / 4 + 56, 98, 20, ModMenuApi.createModsButtonText()));
 		this.buttons.add(new ButtonWidget(900009, this.width / 2 - 49, this.height / 4 + 128, 98, 20, "Screenshots"));
 	}
 

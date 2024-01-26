@@ -1,12 +1,11 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import io.github.niterux.niterucks.config.Config;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.player.input.GameInput;
 import net.minecraft.client.player.input.PlayerInput;
 import net.minecraft.entity.living.player.PlayerEntity;
-import org.lwjgl.input.Keyboard;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +22,7 @@ public class GameInputMixin extends PlayerInput {
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
 	private void addNewInputs(int bl, boolean par2, CallbackInfo ci) {
 		byte InputNum = -1;
-		if (bl == Keyboard.KEY_R) {
+		if (bl == Config.flyButton) {
 			InputNum = 0;
 		}
 		if (bl == this.options.jumpKey.keyCode) {
@@ -32,7 +31,7 @@ public class GameInputMixin extends PlayerInput {
 		if (bl == this.options.sneakKey.keyCode) {
 			InputNum = 2;
 		}
-		if (bl == Keyboard.KEY_LCONTROL) {
+		if (bl == Config.adjustButton) {
 			InputNum = 3;
 		}
 		if (InputNum > -1) {
