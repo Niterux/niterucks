@@ -1,6 +1,7 @@
 package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
+import io.github.niterux.niterucks.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import org.lwjgl.opengl.GL11;
@@ -37,7 +38,7 @@ public class GameRendererMixin {
 
 	@ModifyConstant(method = "getFov(F)F", constant = @Constant(floatValue = 70.0F, ordinal = 0))
 	private float changeFov(float seventy) {
-		return this.handFov ? seventy : Niterucks.fov.get();
+		return this.handFov ? seventy : Niterucks.CONFIG.FOV.get();
 	}
 
 	@Inject(method = "setupCamera(FI)V", at = @At(value = "HEAD"))

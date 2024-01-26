@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.config.Config;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.player.input.GameInput;
@@ -22,7 +23,7 @@ public class GameInputMixin extends PlayerInput {
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
 	private void addNewInputs(int bl, boolean par2, CallbackInfo ci) {
 		byte InputNum = -1;
-		if (bl == Config.flyButton) {
+		if (bl == Niterucks.CONFIG.flyButton.get().keyCode) {
 			InputNum = 0;
 		}
 		if (bl == this.options.jumpKey.keyCode) {
@@ -31,7 +32,7 @@ public class GameInputMixin extends PlayerInput {
 		if (bl == this.options.sneakKey.keyCode) {
 			InputNum = 2;
 		}
-		if (bl == Config.adjustButton) {
+		if (bl == Niterucks.CONFIG.adjustButton.get().keyCode) {
 			InputNum = 3;
 		}
 		if (InputNum > -1) {
