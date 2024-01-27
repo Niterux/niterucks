@@ -17,6 +17,8 @@ public class Niterucks implements ClientModInitializer {
 	static {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
 			LOGGER.level = 4;
+		ConfigUI.getInstance().runWhenLoaded(() ->
+			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget"));
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
 			.getConfigDir().resolve("niterucks.json"), CONFIG.ROOT);
 		AxolotlClientConfig.getInstance()

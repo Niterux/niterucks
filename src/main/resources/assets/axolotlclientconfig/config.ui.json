@@ -1,9 +1,0 @@
-{
-  "styles": {
-    "vanilla": {
-      "widgets": {
-        "keybinding": "io.github.niterux.niterucks.config.widget.KeyBindWidget"
-      }
-    }
-  }
-}
