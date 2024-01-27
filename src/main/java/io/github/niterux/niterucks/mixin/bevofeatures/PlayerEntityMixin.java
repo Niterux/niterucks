@@ -18,12 +18,6 @@ public class PlayerEntityMixin extends LivingEntity {
 		super(world);
 	}
 
-	@Redirect(method = "tickAi()V", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD,
-		target = "Lnet/minecraft/entity/living/player/PlayerEntity;cameraPitch:F"))
-	private void fixPitch(PlayerEntity instance, float value) {
-		this.cameraPitch = (flying && instance instanceof LocalPlayerEntity) ? 0F : value;
-	}
-
 	@ModifyExpressionValue(method = "getMiningSpeed(Lnet/minecraft/block/Block;)F", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;onGround:Z"))
 	private boolean fixFlyMiningSpeed(boolean original) {
 		return flying || original;

@@ -21,7 +21,9 @@
 	],
   "entrypoints": {
     "modmenu": ["io.github.niterux.niterucks.config.NiterucksModmenu"],
-    "client-init": ["io.github.niterux.niterucks.Niterucks"]
+    "client-init": [
+      "io.github.niterux.niterucks.Niterucks"
+    ]
   },
 	"depends": {
 		"fabricloader": ">=0.15.2",

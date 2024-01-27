@@ -17,6 +17,10 @@
     "DimensionMixin",
     "NetherDimensionMixin",
     "ScreenshotUtilsMixin",
+    "fixUnknownWindowsVersionMixin",
+    "CrashPanelMixin",
+    "GameInputMixin",
+    "PlayerInventoryMixin",
     "bevofeatures.PacketMixin",
     "bevofeatures.ClientNetworkHandlerMixin",
     "bevofeatures.LoginPacketMixin",
@@ -25,9 +29,10 @@
     "bevofeatures.PlayerEntityMixin",
     "bevofeatures.ConnectionMixin",
     "bevofeatures.EntityMixin",
-    "bevofeatures.MinecraftMixin",
     "bevofeatures.LivingEntityMixin",
-    "bevofeatures.GameRendererMixin"
+    "bevofeatures.GameRendererMixin",
+    "bevofeatures.GameGuiMixin",
+    "bevofeatures.PlayerInventoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

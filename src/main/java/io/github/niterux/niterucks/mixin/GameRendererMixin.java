@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
-import io.github.niterux.niterucks.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import org.lwjgl.opengl.GL11;
@@ -14,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.zoomAmount;
+import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -69,5 +71,12 @@ public class GameRendererMixin {
 	private void injectGlMode(CallbackInfo info) {
 		GL11.glMatrixMode(5889);
 	}
+
+	@ModifyConstant(method = "render(F)V", constant = @Constant(floatValue = 0.6F, ordinal = 0))
+	private float addZoomFunctionality(float constant){
+		zoom = niterucksControls[0] ? (double)zoomAmount / 2 : 1.0;
+		return niterucksControls[0] ? constant / (float)zoomAmount : constant;
+	}
+
 
 }

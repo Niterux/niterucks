@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.Niterucks.LOGGER;
-import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flySpeed;
-import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
@@ -35,11 +34,15 @@ public class GameGuiMixin extends GuiElement {
 	@Shadow
 	private static ItemRenderer ITEM_RENDERER;
 
+	//print chat message to console
 	@Inject(method = "addChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
 	private void printChatMessage(String text, CallbackInfo ci) {
 		LOGGER.info(text);
 	}
 
+	//===============
+	//f3 menu stuff
+	//===============
 	@ModifyConstant(method = "render",
 		constant = @Constant(stringValue = "Minecraft Beta 1.7.3 ("))
 	private String replaceGameName(String original) {
@@ -146,7 +149,14 @@ public class GameGuiMixin extends GuiElement {
 		return 0xd5312f;
 	}
 
-	//todo, oh no
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
+	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 2) int width) {
+		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
+		this.drawString(var8, biomeString, width - var8.getWidth(biomeString) - 2, 22, 0xd5312f);
+		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
+		this.drawString(var8, lightString, width - var8.getWidth(lightString) - 2, 32, 0xd5312f);
+	}
+
 	@ModifyArg(
 		method = "render",
 		at =
@@ -168,6 +178,7 @@ public class GameGuiMixin extends GuiElement {
 		index = 1
 	)
 	private String goodFaceDirection(String par2) {
+		//todo, make the code less cursed
 		int facingDir = (int) this.minecraft.player.yaw;
 		int i;
 		if (facingDir + 45 < 0) {
@@ -220,22 +231,9 @@ public class GameGuiMixin extends GuiElement {
 		return (double) Math.round(coord * 1000) / 1000;
 	}
 
-	@Inject(
-		method = "render",
-		at = @At(
-			value = "INVOKE",
-			ordinal = 3,
-			target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V",
-			remap = false
-		)
-	)
-	private void addFlyText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height) {
-		if (flying) {
-			this.drawString(var8, "Flying", 2, height - 25, 0x55FF55);
-			this.drawString(var8, "Fly Speed: " + flySpeed, 2, height - 15, 0x55FF55);
-		}
-	}
-
+	//===============
+	//game hud stuff
+	//===============
 	@Inject(
 		method = "render",
 		at = @At(

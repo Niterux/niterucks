@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
 import io.github.niterux.niterucks.Niterucks;
-import io.github.niterux.niterucks.config.Config;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.player.input.GameInput;
 import net.minecraft.client.player.input.PlayerInput;

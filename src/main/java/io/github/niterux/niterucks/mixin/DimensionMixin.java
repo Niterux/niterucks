@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
-import io.github.niterux.niterucks.config.Config;
 import net.minecraft.world.dimension.Dimension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;

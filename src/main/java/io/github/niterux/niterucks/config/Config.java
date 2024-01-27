@@ -10,6 +10,7 @@ import org.lwjgl.input.Keyboard;
 
 public class Config {
 	public final OptionCategory ROOT = OptionCategory.create("niterucks");
+	public KeyBindOption zoomButton = new KeyBindOption("zoom_button", Keyboard.KEY_C);
 	public KeyBindOption flyButton = new KeyBindOption("fly_button", Keyboard.KEY_R);
 	public KeyBindOption adjustButton = new KeyBindOption("adjust_fly_speed", Keyboard.KEY_LCONTROL);
 	public FloatOption FOV = new FloatOption("FOV", 90.0F, 30.0F, 130.0F);
@@ -19,7 +20,7 @@ public class Config {
 
 	public Config() {
 		ROOT.add(FOV, BRIGHTNESS, CLOUD_HEIGHT);
-		ROOT.add(flyButton, adjustButton);
+		ROOT.add(zoomButton, flyButton, adjustButton);
 	}
 	static {
 		changeListener = updateBrightness -> {
