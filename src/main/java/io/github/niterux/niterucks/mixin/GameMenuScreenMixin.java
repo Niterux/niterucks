@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.terraformersmc.modmenu.gui.ModsScreen;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,7 +40,7 @@ public class GameMenuScreenMixin extends Screen {
 		}
 	}
 
-	@ModifyConstant(method = "render(IIF)V", constant = @Constant(intValue = 20, ordinal = 0))
+	@ModifyExpressionValue(method = "render(IIF)V", at = @At(value = "CONSTANT", args = "intValue=20", ordinal = 0))
 	private int fixGhostSaving(int original) {
 		return this.minecraft.isMultiplayer() ? -1 : original;
 	}

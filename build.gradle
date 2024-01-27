@@ -13,7 +13,6 @@ version = "${project.version}"
 group = project.maven_group
 
 project.repositories {
-	mavenLocal()
 	maven { url = "https://jitpack.io" }
 	maven { url = "https://moehreag.duckdns.org/maven/snapshots" }
 }

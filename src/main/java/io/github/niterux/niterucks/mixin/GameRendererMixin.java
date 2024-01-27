@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
@@ -72,10 +73,10 @@ public class GameRendererMixin {
 		GL11.glMatrixMode(5889);
 	}
 
-	@ModifyConstant(method = "render(F)V", constant = @Constant(floatValue = 0.6F, ordinal = 0))
+	@ModifyExpressionValue(method = "render(F)V", at = @At(value = "CONSTANT", args = "floatValue=0.6F", ordinal = 0))
 	private float addZoomFunctionality(float constant){
 		zoom = niterucksControls[0] ? (double)zoomAmount / 2 : 1.0;
-		return niterucksControls[0] ? constant / (float)zoomAmount : constant;
+		return niterucksControls[0] ? constant / (float)(zoomAmount / 2) : constant;
 	}
 
 

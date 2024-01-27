@@ -12,9 +12,10 @@ import org.lwjgl.input.Keyboard;
 
 public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
-	public static Config CONFIG = new Config();
+	public static Config CONFIG;
 
 	static {
+		CONFIG = new Config();
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
 			LOGGER.level = 4;
 		ConfigUI.getInstance().runWhenLoaded(() ->

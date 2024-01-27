@@ -18,10 +18,10 @@ public class PlayerInventoryMixin {
 	private int intersectScrolling(int scrollAmount) {
 		if (niterucksControls[0]) {
 			zoomAmount += scrollAmount;
-			if (zoomAmount > 10)
-				zoomAmount = 10;
-			else if (zoomAmount < 3)
-				zoomAmount = 3;
+			if (zoomAmount > 12)
+				zoomAmount = 12;
+			else if (zoomAmount < 4)
+				zoomAmount = 4;
 			return 0;
 		}
 		return scrollAmount;
