@@ -18,12 +18,12 @@ import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.*;
 
 @Mixin(LocalPlayerEntity.class)
 public class LocalPlayerEntityMixin extends InputPlayerEntity {
-	public LocalPlayerEntityMixin(Minecraft minecraft, World world, Session session, int dimensionId) {
+	private LocalPlayerEntityMixin(Minecraft minecraft, World world, Session session, int dimensionId) {
 		super(minecraft, world, session, dimensionId);
 	}
 
 	@Inject(method = "updateMovement()V", at = @At("TAIL"))
-	public void flyMovement(CallbackInfo ci) {
+	private void flyMovement(CallbackInfo ci) {
 		if (!flyAllowed) {
 			flying = false;
 		}
@@ -54,7 +54,7 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 	}
 
 	@Redirect(method = "updateMovement()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), slice = @Slice(to = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
-	public boolean onGroundOverride(LocalPlayerEntity instance) {
+	private boolean onGroundOverride(LocalPlayerEntity instance) {
 		return !flyingTouchedGround || instance.onGround;
 	}
 }

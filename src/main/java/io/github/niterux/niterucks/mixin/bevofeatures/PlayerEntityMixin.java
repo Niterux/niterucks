@@ -14,7 +14,7 @@ import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends LivingEntity {
-	public PlayerEntityMixin(World world) {
+	private PlayerEntityMixin(World world) {
 		super(world);
 	}
 

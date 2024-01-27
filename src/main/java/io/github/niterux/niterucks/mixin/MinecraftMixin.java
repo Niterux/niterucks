@@ -21,7 +21,7 @@ public class MinecraftMixin {
 
 	@Redirect(method = "tick()V", at = @At(value = "INVOKE",
 		target = "Lorg/lwjgl/input/Keyboard;getEventKeyState()Z", remap = false))
-	public boolean noneKeyFix() {
+	private boolean noneKeyFix() {
 		return keyboardPressed();
 	}
 }

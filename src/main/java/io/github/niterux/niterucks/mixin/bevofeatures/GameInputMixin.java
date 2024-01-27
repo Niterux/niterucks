@@ -48,7 +48,7 @@ public class GameInputMixin extends PlayerInput {
 	}
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/GameInput;sneaking:Z", shift = At.Shift.BEFORE))
-	public void sneakJumpOverride(PlayerEntity par1, CallbackInfo ci) {
+	private void sneakJumpOverride(PlayerEntity par1, CallbackInfo ci) {
 		if (flying) {
 			this.jumping = false;
 			this.sneaking = false;
@@ -56,7 +56,7 @@ public class GameInputMixin extends PlayerInput {
 	}
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At("TAIL"))
-	public void speedOverride(PlayerEntity par1, CallbackInfo ci) {
+	private void speedOverride(PlayerEntity par1, CallbackInfo ci) {
 		if (flying) {
 			par1.updateVelocity(this.movementSideways, this.movementForward, (float) flySpeed / 20);
 		}

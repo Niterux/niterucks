@@ -1,11 +1,14 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.entity.living.player.InputPlayerEntity;
 import net.minecraft.entity.living.LivingEntity;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flyingTouchedGround;
 
 @Mixin(LivingEntity.class)
@@ -23,5 +26,13 @@ public class LivingEntityMixin {
 			value = 0F;
 		}
 		return value;
+	}
+	@ModifyExpressionValue(method = "Lnet/minecraft/entity/living/LivingEntity;moveEntityWithVelocity(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD))
+	private boolean removeFriction(boolean original) {
+		// the warning here is wrong
+		if (flying && ((LivingEntity) (Object) this instanceof InputPlayerEntity)) {
+			original = false;
+		}
+		return original;
 	}
 }

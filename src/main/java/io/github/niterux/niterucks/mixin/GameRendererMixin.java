@@ -38,7 +38,12 @@ public class GameRendererMixin {
 
 	@ModifyConstant(method = "getFov(F)F", constant = @Constant(floatValue = 70.0F, ordinal = 0))
 	private float changeFov(float seventy) {
-		return this.handFov ? seventy : Niterucks.CONFIG.FOV.get();
+		return this.handFov ? 70.0F : Niterucks.CONFIG.FOV.get();
+	}
+
+	@ModifyConstant(method = "getFov(F)F", constant = @Constant(floatValue = 60.0F, ordinal = 0))
+	private float changeWaterFov(float sixty) {
+		return this.handFov ? sixty : Niterucks.CONFIG.FOV.get() * 60.0F / 70.0F;
 	}
 
 	@Inject(method = "setupCamera(FI)V", at = @At(value = "HEAD"))

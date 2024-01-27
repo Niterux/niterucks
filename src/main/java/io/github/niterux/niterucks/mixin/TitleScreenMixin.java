@@ -32,7 +32,7 @@ public class TitleScreenMixin extends Screen {
 	}
 
 	@Redirect(method = "init()V", at =
-		@At(value = "NEW", target = "net/minecraft/client/gui/widget/ButtonWidget", ordinal = 2))
+	@At(value = "NEW", target = "net/minecraft/client/gui/widget/ButtonWidget", ordinal = 2))
 	private ButtonWidget makeTexturePacksButtonSmaller(int int1, int int2, int int3, String string1) {
 		if (ModMenuConfig.MODS_BUTTON_STYLE.getValue() == ModMenuConfig.TitleMenuButtonStyle.CLASSIC) {
 			return new ButtonWidget(int1, int2 + 102, int3, 98, 20, "Texture Packs");

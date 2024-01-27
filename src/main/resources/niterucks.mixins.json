@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "accessors.MinecraftInstanceAccessor",
+    "invokers.initBrightnessTableInvoker",
     "GameOptionsMixin",
     "GameGuiMixin",
     "GameRendererMixin",
@@ -25,7 +26,8 @@
     "bevofeatures.ConnectionMixin",
     "bevofeatures.EntityMixin",
     "bevofeatures.MinecraftMixin",
-    "bevofeatures.LivingEntityMixin"
+    "bevofeatures.LivingEntityMixin",
+    "bevofeatures.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

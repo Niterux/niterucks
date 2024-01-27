@@ -7,7 +7,10 @@
 	"authors": [
 		"Niterux"
 	],
-	"contact": {
+  "contributors": [
+    "moehreag"
+  ],
+  "contact": {
 		"sources": "https://github.com/Niterux/niterucks"
 	},
 	"license": "MIT",
@@ -25,5 +28,9 @@
 		"minecraft": "1.0.0-beta.7.3",
 		"osl-entrypoints": ">=0.4.0",
     "modmenu": ">=0.2.0"
-	}
+	},
+  "recommends": {
+    "mojangfix": "*",
+    "sound-categories": "*"
+  }
 }
