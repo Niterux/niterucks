@@ -13,6 +13,7 @@ version = "${project.version}"
 group = project.maven_group
 
 project.repositories {
+	mavenLocal()
 	maven { url = "https://jitpack.io" }
 	maven { url = "https://moehreag.duckdns.org/maven/snapshots" }
 }
@@ -29,8 +30,8 @@ project.dependencies {
 
 	modImplementation "com.terraformersmc:modmenu:0.2.0+mcb1.7.3"
 	include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
-	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.1+b1.7.3")
-	include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.38")
+	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.3+b1.7.3")
+	include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.41")
 	project.ploceus.addCommonLibraries()
 	project.ploceus.dependOsl(project.osl_version, project.environment)
 }
