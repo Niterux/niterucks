@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
@@ -10,7 +11,6 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -53,8 +53,8 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 
 	}
 
-	@Redirect(method = "updateMovement()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), slice = @Slice(to = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
-	private boolean onGroundOverride(LocalPlayerEntity instance) {
-		return !flyingTouchedGround || instance.onGround;
+	@ModifyExpressionValue(method = "updateMovement()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/living/player/LocalPlayerEntity;onGround:Z", opcode = Opcodes.GETFIELD), slice = @Slice(to = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/network/packet/PlayerMovePacket;<init>(Z)V")))
+	private boolean onGroundOverride(boolean original) {
+		return !flyingTouchedGround || original;
 	}
 }

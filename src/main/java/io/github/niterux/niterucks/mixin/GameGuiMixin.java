@@ -1,9 +1,9 @@
 package io.github.niterux.niterucks.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.living.player.InputPlayerEntity;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
@@ -190,7 +190,7 @@ public class GameGuiMixin extends GuiElement {
 		}
 	}
 
-	@Redirect(
+	@ModifyExpressionValue(
 		method = "render",
 		at = @At(
 			value = "FIELD",
@@ -198,11 +198,11 @@ public class GameGuiMixin extends GuiElement {
 			opcode = Opcodes.GETFIELD
 		)
 	)
-	private double roundCoordsX(InputPlayerEntity instance) {
-		return truncate(instance.x);
+	private double roundCoordsX(double x) {
+		return truncate(x);
 	}
 
-	@Redirect(
+	@ModifyExpressionValue(
 		method = "render",
 		at = @At(
 			value = "FIELD",
@@ -210,11 +210,11 @@ public class GameGuiMixin extends GuiElement {
 			opcode = Opcodes.GETFIELD
 		)
 	)
-	private double roundCoordsY(InputPlayerEntity instance) {
-		return truncate(instance.y);
+	private double roundCoordsY(double y) {
+		return truncate(y);
 	}
 
-	@Redirect(
+	@ModifyExpressionValue(
 		method = "render",
 		at = @At(
 			value = "FIELD",
@@ -222,8 +222,8 @@ public class GameGuiMixin extends GuiElement {
 			opcode = Opcodes.GETFIELD
 		)
 	)
-	private double roundCoordsZ(InputPlayerEntity instance) {
-		return truncate(instance.z);
+	private double roundCoordsZ(double z) {
+		return truncate(z);
 	}
 
 	@Unique

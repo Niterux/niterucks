@@ -6,6 +6,7 @@ import net.minecraft.client.player.input.GameInput;
 import net.minecraft.client.player.input.PlayerInput;
 import net.minecraft.entity.living.player.PlayerEntity;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.*;
 
+@Debug(export = true)
 @Mixin(GameInput.class)
 public class GameInputMixin extends PlayerInput {
 	@Shadow
@@ -46,7 +48,7 @@ public class GameInputMixin extends PlayerInput {
 		}
 	}
 
-	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/GameInput;sneaking:Z", shift = At.Shift.BEFORE))
+	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/GameInput;sneaking:Z"))
 	private void sneakJumpOverride(PlayerEntity par1, CallbackInfo ci) {
 		if (flying) {
 			this.jumping = false;

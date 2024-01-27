@@ -31,6 +31,7 @@ public class TitleScreenMixin extends Screen {
 		this.drawString(this.textRenderer, "Niterucks Client", 2, this.height - 10, 5453474);
 	}
 
+	@SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference", "InvalidInjectorMethodSignature"})
 	@Redirect(method = "init()V", at =
 	@At(value = "NEW", target = "net/minecraft/client/gui/widget/ButtonWidget", ordinal = 2))
 	private ButtonWidget makeTexturePacksButtonSmaller(int int1, int int2, int int3, String string1) {

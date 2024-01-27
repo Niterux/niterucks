@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.GameRenderer;
 import org.objectweb.asm.Opcodes;
@@ -11,13 +12,13 @@ import static io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper.flying;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-	@Redirect(method = "Lnet/minecraft/client/render/GameRenderer;setupCamera(FI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;viewBobbing:Z", opcode = Opcodes.GETFIELD))
-	private boolean removeFlyBobbing(GameOptions instance) {
-		return !flying && instance.viewBobbing;
+	@ModifyExpressionValue(method = "Lnet/minecraft/client/render/GameRenderer;setupCamera(FI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;viewBobbing:Z", opcode = Opcodes.GETFIELD))
+	private boolean removeFlyBobbing(boolean original) {
+		return !flying && original;
 	}
 
-	@Redirect(method = "Lnet/minecraft/client/render/GameRenderer;renderItemInHand(FI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;viewBobbing:Z", opcode = Opcodes.GETFIELD))
-	private boolean removeFlyBobbingHand(GameOptions instance) {
-		return !flying && instance.viewBobbing;
+	@ModifyExpressionValue(method = "Lnet/minecraft/client/render/GameRenderer;renderItemInHand(FI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;viewBobbing:Z", opcode = Opcodes.GETFIELD))
+	private boolean removeFlyBobbingHand(boolean original) {
+		return !flying && original;
 	}
 }

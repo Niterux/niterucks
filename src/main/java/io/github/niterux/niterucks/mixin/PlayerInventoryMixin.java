@@ -12,9 +12,6 @@ import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.nite
 
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin {
-	@Shadow
-	public int selectedSlot;
-
 	@ModifyVariable(method = "scrollInHotbar(I)V", at = @At(value = "FIELD",
 		target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I",
 		opcode = Opcodes.GETFIELD, ordinal = 0), ordinal = 0, argsOnly = true)

@@ -14,13 +14,6 @@ public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
 	public static Config CONFIG = new Config();
 
-	public static boolean keyboardPressed() {
-		if (Keyboard.getEventKey() == 0) {
-			return false;
-		}
-		return Keyboard.getEventKeyState();
-	}
-
 	static {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
 			LOGGER.level = 4;

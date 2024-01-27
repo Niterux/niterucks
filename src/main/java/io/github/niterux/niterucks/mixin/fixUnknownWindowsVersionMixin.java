@@ -4,7 +4,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.awt.*;
 import java.util.logging.Logger;
 
 //This mixin won't work on Quilt because Quilt silently fails mixins into libraries

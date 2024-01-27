@@ -21,15 +21,15 @@ public class LivingEntityMixin {
 	*/
 	@ModifyVariable(method = "applyFallDamage(F)V", at = @At(value = "HEAD"), ordinal = 0, argsOnly = true)
 	private float removeFallDamageClient(float value) {
-		// the warning here is wrong
+		//noinspection ConstantValue
 		if (!flyingTouchedGround && ((LivingEntity) (Object) this instanceof InputPlayerEntity)) {
 			value = 0F;
 		}
 		return value;
 	}
-	@ModifyExpressionValue(method = "Lnet/minecraft/entity/living/LivingEntity;moveEntityWithVelocity(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD))
+	@ModifyExpressionValue(method = "moveEntityWithVelocity(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD))
 	private boolean removeFriction(boolean original) {
-		// the warning here is wrong
+		//noinspection ConstantValue
 		if (flying && ((LivingEntity) (Object) this instanceof InputPlayerEntity)) {
 			original = false;
 		}
