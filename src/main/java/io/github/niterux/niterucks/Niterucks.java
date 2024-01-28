@@ -34,11 +34,15 @@ public class Niterucks implements ClientModInitializer {
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
+		JarFile gsonJar;
+		/*We need the version of Gson because earlier Ornithe installers
+		would install 2.2.2, which has bugs causing files to not be read.*/
         try {
 			//Find where the Gson class comes from and make a JarFile from it
-			JarFile gsonJar = new JarFile(Gson.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			gsonJar = new JarFile(Gson.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 			//Use that JarFile to find the manifest and get the Bundle-Version
 			gsonVersion = gsonJar.getManifest().getMainAttributes().getValue("Bundle-Version");
+			gsonJar.close();
         } catch (IOException e) {
             LOGGER.info("Could not read the Gson jar file, assuming the version is 2.2.4!");
         }
