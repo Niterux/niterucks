@@ -1,30 +1,26 @@
 package io.github.niterux.niterucks;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
-import org.lwjgl.input.Keyboard;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.util.Objects;
-
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
 	public static Config CONFIG;
-	public static String gsonVersion;
+	public static String gsonVersion = "2.2.4";
 
 	static {
 		CONFIG = new Config();
@@ -37,12 +33,25 @@ public class Niterucks implements ClientModInitializer {
 		AxolotlClientConfig.getInstance()
 			.register(manager);
 		manager.load();
-		String gsonVersion = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Niterucks.class.getClassLoader().getResourceAsStream("/META-INF/MANIFEST.MF")))).lines().map(s -> s.split(": ")).filter(s -> s[0].equals("Bundle-Version")).map(s -> s[1]).findFirst().orElse("");
 	}
 
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
+
+        File gsonFile;
+        try {
+            gsonFile = new File(Gson.class.getProtectionDomain().getCodeSource().getLocation().toURI().toURL().getPath());
+        } catch (MalformedURLException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        Manifest gsonManifest;
+        try {
+            gsonManifest = new JarFile(gsonFile).getManifest();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        gsonVersion = gsonManifest.getMainAttributes().getValue("Bundle-Version");
 	}
 
 	public static Screen getConfigScreen(Screen parent) {
