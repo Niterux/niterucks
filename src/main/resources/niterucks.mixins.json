@@ -22,6 +22,7 @@
     "GameInputMixin",
     "PlayerInventoryMixin",
     "bevofeatures.PacketMixin",
+    "ItemEntityMixin",
     "bevofeatures.ClientNetworkHandlerMixin",
     "bevofeatures.LoginPacketMixin",
     "bevofeatures.LocalPlayerEntityMixin",

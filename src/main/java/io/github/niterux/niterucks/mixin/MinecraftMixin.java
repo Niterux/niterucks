@@ -1,7 +1,12 @@
 package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.niterux.niterucks.Niterucks;
+import io.github.niterux.niterucks.niterucksfeatures.GsonWarningScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -9,6 +14,8 @@ import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Objects;
 
 
 @Mixin(Minecraft.class)
@@ -27,5 +34,13 @@ public class MinecraftMixin {
 			return false;
 		}
 		return original;
+	}
+	@WrapOperation(method = "Lnet/minecraft/client/Minecraft;init()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V", ordinal = 1))
+	private void displayGsonWarning(Minecraft instance, Screen screen, Operation<Void> original){
+		if(Objects.equals(Niterucks.gsonVersion, "2.2.4")){
+			instance.openScreen(new GsonWarningScreen());
+		} else {
+			original.call(instance, screen);
+		}
 	}
 }
