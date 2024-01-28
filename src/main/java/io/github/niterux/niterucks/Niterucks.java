@@ -10,17 +10,13 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
 	public static Config CONFIG;
-	public static String gsonVersion = "2.2.4";
+	public static String gsonVersion;
 
 	static {
 		CONFIG = new Config();
@@ -38,20 +34,18 @@ public class Niterucks implements ClientModInitializer {
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
-
-        File gsonFile;
         try {
-            gsonFile = new File(Gson.class.getProtectionDomain().getCodeSource().getLocation().toURI().toURL().getPath());
-        } catch (MalformedURLException | URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        Manifest gsonManifest;
-        try {
-            gsonManifest = new JarFile(gsonFile).getManifest();
+			//Find where the Gson class comes from and make a JarFile from it
+			JarFile gsonJar = new JarFile(Gson.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			//Use that JarFile to find the manifest and get the Bundle-Version
+			gsonVersion = gsonJar.getManifest().getMainAttributes().getValue("Bundle-Version");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.info("Could not read the Gson jar file, assuming the version is 2.2.4!");
         }
-        gsonVersion = gsonManifest.getMainAttributes().getValue("Bundle-Version");
+		if(gsonVersion == null){
+			LOGGER.info("Couldn't read the Gson version from manifest! Assuming the version is 2.2.4");
+			gsonVersion = "2.2.4";
+		}
 	}
 
 	public static Screen getConfigScreen(Screen parent) {
