@@ -25,10 +25,12 @@ public class BetaEvoPacketDecoder {
 	private static void decodeUpdate(BetaEvoPacketPOJO data) {
 		switch (data.updateType) {
 			case "handshake":
-				MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEvoPacket("[{\"protocol\":2,\"updateType\":\"handshake\"}]"));
+				if(data.protocol == 2)
+					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEvoPacket("[{\"protocol\":2,\"updateType\":\"handshake\"}]"));
 				break;
 			case "fly":
-				BetaEVOFlyHelper.flyAllowed = data.enabled;
+				if(data.protocol == 1)
+					BetaEVOFlyHelper.flyAllowed = data.enabled;
 				break;
 			case "mouseEars":
 				//todo
