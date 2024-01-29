@@ -5,7 +5,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.OptionBase;
 import io.github.niterux.niterucks.config.option.KeyBindOption;
-import io.github.niterux.niterucks.mixin.invokers.initBrightnessTableInvoker;
+import io.github.niterux.niterucks.mixin.invokers.InitBrightnessTableInvoker;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
@@ -30,7 +30,7 @@ public class Config {
 		changeListener = updateBrightness -> {
 			Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 			if(minecraft.world != null) {
-				((initBrightnessTableInvoker) minecraft.world.dimension).reinitBrightnessTable();
+				((InitBrightnessTableInvoker) minecraft.world.dimension).reinitBrightnessTable();
 				minecraft.worldRenderer.m_6748042(); //reload chunks
 			}
 		};

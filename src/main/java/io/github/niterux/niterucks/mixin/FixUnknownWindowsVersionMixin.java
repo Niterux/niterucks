@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 //This mixin won't work on Quilt because Quilt silently fails mixins into libraries
 @Mixin(targets = {"net/java/games/input/DefaultControllerEnvironment"})
-public class fixUnknownWindowsVersionMixin {
+public class FixUnknownWindowsVersionMixin {
 	@Redirect(method = "getControllers()[Lnet/java/games/input/Controller;", remap = false, at = @At(value = "INVOKE", target = "Ljava/util/logging/Logger;warning(Ljava/lang/String;)V", remap = false))
 	private void suppressWindowsWarning(Logger instance, String msg){
 

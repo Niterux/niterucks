@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(LivingEntityRenderer.class)
-public interface renderNameTagInvoker {
+public interface RenderNameTagInvoker {
 	@Invoker("renderNameTag")
 	void renderNameTagCustom(LivingEntity entity, String name, double dx, double dy, double dz, int range);
 }
