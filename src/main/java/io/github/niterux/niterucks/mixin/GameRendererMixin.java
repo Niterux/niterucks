@@ -75,8 +75,8 @@ public class GameRendererMixin {
 
 	@ModifyExpressionValue(method = "render(F)V", at = @At(value = "CONSTANT", args = "floatValue=0.6F", ordinal = 0))
 	private float addZoomFunctionality(float constant){
-		zoom = niterucksControls[0] ? (double)zoomAmount / 2 : 1.0;
-		return niterucksControls[0] ? constant / (float)(zoomAmount / 2) : constant;
+		zoom = niterucksControls[0] ? Math.pow((double) zoomAmount / 4, 2) : 1.0;
+		return niterucksControls[0] ? (float) (constant / Math.pow((double) zoomAmount / 4, 2)) : constant;
 	}
 
 

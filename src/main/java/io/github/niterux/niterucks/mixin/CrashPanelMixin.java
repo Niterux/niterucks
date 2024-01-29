@@ -2,11 +2,12 @@ package io.github.niterux.niterucks.mixin;
 
 import net.minecraft.client.crash.CrashPanel;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
+
+import java.awt.*;
 
 @Mixin(CrashPanel.class)
-public class CrashPanelMixin {
+public class CrashPanelMixin extends Panel {
 	@ModifyConstant(method = "<init>(Lnet/minecraft/client/crash/CrashSummary;)V", constant = @Constant(intValue = 3028036))
 	private int modifyCrashBGColor(int constant) {
 		return 0x633534;

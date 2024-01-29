@@ -1,6 +1,7 @@
 package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
@@ -47,5 +49,18 @@ public class EntityMixin {
 			belowCurrentBlockId = 0;
 		}
 		return original;
+	}
+
+/*	the view distance scaling disproportionately affects small entities and large
+	entities, this is because the game *squares* the dimensions of the entity instead
+	of just leaving them alone, to counteract this I've sorta "unsquared" things
+	IMO this makes the entity distance culling work way better :P*/
+	@ModifyExpressionValue(method = "isWithinViewDistance(D)Z", at = @At(value = "CONSTANT", args = "doubleValue=64", ordinal = 0))
+	private double increaseEntityDistance(double original){
+		return original * original * Niterucks.CONFIG.ENTITYDISTANCE.get();
+	}
+	@ModifyVariable(method = "isWithinViewDistance(D)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+	private double unSquare(double original){
+		return original * original;
 	}
 }

@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(Dimension.class)
 public interface initBrightnessTableInvoker {
 	@Invoker("initBrightnessTable")
-	public void reinitBrightnessTable();
+    void reinitBrightnessTable();
 }

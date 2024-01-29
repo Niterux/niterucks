@@ -3,7 +3,6 @@ package io.github.niterux.niterucks.mixin.bevofeatures;
 import net.minecraft.entity.player.PlayerInventory;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -17,8 +16,8 @@ public class PlayerInventoryMixin {
 	private int intersectScrolling(int scrollAmount) {
 		if (flying && flyingControls[3]) {
 			flySpeed += scrollAmount;
-			if (flySpeed > 16)
-				flySpeed = 16;
+			if (flySpeed > 12)
+				flySpeed = 12;
 			else if (flySpeed < 0)
 				flySpeed = 0;
 			return 0;

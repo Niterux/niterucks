@@ -17,7 +17,7 @@ public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
 	public static Config CONFIG;
 	public static String gsonVersion;
-
+	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString();
 	static {
 		CONFIG = new Config();
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())

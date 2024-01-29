@@ -3,7 +3,6 @@ package io.github.niterux.niterucks.mixin;
 import net.minecraft.entity.player.PlayerInventory;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
@@ -20,8 +19,8 @@ public class PlayerInventoryMixin {
 			zoomAmount += scrollAmount;
 			if (zoomAmount > 12)
 				zoomAmount = 12;
-			else if (zoomAmount < 4)
-				zoomAmount = 4;
+			else if (zoomAmount < 5)
+				zoomAmount = 5;
 			return 0;
 		}
 		return scrollAmount;

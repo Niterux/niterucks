@@ -1,17 +1,17 @@
 package io.github.niterux.niterucks.mixin;
 
 import com.bawnorton.mixinsquared.TargetHandler;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Mixin(value = TitleScreen.class, priority = 1500)
+@Mixin(value = GameMenuScreen.class, priority = 1500)
 public class ModMenuFixMixin extends Screen {
 	@SuppressWarnings({"MixinAnnotationTarget", "InvalidMemberReference", "UnresolvedMixinReference"})
 	@TargetHandler(
-		mixin = "com.terraformersmc.modmenu.mixin.MixinTitleScreen",
+		mixin = "com.terraformersmc.modmenu.mixin.MixinGameMenu",
 		name = "onInit"
 	)
 	@ModifyArg(

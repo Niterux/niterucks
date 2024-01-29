@@ -6,8 +6,6 @@ import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.world.dimension.NetherDimension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(NetherDimension.class)
 public class NetherDimensionMixin {

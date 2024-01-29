@@ -2,7 +2,7 @@ package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.niterux.niterucks.niterucksfeatures.ItemCoords;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
@@ -10,6 +10,7 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.HitResult;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.Niterucks.LOGGER;
+import static io.github.niterux.niterucks.Niterucks.modVersion;
 
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
@@ -27,6 +29,8 @@ public class GameGuiMixin extends GuiElement {
 		"West (Towards Negative X)",
 		"North (Towards Negative Z)",
 		"East (Towards Positive X)"};
+	@Unique
+	private static ItemStack heldItem;
 
 	@Shadow
 	private Minecraft minecraft;
@@ -46,7 +50,7 @@ public class GameGuiMixin extends GuiElement {
 	@ModifyConstant(method = "render",
 		constant = @Constant(stringValue = "Minecraft Beta 1.7.3 ("))
 	private String replaceGameName(String original) {
-		return String.format("Niterucks Client %s (", FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString());
+		return String.format("Niterucks Client %s (", modVersion);
 	}
 
 	@ModifyArg(
@@ -149,12 +153,25 @@ public class GameGuiMixin extends GuiElement {
 		return 0xd5312f;
 	}
 
+	@SuppressWarnings("SuspiciousNameCombination")
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 2) int width) {
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
-		this.drawString(var8, biomeString, width - var8.getWidth(biomeString) - 2, 22, 0xd5312f);
+		this.drawString(var8, biomeString, width - var8.getWidth(biomeString) - 2, 22, 0x46a848);
 		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
-		this.drawString(var8, lightString, width - var8.getWidth(lightString) - 2, 32, 0xd5312f);
+		this.drawString(var8, lightString, width - var8.getWidth(lightString) - 2, 32, 0x46a848);
+
+		if(minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY){
+			int targetBlockID = minecraft.world.getBlock(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
+			int targetBlockMetadata = minecraft.world.getBlockMetadata(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
+			String blockString = "Block: " + targetBlockID + ":" + targetBlockMetadata;
+			this.drawString(var8, blockString, width - var8.getWidth(blockString) - 2, 42, 0x46a848);
+		}
+
+		if(heldItem != null) {
+			String itemString = "Item: " + heldItem.itemId + ":" + heldItem.getDamage();
+			this.drawString(var8, itemString, width - var8.getWidth(itemString) - 2, 52, 0x46a848);
+		}
 	}
 
 	@ModifyArg(
@@ -245,21 +262,17 @@ public class GameGuiMixin extends GuiElement {
 		)
 	)
 	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
-		ItemStack heldItem = minecraft.player.inventory.getMainHandStack();
-		String damageText;
+		heldItem = minecraft.player.inventory.getMainHandStack();
 		if (heldItem != null) {
-			String itemIdText = String.valueOf(heldItem.itemId);
 			if (heldItem.getMaxDamage() > 0) {
-				damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
-			} else {
-				damageText = String.valueOf(heldItem.getDamage());
+				String damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
+				this.drawString(var8, damageText, width / 2 - var8.getWidth(damageText) / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
 			}
-			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - 130, height - 31);
-			if (heldItem.size > 1) {
-				this.drawString(var8, String.valueOf(heldItem.size), width / 2 - var8.getWidth(String.valueOf(heldItem.size)) / 2 - 122, height - 40, 0x55FF55);
+			if (heldItem.getMaxSize() > 1 || heldItem.size > 1) { //account for overstacked items
+				String sizeText = String.valueOf(heldItem.size);
+				this.drawString(var8, sizeText, width / 2 - var8.getWidth(sizeText) / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
 			}
-			this.drawString(var8, damageText, width / 2 - var8.getWidth(damageText) / 2 - 122, height - 15, 0x55FF55);
-			this.drawString(var8, itemIdText, width / 2 - var8.getWidth(itemIdText) - 130, height - 27, 0x55FF55);
+			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);
 		}
 	}
 }

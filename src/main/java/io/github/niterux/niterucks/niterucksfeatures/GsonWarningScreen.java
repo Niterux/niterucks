@@ -12,7 +12,10 @@ public class GsonWarningScreen extends Screen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0) {
-			if (mouseX < this.textRenderer.getWidth("https://ornithemc.net/") + this.width / 2 - 150 && mouseX > this.width / 2 - 150 && mouseY > this.height / 4 + 58 && mouseY < this.height / 4 + 68){
+			if (mouseX < this.textRenderer.getWidth("https://ornithemc.net/") + this.width / 2 - 150 &&
+				mouseX > this.width / 2 - 150 &&
+				mouseY < this.height / 4 + 68 &&
+				mouseY > this.height / 4 + 58){
                 openLink(this, "https://ornithemc.net/", "niterucks");
             }
 		}
