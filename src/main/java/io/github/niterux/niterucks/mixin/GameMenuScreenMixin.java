@@ -2,7 +2,6 @@ package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.terraformersmc.modmenu.config.ModMenuConfig;
-import io.github.niterux.niterucks.Niterucks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,17 +20,14 @@ public class GameMenuScreenMixin extends Screen {
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addTextureButton(CallbackInfo ci) {
 		switch(ModMenuConfig.GAME_MENU_BUTTON_STYLE.getValue()){
-			case BELOW_ADVANCEMENTS: case BELOW_ADVANCEMENTS_AND_STATISTICS: // BELOW_ACHIEVEMENTS BELOW_ACHIEVEMENTS_AND_STATISTICS
+			case BELOW_ACHIEVEMENTS: case BELOW_ACHIEVEMENTS_AND_STATISTICS:
 				this.buttons.add(new ButtonWidget(700009, this.width / 2 + 2, this.height / 4 + 56, 98, 20, "Texture Packs"));
-				Niterucks.LOGGER.debug("FIRST");
 				break;
 			case BELOW_STATISTICS:
 				this.buttons.add(new ButtonWidget(700009, this.width / 2  - 100, this.height / 4 + 56, 98, 20, "Texture Packs"));
-				Niterucks.LOGGER.debug("SECOND");
 				break;
 			default:
 				this.buttons.add(new ButtonWidget(700009, this.width / 2 - 100, this.height / 4 + 56, "Texture Packs"));
-				Niterucks.LOGGER.debug(String.valueOf(ModMenuConfig.GAME_MENU_BUTTON_STYLE.getValue()));
 		}
 		this.buttons.add(new ButtonWidget(900009, this.width / 2 - 49, this.height / 4 + 128, 98, 20, "Screenshots"));
 	}

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.zoomAmount;
 import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
 
+@Debug(export = true)
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 	@Unique
@@ -78,6 +80,4 @@ public class GameRendererMixin {
 		zoom = niterucksControls[0] ? Math.pow((double) zoomAmount / 4, 2) : 1.0;
 		return niterucksControls[0] ? (float) (constant / Math.pow((double) zoomAmount / 4, 2)) : constant;
 	}
-
-
 }
