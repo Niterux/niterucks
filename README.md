@@ -13,7 +13,7 @@ Significantly improved f3 menu that includes:</p>
 - Item ID and Metadata<br>
 - Better facing direction (North, South, East, West)<br><br>
 <p>Information about the held item (stack size and durability)<br>
-Adjustable<br>
+Adjustable zoom<br>
 Improved pause menu that includes texture packs button and screenshots button (also fixes the saving text in multiplayer)<br>
 Gui scale fix (no more, small, medium, and large, simply integer scales that go up to your current resolution like modern)<br>
 Fov slider<br>
