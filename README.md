@@ -8,7 +8,7 @@ Entity distance fix and slider<br>
 Unknown Windows version warning removal<br>
 Chat print to console<br>
 Significantly improved f3 menu that includes:</p>
-- Colors!><br>
+- Colors!<br>
 - Biome<br>
 - Light level<br>
 - Block ID and Metadata<br>
