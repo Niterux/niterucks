@@ -26,29 +26,32 @@ public class TextRendererMixin {
 
 	@ModifyArg(index = 0, method = "<init>(Lnet/minecraft/client/options/GameOptions;Ljava/lang/String;Lnet/minecraft/client/render/texture/TextureManager;)V",
 		at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glNewList(II)V", ordinal = 1, remap = false))
-	private int captureChatColorIndex(int index, @Share("index") LocalIntRef indexRef){
+	private int captureChatColorIndex(int index, @Share("index") LocalIntRef indexRef) {
 		indexRef.set(index - 256 - this.boundPage);
 		return index;
 	}
+
 	@ModifyArgs(method = "<init>(Lnet/minecraft/client/options/GameOptions;Ljava/lang/String;Lnet/minecraft/client/render/texture/TextureManager;)V",
 		at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glColor3f(FFF)V", remap = false))
-	private void captureChatColors(Args args, @Share("index") LocalIntRef indexRef){
+	private void captureChatColors(Args args, @Share("index") LocalIntRef indexRef) {
 		chatColors[indexRef.get()][0] = args.get(0);
 		chatColors[indexRef.get()][1] = args.get(1);
 		chatColors[indexRef.get()][2] = args.get(2);
 	}
+
 	@Redirect(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 0))
-	private IntBuffer modifyDrawColor(IntBuffer instance, int i, @Local(ordinal = 2, argsOnly = true) int color){
+	private IntBuffer modifyDrawColor(IntBuffer instance, int i, @Local(ordinal = 2, argsOnly = true) int color) {
 		int colorIndex = i - this.boundPage - 256;
-		float alpha = (float)(color >> 24 & 0xFF) / 255.0F;
+		float alpha = (float) (color >> 24 & 0xFF) / 255.0F;
 		if (alpha == 0.0F) {
 			alpha = 1.0F;
 		}
-		GL11.glColor4f(chatColors[colorIndex][0],chatColors[colorIndex][1],chatColors[colorIndex][2], alpha);
+		GL11.glColor4f(chatColors[colorIndex][0], chatColors[colorIndex][1], chatColors[colorIndex][2], alpha);
 		return instance;
 	}
+
 	@Redirect(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 1))
-	private IntBuffer manuallyDrawChar(IntBuffer instance, int i){
+	private IntBuffer manuallyDrawChar(IntBuffer instance, int i) {
 		GL11.glCallList(i);
 		return instance;
 	}

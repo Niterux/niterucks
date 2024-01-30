@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity {
 	@Inject(method = "<init>(Lnet/minecraft/world/World;DDDLnet/minecraft/item/ItemStack;)V", at = @At("TAIL"))
-	private void setViewDistanceScaling(World x, double y, double z, double stack, ItemStack par5, CallbackInfo ci){
+	private void setViewDistanceScaling(World x, double y, double z, double stack, ItemStack par5, CallbackInfo ci) {
 		this.viewDistanceScaling = 2.0;
 	}
 

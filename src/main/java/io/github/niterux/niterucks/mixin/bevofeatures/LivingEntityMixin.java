@@ -27,6 +27,7 @@ public class LivingEntityMixin {
 		}
 		return value;
 	}
+
 	@ModifyExpressionValue(method = "moveEntityWithVelocity(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD))
 	private boolean removeFriction(boolean original) {
 		//noinspection ConstantValue

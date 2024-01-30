@@ -17,14 +17,16 @@ import java.io.File;
 
 @Mixin(GameMenuScreen.class)
 public class GameMenuScreenMixin extends Screen {
+	@SuppressWarnings("unchecked")
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addTextureButton(CallbackInfo ci) {
-		switch(ModMenuConfig.GAME_MENU_BUTTON_STYLE.getValue()){
-			case BELOW_ACHIEVEMENTS: case BELOW_ACHIEVEMENTS_AND_STATISTICS:
+		switch (ModMenuConfig.GAME_MENU_BUTTON_STYLE.getValue()) {
+			case BELOW_ACHIEVEMENTS:
+			case BELOW_ACHIEVEMENTS_AND_STATISTICS:
 				this.buttons.add(new ButtonWidget(700009, this.width / 2 + 2, this.height / 4 + 56, 98, 20, "Texture Packs"));
 				break;
 			case BELOW_STATISTICS:
-				this.buttons.add(new ButtonWidget(700009, this.width / 2  - 100, this.height / 4 + 56, 98, 20, "Texture Packs"));
+				this.buttons.add(new ButtonWidget(700009, this.width / 2 - 100, this.height / 4 + 56, 98, 20, "Texture Packs"));
 				break;
 			default:
 				this.buttons.add(new ButtonWidget(700009, this.width / 2 - 100, this.height / 4 + 56, "Texture Packs"));

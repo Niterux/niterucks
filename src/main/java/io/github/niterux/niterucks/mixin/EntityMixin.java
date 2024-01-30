@@ -51,16 +51,17 @@ public class EntityMixin {
 		return original;
 	}
 
-/*	the view distance scaling disproportionately affects small entities and large
-	entities, this is because the game *squares* the dimensions of the entity instead
-	of just leaving them alone, to counteract this I've sorta "unsquared" things
-	IMO this makes the entity distance culling work way better :P*/
+	/*	the view distance scaling disproportionately affects small entities and large
+		entities, this is because the game *squares* the dimensions of the entity instead
+		of just leaving them alone, to counteract this I've sorta "unsquared" things
+		IMO this makes the entity distance culling work way better :P*/
 	@ModifyExpressionValue(method = "isWithinViewDistance(D)Z", at = @At(value = "CONSTANT", args = "doubleValue=64", ordinal = 0))
-	private double increaseEntityDistance(double original){
+	private double increaseEntityDistance(double original) {
 		return original * original * Niterucks.CONFIG.ENTITYDISTANCE.get();
 	}
+
 	@ModifyVariable(method = "isWithinViewDistance(D)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-	private double unSquare(double original){
+	private double unSquare(double original) {
 		return original * original;
 	}
 }

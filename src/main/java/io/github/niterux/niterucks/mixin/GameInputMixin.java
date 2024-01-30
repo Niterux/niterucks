@@ -21,6 +21,7 @@ public class GameInputMixin {
 			niterucksControls[InputNum] = par2;
 		}
 	}
+
 	@Inject(method = "m_6793679()V", at = @At("TAIL"))
 	private void addResetInputs(CallbackInfo ci) {
 		for (int i = 0; i < 1; ++i) {

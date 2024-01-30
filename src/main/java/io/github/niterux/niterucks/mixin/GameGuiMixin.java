@@ -161,14 +161,14 @@ public class GameGuiMixin extends GuiElement {
 		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
 		this.drawString(var8, lightString, width - var8.getWidth(lightString) - 2, 32, 0x46a848);
 
-		if(minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY){
+		if (minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY) {
 			int targetBlockID = minecraft.world.getBlock(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
 			int targetBlockMetadata = minecraft.world.getBlockMetadata(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
 			String blockString = "Block: " + targetBlockID + ":" + targetBlockMetadata;
 			this.drawString(var8, blockString, width - var8.getWidth(blockString) - 2, 42, 0x46a848);
 		}
 
-		if(heldItem != null) {
+		if (heldItem != null) {
 			String itemString = "Item: " + heldItem.itemId + ":" + heldItem.getDamage();
 			this.drawString(var8, itemString, width - var8.getWidth(itemString) - 2, 52, 0x46a848);
 		}
@@ -261,18 +261,17 @@ public class GameGuiMixin extends GuiElement {
 			remap = false
 		)
 	)
-	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
+	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
 		heldItem = minecraft.player.inventory.getMainHandStack();
 		if (heldItem != null) {
 			if (heldItem.getMaxDamage() > 0) {
 				String damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
-				this.drawString(var8, damageText, width / 2 - var8.getWidth(damageText) / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
+				this.drawCenteredString(textRenderer, damageText, width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
 			}
 			if (heldItem.getMaxSize() > 1 || heldItem.size > 1) { //account for overstacked items
-				String sizeText = String.valueOf(heldItem.size);
-				this.drawString(var8, sizeText, width / 2 - var8.getWidth(sizeText) / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
+				this.drawCenteredString(textRenderer, String.valueOf(heldItem.size), width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
 			}
-			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);
+			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX + ItemCoords.itemIconOffsetX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);
 		}
 	}
 }

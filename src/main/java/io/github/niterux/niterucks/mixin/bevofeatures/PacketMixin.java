@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Packet.class)
 public class PacketMixin {
 	@Shadow
-	static void register(int id, boolean s2c, boolean c2s, Class type) {
+	static void register(int id, boolean s2c, boolean c2s, @SuppressWarnings("rawtypes") Class type) {
 	}
 
 	@Inject(method = "<clinit>",

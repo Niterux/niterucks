@@ -18,6 +18,7 @@ public class Niterucks implements ClientModInitializer {
 	public static Config CONFIG;
 	public static String gsonVersion;
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString();
+
 	static {
 		CONFIG = new Config();
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
@@ -37,16 +38,16 @@ public class Niterucks implements ClientModInitializer {
 		JarFile gsonJar;
 		/*We need the version of Gson because earlier Ornithe installers
 		would install 2.2.2, which has bugs causing files to not be read.*/
-        try {
+		try {
 			//Find where the Gson class comes from and make a JarFile from it
 			gsonJar = new JarFile(Gson.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 			//Use that JarFile to find the manifest and get the Bundle-Version
 			gsonVersion = gsonJar.getManifest().getMainAttributes().getValue("Bundle-Version");
 			gsonJar.close();
-        } catch (IOException e) {
-            LOGGER.info("Could not read the Gson jar file, assuming the version is 2.2.4!");
-        }
-		if(gsonVersion == null){
+		} catch (IOException e) {
+			LOGGER.info("Could not read the Gson jar file, assuming the version is 2.2.4!");
+		}
+		if (gsonVersion == null) {
 			LOGGER.info("Couldn't read the Gson version from manifest! Assuming the version is 2.2.4");
 			gsonVersion = "2.2.4";
 		}

@@ -15,11 +15,12 @@ public class GsonWarningScreen extends Screen {
 			if (mouseX < this.textRenderer.getWidth("https://ornithemc.net/") + this.width / 2 - 150 &&
 				mouseX > this.width / 2 - 150 &&
 				mouseY < this.height / 4 + 68 &&
-				mouseY > this.height / 4 + 58){
-                openLink(this, "https://ornithemc.net/", "niterucks");
-            }
+				mouseY > this.height / 4 + 58) {
+				openLink(this, "https://ornithemc.net/", "niterucks");
+			}
 		}
 	}
+
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		this.renderBackground();
