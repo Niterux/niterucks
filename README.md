@@ -1,5 +1,5 @@
 <p>Features:<br>
-Adjustable Beta Evolutions flight (only people given permission to fly can activate it)<br>
+Adjustable BevoFlight (FOR STAFF)<br>
 Better crash menu<br>
 Brightness slider<br>
 Footstep sound fix<br>
