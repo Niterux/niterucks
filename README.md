@@ -1,12 +1,13 @@
 <p>Features:<br>
 Adjustable BevoFlight (FOR STAFF)<br>
-Better crash menu<br>
+Edited crash menu<br>
 Brightness slider<br>
 Footstep sound fix<br>
 Entity distance fix and slider<br>
 Unknown Windows version warning removal<br>
 Chat print to console<br>
 Significantly improved f3 menu that includes:</p>
+- Colors!><br>
 - Biome<br>
 - Light level<br>
 - Block ID and Metadata<br>
