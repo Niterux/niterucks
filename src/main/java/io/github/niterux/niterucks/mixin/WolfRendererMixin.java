@@ -2,13 +2,13 @@ package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+import io.github.niterux.niterucks.mixin.invokers.RenderNameTagInvoker;
 import net.minecraft.client.render.entity.WolfRenderer;
 import net.minecraft.entity.living.mob.passive.animal.tamable.WolfEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import io.github.niterux.niterucks.mixin.invokers.RenderNameTagInvoker;
 
 import java.util.Objects;
 

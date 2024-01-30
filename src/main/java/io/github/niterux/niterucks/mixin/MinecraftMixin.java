@@ -13,7 +13,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,8 +21,8 @@ import java.util.Objects;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-	@Redirect(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
-	private void amdFix() throws LWJGLException {
+	@WrapOperation(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
+	private void amdFix(Operation<Void> original) throws LWJGLException {
 		PixelFormat pixelformat = new PixelFormat();
 		pixelformat = pixelformat.withDepthBits(24);
 		Display.create(pixelformat);

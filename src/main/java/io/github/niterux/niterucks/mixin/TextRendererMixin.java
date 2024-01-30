@@ -1,5 +1,7 @@
 package io.github.niterux.niterucks.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
@@ -11,7 +13,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.nio.IntBuffer;
@@ -39,8 +40,8 @@ public class TextRendererMixin {
 		chatColors[indexRef.get()][2] = args.get(2);
 	}
 
-	@Redirect(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 0))
-	private IntBuffer modifyDrawColor(IntBuffer instance, int i, @Local(ordinal = 2, argsOnly = true) int color) {
+	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 0))
+	private IntBuffer modifyDrawColor(IntBuffer instance, int i, Operation<IntBuffer> original, @Local(ordinal = 2, argsOnly = true) int color) {
 		int colorIndex = i - this.boundPage - 256;
 		float alpha = (float) (color >> 24 & 0xFF) / 255.0F;
 		if (alpha == 0.0F) {
@@ -50,8 +51,8 @@ public class TextRendererMixin {
 		return instance;
 	}
 
-	@Redirect(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 1))
-	private IntBuffer manuallyDrawChar(IntBuffer instance, int i) {
+	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 1))
+	private IntBuffer manuallyDrawChar(IntBuffer instance, int i, Operation<IntBuffer> original) {
 		GL11.glCallList(i);
 		return instance;
 	}

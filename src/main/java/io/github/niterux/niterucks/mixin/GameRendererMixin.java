@@ -1,6 +1,8 @@
 package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
@@ -10,9 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.zoomAmount;
@@ -39,14 +39,15 @@ public class GameRendererMixin {
 	@Shadow
 	private float viewDistance;
 
-	@ModifyConstant(method = "getFov(F)F", constant = @Constant(floatValue = 70.0F, ordinal = 0))
-	private float changeFov(float seventy) {
+	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=70.0F", ordinal = 0))
+	private float changeFov(float seventy, @Share("seventy")LocalFloatRef fovRef) {
+		fovRef.set(seventy);
 		return this.handFov ? seventy : Niterucks.CONFIG.FOV.get();
 	}
 
-	@ModifyConstant(method = "getFov(F)F", constant = @Constant(floatValue = 60.0F, ordinal = 0))
-	private float changeWaterFov(float sixty) {
-		return this.handFov ? sixty : Niterucks.CONFIG.FOV.get() * 60.0F / 70.0F;
+	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=60.0F", ordinal = 0))
+	private float changeWaterFov(float sixty, @Share("seventy")LocalFloatRef fovRef) {
+		return this.handFov ? sixty : Niterucks.CONFIG.FOV.get() * sixty / fovRef.get();
 	}
 
 	@Inject(method = "setupCamera(FI)V", at = @At(value = "HEAD"))

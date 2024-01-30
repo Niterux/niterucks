@@ -5,8 +5,6 @@ import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.world.dimension.Dimension;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(Dimension.class)
 public class DimensionMixin {
@@ -15,7 +13,7 @@ public class DimensionMixin {
 		return constant * (Niterucks.CONFIG.BRIGHTNESS.get() * 2 + 1.0F);
 	}
 
-	@ModifyConstant(method = "getCloudHeight()F", constant = @Constant(floatValue = 108F))
+	@ModifyExpressionValue(method = "getCloudHeight()F", at = @At(value = "CONSTANT", args = "floatValue=108F"))
 	private float modifyCloudHeight(float original) {
 		return Niterucks.CONFIG.CLOUD_HEIGHT.get();
 	}

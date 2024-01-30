@@ -15,7 +15,10 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.Niterucks.LOGGER;
@@ -47,8 +50,8 @@ public class GameGuiMixin extends GuiElement {
 	//===============
 	//f3 menu stuff
 	//===============
-	@ModifyConstant(method = "render",
-		constant = @Constant(stringValue = "Minecraft Beta 1.7.3 ("))
+	@ModifyExpressionValue(method = "render",
+		at = @At(value = "CONSTANT", args = "stringValue=Minecraft Beta 1.7.3 ("))
 	private String replaceGameName(String original) {
 		return String.format("Niterucks Client %s (", modVersion);
 	}
