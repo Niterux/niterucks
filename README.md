@@ -2,6 +2,7 @@
 Adjustable BevoFlight (FOR STAFF)<br>
 Edited crash menu<br>
 Brightness slider<br>
+Adjustable cloud height<br>
 Footstep sound fix<br>
 Entity distance fix and slider<br>
 Unknown Windows version warning removal<br>
