@@ -1,5 +1,5 @@
 <p>Features:<br>
-Adjustable BevoFlight (FOR STAFF)<br>
+Enhanced BevoFlight (ONLY ENABLABLE BY STAFF)<br>
 Edited crash menu<br>
 Brightness slider<br>
 Adjustable cloud height<br>
