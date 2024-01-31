@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "accessors.BlockEntityRendererDispatcherAccessor",
+    "accessors.ConnectionAccessor",
     "accessors.MinecraftInstanceAccessor",
+    "accessors.NetworkHandlerAccessor",
+    "accessors.SocketAccessor",
     "invokers.InitBrightnessTableInvoker",
     "invokers.RenderNameTagInvoker",
     "ClientNetworkHandlerMixin",
@@ -21,6 +24,7 @@
     "ItemEntityMixin",
     "MinecraftMixin",
     "ModMenuFixMixin",
+    "MultiplayerInteractionManagerMixin",
     "NetherDimensionMixin",
     "PlayerInventoryMixin",
     "ScreenshotUtilsMixin",

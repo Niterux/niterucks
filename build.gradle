@@ -29,8 +29,8 @@ project.dependencies {
 
 	modImplementation "com.terraformersmc:modmenu:0.2.1+mcb1.7.3"
 	include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
-	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.3+b1.7.3")
-	include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.41")
+	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.4+b1.7.3")
+	include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.43")
 	project.ploceus.addCommonLibraries()
 	project.ploceus.dependOsl(project.osl_version, project.environment)
 }
