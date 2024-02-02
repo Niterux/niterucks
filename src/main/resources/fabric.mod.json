@@ -13,7 +13,7 @@
   "contact": {
 		"sources": "https://github.com/Niterux/niterucks"
 	},
-	"license": "MIT",
+	"license": ["MIT"],
 	"icon": "assets/niterucks/icon.png",
 	"environment": "client",
 	"mixins": [
@@ -29,6 +29,7 @@
 		"fabricloader": ">=0.15.2",
 		"minecraft": "1.0.0-beta.7.3",
 		"osl-entrypoints": ">=0.4.0",
-    "modmenu": ">=0.2.1"
+    "modmenu": ">=0.2.1",
+    "fabric-language-kotlin": ">=1.10.17+kotlin.1.9.22"
 	}
 }

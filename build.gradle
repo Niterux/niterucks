@@ -13,6 +13,7 @@ version = "${project.version}"
 group = project.maven_group
 
 project.repositories {
+	mavenCentral()
 	maven { url = "https://jitpack.io" }
 	maven { url = "https://moehreag.duckdns.org/maven/snapshots" }
 }
@@ -26,11 +27,14 @@ project.dependencies {
 	nests "net.ornithemc:nests:${project.minecraft_version}-${project.environment}+build.${project.nests_build}"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc:fabric-language-kotlin:1.10.17+kotlin.1.9.22"
 
 	modImplementation "com.terraformersmc:modmenu:0.2.1+mcb1.7.3"
 	include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
-	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.4+b1.7.3")
+	modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1-beta.5+b1.7.3")
 	include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.0-beta.43")
+	include(implementation("dev.kdrag0n:colorkt-jvm:1.0.5"))
+
 	project.ploceus.addCommonLibraries()
 	project.ploceus.dependOsl(project.osl_version, project.environment)
 }

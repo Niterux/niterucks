@@ -4,7 +4,11 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public class EntityMixin {
@@ -19,6 +24,17 @@ public class EntityMixin {
 	private int distanceOnNextBlock;
 	@Shadow
 	public float horizontalVelocity;
+	@Shadow
+	public World world;
+	@Shadow
+	public double x;
+	@Shadow
+	public double z;
+	@Shadow
+	public float f_4350946; //inventory brightness override
+	@Final
+	@Shadow
+	public Box shape;
 	@Unique
 	private int belowCurrentBlockId;
 	@Unique
@@ -63,5 +79,21 @@ public class EntityMixin {
 	@ModifyVariable(method = "isWithinViewDistance(D)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private double unSquare(double original) {
 		return original * original;
+	}
+
+	@Inject(method = "getBrightness(F)F", cancellable = true, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;f_4350946:F", ordinal = 2))
+	private void fixEntityBlack(float par1, CallbackInfoReturnable<Float> cir) {
+		//Fixes entities turning black above Y 129 and the vignette
+		//noinspection SuspiciousNameCombination
+		if (f_4350946 == 0.0F && MathHelper.floor(this.shape.maxY) > 128 && this.world
+			.isAreaLoaded(
+				MathHelper.floor(this.shape.minX),
+				127,
+				MathHelper.floor(this.shape.minZ),
+				MathHelper.floor(this.shape.maxX),
+				127,
+				MathHelper.floor(this.shape.maxZ)
+			))
+			cir.setReturnValue(this.world.getBrightness(MathHelper.floor(this.x), 127, MathHelper.floor(this.z)));
 	}
 }

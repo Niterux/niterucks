@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.optimization;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.niterux.niterucks.mixin.accessors.BlockEntityRendererDispatcherAccessor;

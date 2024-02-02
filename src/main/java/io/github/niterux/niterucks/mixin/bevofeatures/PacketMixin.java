@@ -1,6 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures;
 
-import io.github.niterux.niterucks.bevofeatures.BetaEvoPacket;
+import io.github.niterux.niterucks.bevofeatures.BetaEVOPacket;
 import net.minecraft.network.packet.Packet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,6 +17,6 @@ public class PacketMixin {
 	@Inject(method = "<clinit>",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/Packet;register(IZZLjava/lang/Class;)V", ordinal = 0))
 	private static void newPacket(CallbackInfo info) {
-		register(220, true, true, BetaEvoPacket.class);
+		register(220, true, true, BetaEVOPacket.class);
 	}
 }

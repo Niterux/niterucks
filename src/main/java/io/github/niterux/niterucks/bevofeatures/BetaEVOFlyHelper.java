@@ -20,7 +20,7 @@ public class BetaEVOFlyHelper {
 		flyingButtonHeld = false;
 		flyingTouchedGround = true;
 
-		boolean[] flyingControls = {
+		BetaEVOFlyHelper.flyingControls = new boolean[]{
 			false, //fly button
 			false, //up
 			false, //down

@@ -2,6 +2,7 @@ package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.terraformersmc.modmenu.config.ModMenuConfig;
+import io.github.niterux.niterucks.niterucksfeatures.ColorCheatSheetScreen;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -32,6 +33,7 @@ public class GameMenuScreenMixin extends Screen {
 				this.buttons.add(new ButtonWidget(700009, this.width / 2 - 100, this.height / 4 + 56, "Texture Packs"));
 		}
 		this.buttons.add(new ButtonWidget(900009, this.width / 2 - 49, this.height / 4 + 128, 98, 20, "Screenshots"));
+		this.buttons.add(new ButtonWidget(900010, this.width - 100, 2, 98, 20, "Colors"));
 	}
 
 	@Inject(method = "buttonClicked(Lnet/minecraft/client/gui/widget/ButtonWidget;)V", at = @At("TAIL"))
@@ -41,6 +43,9 @@ public class GameMenuScreenMixin extends Screen {
 		}
 		if (par1.id == 900009) {
 			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
+		}
+		if (par1.id == 900010) {
+			this.minecraft.openScreen(new ColorCheatSheetScreen(this));
 		}
 	}
 

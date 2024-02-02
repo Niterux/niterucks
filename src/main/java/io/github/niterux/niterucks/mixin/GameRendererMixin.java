@@ -13,10 +13,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.zoomAmount;
 import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
+import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.adjustRainbow;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -40,13 +42,13 @@ public class GameRendererMixin {
 	private float viewDistance;
 
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=70.0F", ordinal = 0))
-	private float changeFov(float seventy, @Share("seventy")LocalFloatRef fovRef) {
+	private float changeFov(float seventy, @Share("seventy") LocalFloatRef fovRef) {
 		fovRef.set(seventy);
 		return this.handFov ? seventy : Niterucks.CONFIG.FOV.get();
 	}
 
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=60.0F", ordinal = 0))
-	private float changeWaterFov(float sixty, @Share("seventy")LocalFloatRef fovRef) {
+	private float changeWaterFov(float sixty, @Share("seventy") LocalFloatRef fovRef) {
 		return this.handFov ? sixty : Niterucks.CONFIG.FOV.get() * sixty / fovRef.get();
 	}
 
@@ -78,5 +80,17 @@ public class GameRendererMixin {
 	private float addZoomFunctionality(float constant) {
 		zoom = niterucksControls[0] ? Math.pow((double) zoomAmount / 4, 2) : 1.0;
 		return niterucksControls[0] ? (float) (constant / Math.pow((double) zoomAmount / 4, 2)) : constant;
+	}
+
+	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;fpsLimit:I"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJ)V", ordinal = 1)))
+	private int fixPerformanceLimiter(int fpsLimit) {
+		// Notch meant to write this.minecraft.options.fpsLimit > 0 instead they wrote
+		// this.minecraft.options.fpsLimit == 2 which means the fps limit never applies on balanced
+		return (fpsLimit > 0) ? 2 : -1;
+	}
+
+	@Inject(method = "render", at = @At("HEAD"))
+	private void updateRainbow(CallbackInfo ci) {
+		adjustRainbow();
 	}
 }

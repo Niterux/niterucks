@@ -4,13 +4,7 @@
   "package": "io.github.niterux.niterucks.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "accessors.BlockEntityRendererDispatcherAccessor",
-    "accessors.ConnectionAccessor",
-    "accessors.MinecraftInstanceAccessor",
-    "accessors.NetworkHandlerAccessor",
-    "accessors.SocketAccessor",
-    "invokers.InitBrightnessTableInvoker",
-    "invokers.RenderNameTagInvoker",
+    "ChatScreenMixin",
     "ClientNetworkHandlerMixin",
     "CrashPanelMixin",
     "DimensionMixin",
@@ -22,16 +16,21 @@
     "GameOptionsMixin",
     "GameRendererMixin",
     "ItemEntityMixin",
+    "ItemRendererMixin",
     "MinecraftMixin",
     "ModMenuFixMixin",
     "MultiplayerInteractionManagerMixin",
     "NetherDimensionMixin",
     "PlayerInventoryMixin",
-    "ScreenshotUtilsMixin",
-    "SignRendererMixin",
     "TextRendererMixin",
     "TitleScreenMixin",
     "WolfRendererMixin",
+    "WorldRendererMixin",
+    "accessors.BlockEntityRendererDispatcherAccessor",
+    "accessors.ConnectionAccessor",
+    "accessors.MinecraftInstanceAccessor",
+    "accessors.NetworkHandlerAccessor",
+    "accessors.SocketAccessor",
     "bevofeatures.ClientNetworkHandlerMixin",
     "bevofeatures.ConnectionMixin",
     "bevofeatures.EntityMixin",
@@ -39,13 +38,21 @@
     "bevofeatures.GameInputMixin",
     "bevofeatures.GameRendererMixin",
     "bevofeatures.LivingEntityMixin",
+    "bevofeatures.LivingEntityRendererMixin",
     "bevofeatures.LocalPlayerEntityMixin",
     "bevofeatures.LoginPacketMixin",
     "bevofeatures.PacketMixin",
     "bevofeatures.PlayerEntityMixin",
-    "bevofeatures.PlayerInventoryMixin"
+    "bevofeatures.PlayerInventoryMixin",
+    "invokers.InitBrightnessTableInvoker",
+    "invokers.RenderNameTagInvoker",
+    "optimization.ScreenshotUtilsMixin",
+    "optimization.SignRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "accessors.HueAccessor"
+  ]
 }

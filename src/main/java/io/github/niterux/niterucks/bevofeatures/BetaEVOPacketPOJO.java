@@ -1,6 +1,6 @@
 package io.github.niterux.niterucks.bevofeatures;
 
-public class BetaEvoPacketPOJO {
+public class BetaEVOPacketPOJO {
 	public int protocol = 1;
 	public String updateType = "none";
 	public boolean enabled = false;

@@ -2,6 +2,7 @@ package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.niterux.niterucks.NiteLogger;
 import io.github.niterux.niterucks.niterucksfeatures.ItemCoords;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
@@ -21,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static io.github.niterux.niterucks.Niterucks.LOGGER;
 import static io.github.niterux.niterucks.Niterucks.modVersion;
 
 @Mixin(GameGui.class)
@@ -34,6 +34,8 @@ public class GameGuiMixin extends GuiElement {
 		"East (Towards Positive X)"};
 	@Unique
 	private static ItemStack heldItem;
+	@Unique
+	private static NiteLogger chatLogger = new NiteLogger("chat");
 
 	@Shadow
 	private Minecraft minecraft;
@@ -44,7 +46,7 @@ public class GameGuiMixin extends GuiElement {
 	//print chat message to console
 	@Inject(method = "addChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
 	private void printChatMessage(String text, CallbackInfo ci) {
-		LOGGER.info(text);
+		chatLogger.info(text);
 	}
 
 	//===============
@@ -271,7 +273,7 @@ public class GameGuiMixin extends GuiElement {
 				String damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
 				this.drawCenteredString(textRenderer, damageText, width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
 			}
-			if (heldItem.getMaxSize() > 1 || heldItem.size > 1) { //account for overstacked items
+			if (heldItem.size > 1 || heldItem.getMaxSize() > 1) { //account for overstacked items
 				this.drawCenteredString(textRenderer, String.valueOf(heldItem.size), width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
 			}
 			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX + ItemCoords.itemIconOffsetX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);

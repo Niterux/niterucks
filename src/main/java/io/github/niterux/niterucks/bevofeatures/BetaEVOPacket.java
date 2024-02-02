@@ -6,23 +6,23 @@ import net.minecraft.network.packet.Packet;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-public class BetaEvoPacket extends Packet {
+public class BetaEVOPacket extends Packet {
 	public String message;
 
-	public BetaEvoPacket(String message) {
+	public BetaEVOPacket(String message) {
 		this.message = message;
 	}
 
-	public BetaEvoPacket() {
+	public BetaEVOPacket() {
 	}
 
 	public void read(DataInputStream var1) {
-		this.message = BetaEvoPacket.readString(var1, 1000);
-		BetaEvoPacketDecoder.decode(this.message);
+		this.message = BetaEVOPacket.readString(var1, 1000);
+		BetaEVOPacketDecoder.decode(this.message);
 	}
 
 	public void write(DataOutputStream var1) {
-		BetaEvoPacket.writeString(this.message, var1);
+		BetaEVOPacket.writeString(this.message, var1);
 	}
 
 	public void handle(PacketHandler var1) {
