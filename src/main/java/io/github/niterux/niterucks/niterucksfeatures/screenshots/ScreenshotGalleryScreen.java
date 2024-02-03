@@ -29,7 +29,10 @@ public class ScreenshotGalleryScreen extends Screen {
 
 	@Override
 	public void init() {
+		files.forEach(ScreenshotInfo::release);
 		files.clear();
+		buttons.clear();
+		System.gc();
 		try (Stream<Path> paths = Files.list(screenshotsDir)) {
 			paths.sorted().forEachOrdered(p -> {
 				ScreenshotInfo info = new ScreenshotInfo(p);
@@ -69,6 +72,7 @@ public class ScreenshotGalleryScreen extends Screen {
 		//System.out.println("Showing screenshots "+index+"-"+ Math.min((index)+count-1, files.size()-1));
 
 		buttons.removeIf(b -> b instanceof ScreenshotWidget);
+		files.forEach(ScreenshotInfo::release);
 
 		for (int i = 0; i < Math.min(count, files.size() - index); i++) {
 			ScreenshotInfo info = files.get(i + index);
@@ -98,6 +102,10 @@ public class ScreenshotGalleryScreen extends Screen {
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		if (button.id == 0) {
+			files.forEach(ScreenshotInfo::release);
+			files.clear();
+			buttons.clear();
+			System.gc();
 			minecraft.openScreen(parent);
 			return;
 		}
@@ -119,11 +127,6 @@ public class ScreenshotGalleryScreen extends Screen {
 		}
 	}
 
-	@Override
-	public void m_9533182() {
-		super.m_9533182();
-	}
-
 	public static class ScreenshotInfo {
 		private BufferedImage image;
 		private int glId = -1;
@@ -140,6 +143,11 @@ public class ScreenshotGalleryScreen extends Screen {
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
+				if (image == null){
+					image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+					image.getGraphics().drawString("Error", 1, 15);
+					image.getGraphics().dispose();
+				}
 			}
 			return image;
 		}
@@ -154,6 +162,17 @@ public class ScreenshotGalleryScreen extends Screen {
 
 		public Path getFile() {
 			return file;
+		}
+
+		public void release(){
+			if (glId != -1){
+				TextureUtil.deleteTextures(glId);
+				glId = -1;
+			}
+			if (image != null){
+				image.flush();
+				image = null;
+			}
 		}
 	}
 }
