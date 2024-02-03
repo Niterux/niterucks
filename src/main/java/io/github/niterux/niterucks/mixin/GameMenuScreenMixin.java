@@ -3,18 +3,15 @@ package io.github.niterux.niterucks.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.terraformersmc.modmenu.config.ModMenuConfig;
 import io.github.niterux.niterucks.niterucksfeatures.ColorCheatSheetScreen;
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.niterux.niterucks.niterucksfeatures.screenshots.ScreenshotGalleryScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TexturePackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import org.lwjgl.Sys;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.io.File;
 
 @Mixin(GameMenuScreen.class)
 public class GameMenuScreenMixin extends Screen {
@@ -42,7 +39,7 @@ public class GameMenuScreenMixin extends Screen {
 			this.minecraft.openScreen(new TexturePackScreen(this));
 		}
 		if (par1.id == 900009) {
-			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
+			minecraft.openScreen(new ScreenshotGalleryScreen(this));
 		}
 		if (par1.id == 900010) {
 			this.minecraft.openScreen(new ColorCheatSheetScreen(this));
