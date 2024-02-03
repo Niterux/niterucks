@@ -94,6 +94,6 @@ public class EntityMixin {
 				127,
 				MathHelper.floor(this.shape.maxZ)
 			))
-			cir.setReturnValue(this.world.getBrightness(MathHelper.floor(this.x), 127, MathHelper.floor(this.z)));
+			cir.setReturnValue(this.world.getBrightness(MathHelper.floor(this.x), 128, MathHelper.floor(this.z)));
 	}
 }

@@ -15,6 +15,9 @@ public class PlayerNameStatus {
 	public int getColor() {
 		return color;
 	}
+	public String getName(){
+		return name;
+	}
 
 	public PlayerNameStatus(String name, int color, boolean isRainbow) {
 		this.name = name;

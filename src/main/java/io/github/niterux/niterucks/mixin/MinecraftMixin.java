@@ -10,17 +10,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
-@Mixin(Minecraft.class)
+@Mixin(value = Minecraft.class, priority = 1005)
 public class MinecraftMixin {
 	@WrapOperation(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
 	private void amdFix(Operation<Void> original) throws LWJGLException {
@@ -40,7 +38,7 @@ public class MinecraftMixin {
 
 	//this will only do anything once issue #888 in fabric-loader is solved
 	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
-	@WrapOperation(method = "m_6868991(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/awt/Frame;setLayout(Ljava/awt/LayoutManager;)V"))
+	@WrapOperation(method = "m_6868991(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/awt/Frame;setLayout(Ljava/awt/LayoutManager;)V"), require = 0)
 	private static void addNiterucksIcon(Frame instance, LayoutManager layoutManager, Operation<Void> original) throws IOException {
 		original.call(instance, new BorderLayout());
 		instance.setIconImage(ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/icon.png"))));
@@ -56,5 +54,10 @@ public class MinecraftMixin {
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)
 	private int swapMiningMouseButton(int button) {
 		return (Niterucks.CONFIG.SWAPMOUSEBUTTONS.get()) ? 1 : button;
+	}
+
+	@Inject(method = "toggleFullscreen()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
+	private void addVsync(CallbackInfo ci) {
+		Display.setVSyncEnabled(Niterucks.CONFIG.VSYNC.get());
 	}
 }
