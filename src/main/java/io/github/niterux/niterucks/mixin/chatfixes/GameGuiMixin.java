@@ -5,6 +5,7 @@ import io.github.niterux.niterucks.niterucksfeatures.ChatScreenGetMessageScroll;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.screen.ChatScreen;
+import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,6 +24,7 @@ public class GameGuiMixin {
 
 	@ModifyExpressionValue(method = "addChatMessage(Ljava/lang/String;)V", at = @At(value = "CONSTANT", args = "intValue=50"))
 	private int modifyMaxChatMessages(int original) {
+		messageScrollTotal++;
 		return 1000;
 	}
 
@@ -34,12 +36,17 @@ public class GameGuiMixin {
 	@ModifyArg(method = "Lnet/minecraft/client/gui/GameGui;render(FZII)V", at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;", ordinal = 2), slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;screen:Lnet/minecraft/client/gui/screen/Screen;")))
 	private int getHigherMessages(int index) {
 		if (this.minecraft.screen instanceof ChatScreen && chatMessages.size() > 20) {
-			messageScrollTotal += ((ChatScreenGetMessageScroll) this.minecraft.screen).niterucks$GetMessageScroll();
+			int scroll = Mouse.getDWheel();
+			if (scroll != 0) {
+				messageScrollTotal += (int) (Math.signum(scroll) * 1);
+			}
 			if (messageScrollTotal < 0)
 				messageScrollTotal = 0;
 			if (messageScrollTotal > chatMessages.size() - 20)
 				messageScrollTotal = chatMessages.size() - 20;
 			return index + messageScrollTotal;
+		} else {
+			messageScrollTotal = 0;
 		}
 		return index;
 	}

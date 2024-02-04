@@ -63,11 +63,7 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 	@Unique
 	private void renderSelectionOverlay(String text, int caretRenderPos) {
 		if (selectionAnchor == -1) {
-			Niterucks.LOGGER.debug("SELECTION ANCHOR IS NEGATIVE 1");
 			return;
-		}
-		if (selectionAnchor == caretPos) {
-			Niterucks.LOGGER.debug("SELECTION ANCHOR IS EQUAL TO CARETPOS");
 		}
 		int selectionRenderPos = calculateCaretRenderPos(text, selectionAnchor);
 		int left = Math.min(caretRenderPos, selectionRenderPos);
@@ -169,10 +165,18 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 		}
 		switch (key) {
 			case Keyboard.KEY_LEFT:
-				moveCaret(caretPos + 1);
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+					moveCaret(findNextWord(lastChatMessage, caretPos, direction.LEFT));
+				} else {
+					moveCaret(caretPos + 1);
+				}
 				break;
 			case Keyboard.KEY_RIGHT:
-				moveCaret(caretPos - 1);
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+					moveCaret(findNextWord(lastChatMessage, caretPos, direction.RIGHT));
+				} else {
+					moveCaret(caretPos - 1);
+				}
 				break;
 			case Keyboard.KEY_UP:
 				localChatHistorySelection += 2;
@@ -198,8 +202,7 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 		if (selectionAnchor != -1) {
 			Niterucks.LOGGER.debug(selectionAnchor + "hi");
 			value = cutText(value, caretPos, selectionAnchor);
-			if (caretPos > selectionAnchor)
-				moveCaret(selectionAnchor);
+			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;
 		}
 		String newString = insertString(value, String.valueOf(chr), caretPos);
@@ -213,8 +216,7 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 		if (selectionAnchor != -1) {
 			Niterucks.LOGGER.debug(selectionAnchor + "hi");
 			lastChatMessage = cutText(lastChatMessage, caretPos, selectionAnchor);
-			if (caretPos > selectionAnchor)
-				moveCaret(selectionAnchor);
+			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;
 			cancelBackspace = true;
 		}

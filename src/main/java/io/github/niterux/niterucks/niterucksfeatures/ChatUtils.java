@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
+import com.google.gson.annotations.SerializedName;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.bevofeatures.BetaEVO;
 import io.github.niterux.niterucks.bevofeatures.PlayerNameStatus;
@@ -21,7 +22,9 @@ public class ChatUtils {
 			index = 0;
 		return index;
 	}
-
+	public static boolean checkIfCharPosValid(int length, int position) {
+        return position >= 0 && position < length;
+    }
 	public static String getLocalHistoryMessage(int index) {
 		Niterucks.LOGGER.debug("HISTORY GET");
 		if (index > localChatHistory.size())
@@ -86,15 +89,53 @@ public class ChatUtils {
 	public static String findMatchingPlayers(String message, int caretPos) {
 		if (message.trim().isEmpty())
 			return message;
+		int nonWordChars = 0;
+		while (("" + message.charAt(message.length() - caretPos - nonWordChars - 1)).matches("\\W")) {
+			nonWordChars++;
+			if (nonWordChars == message.length())
+				return message;
+		}
+
+
 		String[] words = message.substring(0, message.length() - caretPos).split("\\W");
 		Collection<PlayerNameStatus> players = BetaEVO.playerList.values();
 		if (players.isEmpty())
 			return message;
 		for (PlayerNameStatus player : players) {
 			if (player.getName().startsWith(words[words.length - 1])) {
-				return message.substring(0, (message.length() - caretPos) - words[words.length - 1].length()) + player.getName() + ' ' + message.substring(message.length() - caretPos);
+				return message.substring(0, (message.length() - caretPos) - words[words.length - 1].length() - nonWordChars) + player.getName() + ' ' + message.substring(message.length() - caretPos);
 			}
 		}
 		return message;
+	}
+
+	public static int findNextWord(String text, int caretPos, direction direction) {
+		boolean switchType = false;
+		if (text.isEmpty())
+			return 0;
+		boolean initialType = (String.valueOf(text.charAt(text.length() - caretPos - 1)).matches("\\W"));
+		Niterucks.LOGGER.debug(String.valueOf(initialType));
+		while (checkIfCharPosValid(text.length(), text.length() - caretPos - 1)) {
+			if ((String.valueOf(text.charAt(text.length() - caretPos - 1)).matches("\\W")) != initialType) {
+				if (switchType) {
+					return caretPos;
+				} else {
+					switchType = true;
+					initialType = !initialType;
+				}
+			}
+			if (direction == ChatUtils.direction.LEFT) {
+				caretPos++;
+			} else {
+				caretPos--;
+			}
+
+		}
+		return text.length();
+	}
+
+	public enum direction {
+		LEFT,
+		RIGHT;
 	}
 }
