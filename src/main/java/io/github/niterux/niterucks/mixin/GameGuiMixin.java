@@ -3,6 +3,7 @@ package io.github.niterux.niterucks.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.niterux.niterucks.NiteLogger;
+import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.ItemCoords;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
@@ -12,6 +13,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.HitResult;
+import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,6 +44,45 @@ public class GameGuiMixin extends GuiElement {
 
 	@Shadow
 	private static ItemRenderer ITEM_RENDERER;
+
+	@Unique
+	float hotbarHeight;
+
+	//hotbar screen safety
+	@Inject(method = "render", at = @At("HEAD"))
+	private void getHotbarHeight(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		hotbarHeight = Niterucks.CONFIG.HOTBAR_HEIGHT.get();
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;m_1513977()I", ordinal = 0))
+	private void moveHealthMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", ordinal = 1))
+	private void moveHealthMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", ordinal = 0))
+	private void moveHotbarMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", ordinal = 1))
+	private void moveHotbarMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
+	private void moveItemsMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, -hotbarHeight, -50.0F); //50 to item rendering over chat
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOff()V", ordinal = 0))
+	private void moveItemsMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+		GL11.glTranslatef(0.0F, hotbarHeight, 50.0F);
+	}
 
 	//print chat message to console
 	@Inject(method = "addChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))

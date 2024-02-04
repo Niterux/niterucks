@@ -24,6 +24,7 @@ public class Config {
 	public FloatOption FOV = new FloatOption("FOV", 90.0F, 30.0F, 130.0F);
 	public FloatOption BRIGHTNESS = new FloatOption("Brightness", 1.0F, changeListenerBrightness, 0.0F, 3.0F);
 	public FloatOption CLOUD_HEIGHT = new FloatOption("Cloud Height", 108.0F, 70.0F, 200.0F);
+	public FloatOption HOTBAR_HEIGHT = new FloatOption("Hotbar Screen Safety", 3.0F, 0.0F, 30.0F);
 	public DoubleOption ENTITYDISTANCE = new DoubleOption("Entity Distance", 1.0, 0.5, 5.0);
 	public DoubleOption RAINBOWSPEED = new DoubleOption("Rainbow Speed", 3.0, 1.0, 6.0);
 	public BooleanOption VSYNC = new BooleanOption("Use VSync", false, changeListenerVsync);
@@ -33,7 +34,7 @@ public class Config {
 
 	public Config() {
 		ROOT.add(ENTITYDISTANCE);
-		ROOT.add(FOV, BRIGHTNESS, CLOUD_HEIGHT);
+		ROOT.add(FOV, BRIGHTNESS, CLOUD_HEIGHT, HOTBAR_HEIGHT);
 		ROOT.add(VSYNC, WOLFTAGS, RAINBOWOUTLINE);
 		CONTROLS.add(zoomButton, flyButton, adjustButton);
 		CONTROLS.add(SWAPMOUSEBUTTONS);

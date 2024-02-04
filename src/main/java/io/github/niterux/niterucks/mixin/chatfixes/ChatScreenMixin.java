@@ -9,15 +9,12 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
-import io.github.niterux.niterucks.niterucksfeatures.ChatScreenGetMessageScroll;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.Opcodes;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,35 +24,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.niterucksfeatures.ChatUtils.*;
 
-@Debug(export = true)
 @Mixin(ChatScreen.class)
-public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScroll {
-
+public class ChatScreenMixin extends Screen {
+	// counts from the position of the end of the string
 	@Unique
-	private int caretPos = 0; // inverted from the total length of the chat string
-
+	private int caretPos = 0;
 	@Unique
 	private int selectionAnchor = -1;
+
+
 	@Unique
 	private int localChatHistorySelection = 0;
 	@Shadow
 	protected String lastChatMessage;
 	@Shadow
 	private int messageHistorySize;
-	@Unique
-	private int messageScroll = 0;
-
-	@Override
-	public int niterucks$GetMessageScroll() {
-		int returnMessageScroll = messageScroll;
-		messageScroll = 0;
-		return returnMessageScroll;
-	}
 
 	@Unique
 	private int calculateCaretRenderPos(String text, int caret) {
-		if (caret > text.length())
-			Niterucks.LOGGER.debug("CARET LARGER THAN LENGTH");
 		String caretTextBefore = text.substring(0, text.length() - caret);
 		return this.textRenderer.getWidth(caretTextBefore) + this.textRenderer.getWidth("> ") + 4;
 	}
@@ -135,7 +121,6 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 		caretPos = 0;
 		selectionAnchor = -1;
 		localChatHistorySelection = 0;
-		messageScroll = 0;
 	}
 
 	@Inject(method = "keyPressed(CI)V", at = @At("TAIL"))
@@ -189,10 +174,8 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 				break;
 			case Keyboard.KEY_TAB:
 				lastChatMessage = findMatchingPlayers(lastChatMessage, caretPos);
-				Niterucks.LOGGER.debug(lastChatMessage);
 		}
-		if (lastChatMessage.length() > 100)
-			lastChatMessage = lastChatMessage.substring(0, 100);
+		if (lastChatMessage.length() > 100) lastChatMessage = lastChatMessage.substring(0, 100);
 		moveCaret(caretPos);
 	}
 
@@ -200,27 +183,22 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 	private void typeAtCorrectPos(ChatScreen instance, String value, Operation<Void> original, char chr) {
 		value = value.substring(0, value.length() - 1);
 		if (selectionAnchor != -1) {
-			Niterucks.LOGGER.debug(selectionAnchor + "hi");
 			value = cutText(value, caretPos, selectionAnchor);
 			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;
 		}
 		String newString = insertString(value, String.valueOf(chr), caretPos);
 		original.call(instance, newString);
-
 	}
 
 	@WrapOperation(method = "keyPressed(CI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ChatScreen;lastChatMessage:Ljava/lang/String;", opcode = Opcodes.PUTFIELD, ordinal = 0))
 	private void deleteAtCorrectPos(ChatScreen instance, String value, Operation<Void> original) {
-		boolean cancelBackspace = false;
 		if (selectionAnchor != -1) {
 			Niterucks.LOGGER.debug(selectionAnchor + "hi");
 			lastChatMessage = cutText(lastChatMessage, caretPos, selectionAnchor);
 			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;
-			cancelBackspace = true;
-		}
-		if (caretPos != this.lastChatMessage.length() && !cancelBackspace) {
+		} else if (caretPos != this.lastChatMessage.length()) {
 			String newString = this.lastChatMessage.substring(0, this.lastChatMessage.length() - 1 - caretPos) + this.lastChatMessage.substring(this.lastChatMessage.length() - caretPos);
 			original.call(instance, newString);
 		}
@@ -228,10 +206,6 @@ public class ChatScreenMixin extends Screen implements ChatScreenGetMessageScrol
 
 	@ModifyExpressionValue(method = "render(IIF)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/screen/ChatScreen;lastChatMessage:Ljava/lang/String;"))
 	private String coloredChatTextPreview(String original, @Share("chatText") LocalRef<String> chatText) {
-		int scroll = Mouse.getDWheel();
-		if (scroll != 0) {
-			messageScroll = (int) (Math.signum(scroll) * 1);
-		}
 		chatText.set(original);
 		String modifiedString = original;
 		for (int var12 = 0; modifiedString.length() - 1 > var12; var12++) {

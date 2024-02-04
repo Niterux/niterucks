@@ -32,5 +32,9 @@
 		"osl-entrypoints": ">=0.4.0",
     "modmenu": ">=0.2.1",
     "fabric-language-kotlin": ">=1.10.17+kotlin.1.9.22"
-	}
+	},
+  "breaks": {
+    "osl-resource-loader": "0.4.0",
+    "mojangfix": "<=0.5.2+mcb1.7.3"
+  }
 }

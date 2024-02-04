@@ -1,6 +1,5 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
-import com.google.gson.annotations.SerializedName;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.bevofeatures.BetaEVO;
 import io.github.niterux.niterucks.bevofeatures.PlayerNameStatus;
@@ -15,18 +14,14 @@ public class ChatUtils {
 	private static final ArrayList<String> localChatHistory = new ArrayList<>();
 
 	public static int makeIndexValid(int index) {
-		Niterucks.LOGGER.debug("INDEX CHECK");
 		if (index > localChatHistory.size())
 			index = localChatHistory.size();
 		if (index < 0)
 			index = 0;
 		return index;
 	}
-	public static boolean checkIfCharPosValid(int length, int position) {
-        return position >= 0 && position < length;
-    }
+
 	public static String getLocalHistoryMessage(int index) {
-		Niterucks.LOGGER.debug("HISTORY GET");
 		if (index > localChatHistory.size())
 			throw new IllegalArgumentException("INDEX GREATER THAN LOCAL CHAT HISTORY");
 		if (index < 0)
@@ -37,7 +32,6 @@ public class ChatUtils {
 	}
 
 	public static void putLocalHistoryMessage(String message) {
-		Niterucks.LOGGER.debug("HISTORY PUT");
 		if (localChatHistory.size() > 100)
 			localChatHistory.remove(0);
 		localChatHistory.add(message);
@@ -96,7 +90,6 @@ public class ChatUtils {
 				return message;
 		}
 
-
 		String[] words = message.substring(0, message.length() - caretPos).split("\\W");
 		Collection<PlayerNameStatus> players = BetaEVO.playerList.values();
 		if (players.isEmpty())
@@ -110,32 +103,32 @@ public class ChatUtils {
 	}
 
 	public static int findNextWord(String text, int caretPos, direction direction) {
-		boolean switchType = false;
-		if (text.isEmpty())
-			return 0;
-		boolean initialType = (String.valueOf(text.charAt(text.length() - caretPos - 1)).matches("\\W"));
-		Niterucks.LOGGER.debug(String.valueOf(initialType));
-		while (checkIfCharPosValid(text.length(), text.length() - caretPos - 1)) {
-			if ((String.valueOf(text.charAt(text.length() - caretPos - 1)).matches("\\W")) != initialType) {
-				if (switchType) {
-					return caretPos;
-				} else {
-					switchType = true;
-					initialType = !initialType;
-				}
-			}
-			if (direction == ChatUtils.direction.LEFT) {
-				caretPos++;
-			} else {
-				caretPos--;
-			}
+		int cursorPosition = caretPos;
+		boolean isRight = (direction == ChatUtils.direction.RIGHT);
 
+		if (isRight) {
+			while (cursorPosition > 0 && text.charAt(cursorPosition - 1) == ' ') {
+				--cursorPosition;
+			}
+			while (cursorPosition > 0 && text.charAt(cursorPosition - 1) != ' ') {
+				--cursorPosition;
+			}
+			return cursorPosition;
 		}
-		return text.length();
+		int textLength = text.length();
+		if ((cursorPosition = text.indexOf(32, cursorPosition)) == -1) {
+			cursorPosition = textLength;
+			return cursorPosition;
+		}
+		while (cursorPosition < textLength && text.charAt(cursorPosition) == ' ') {
+			++cursorPosition;
+		}
+
+		return cursorPosition;
 	}
 
 	public enum direction {
 		LEFT,
-		RIGHT;
-	}
+		RIGHT
+    }
 }
