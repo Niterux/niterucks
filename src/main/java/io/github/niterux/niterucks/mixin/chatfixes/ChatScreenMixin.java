@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
 import net.minecraft.SharedConstants;
@@ -194,7 +193,6 @@ public class ChatScreenMixin extends Screen {
 	@WrapOperation(method = "keyPressed(CI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ChatScreen;lastChatMessage:Ljava/lang/String;", opcode = Opcodes.PUTFIELD, ordinal = 0))
 	private void deleteAtCorrectPos(ChatScreen instance, String value, Operation<Void> original) {
 		if (selectionAnchor != -1) {
-			Niterucks.LOGGER.debug(selectionAnchor + "hi");
 			lastChatMessage = cutText(lastChatMessage, caretPos, selectionAnchor);
 			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;

@@ -24,6 +24,6 @@ public class WorldRendererMixin {
 
 	@ModifyArg(method = "renderBlockOutline(Lnet/minecraft/entity/living/player/PlayerEntity;Lnet/minecraft/world/HitResult;ILnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glLineWidth(F)V", remap = false))
 	private float fixWidth(float width) {
-		return width * ((float) MinecraftInstanceAccessor.getMinecraft().height / 320);
+		return width * ((float) MinecraftInstanceAccessor.getMinecraft().height / 480);
 	}
 }

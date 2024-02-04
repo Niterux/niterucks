@@ -1,6 +1,5 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
-import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.bevofeatures.BetaEVO;
 import io.github.niterux.niterucks.bevofeatures.PlayerNameStatus;
 
@@ -71,9 +70,7 @@ public class ChatUtils {
 	public static String cutText(String text, int caretPos, int selectionPos) {
 		int start = Math.min(text.length() - caretPos, text.length() - selectionPos);
 		int end = Math.max(text.length() - caretPos, text.length() - selectionPos);
-		String returningText = text.substring(0, start) + text.substring(end);
-		Niterucks.LOGGER.debug(returningText);
-		return returningText;
+        return text.substring(0, start) + text.substring(end);
 	}
 
 	public static String insertString(String text, String string, int position) {
@@ -91,12 +88,13 @@ public class ChatUtils {
 		}
 
 		String[] words = message.substring(0, message.length() - caretPos).split("\\W");
+		String word = words[words.length - 1].toLowerCase();
 		Collection<PlayerNameStatus> players = BetaEVO.playerList.values();
 		if (players.isEmpty())
 			return message;
 		for (PlayerNameStatus player : players) {
-			if (player.getName().startsWith(words[words.length - 1])) {
-				return message.substring(0, (message.length() - caretPos) - words[words.length - 1].length() - nonWordChars) + player.getName() + ' ' + message.substring(message.length() - caretPos);
+			if (player.getName().toLowerCase().startsWith(word)) {
+				return message.substring(0, (message.length() - caretPos) - word.length() - nonWordChars) + player.getName() + ' ' + message.substring(message.length() - caretPos);
 			}
 		}
 		return message;
@@ -104,26 +102,24 @@ public class ChatUtils {
 
 	public static int findNextWord(String text, int caretPos, direction direction) {
 		int cursorPosition = caretPos;
+		int textLength = text.length();
 		boolean isRight = (direction == ChatUtils.direction.RIGHT);
 
 		if (isRight) {
-			while (cursorPosition > 0 && text.charAt(cursorPosition - 1) == ' ') {
+			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) == ' ') {
 				--cursorPosition;
 			}
-			while (cursorPosition > 0 && text.charAt(cursorPosition - 1) != ' ') {
+			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) != ' ') {
 				--cursorPosition;
 			}
 			return cursorPosition;
 		}
-		int textLength = text.length();
-		if ((cursorPosition = text.indexOf(32, cursorPosition)) == -1) {
-			cursorPosition = textLength;
-			return cursorPosition;
-		}
-		while (cursorPosition < textLength && text.charAt(cursorPosition) == ' ') {
+		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) == ' ') {
 			++cursorPosition;
 		}
-
+		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) != ' ') {
+			++cursorPosition;
+		}
 		return cursorPosition;
 	}
 

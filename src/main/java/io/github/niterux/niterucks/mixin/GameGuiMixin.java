@@ -59,22 +59,22 @@ public class GameGuiMixin extends GuiElement {
 		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", ordinal = 1))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", remap = false, ordinal = 1))
 	private void moveHealthMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
 		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 0))
 	private void moveHotbarMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
 		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", ordinal = 1))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 1))
 	private void moveHotbarMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
 		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", ordinal = 0, shift = At.Shift.AFTER))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", remap = false, ordinal = 0, shift = At.Shift.AFTER))
 	private void moveItemsMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
 		GL11.glTranslatef(0.0F, -hotbarHeight, -50.0F); //50 to item rendering over chat
 	}
