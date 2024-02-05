@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -80,8 +82,8 @@ public class ScreenshotGalleryScreen extends Screen {
 	private void refreshPage() {
 
 		int fileCount = files.size();
-		if (index != 0 && (fileCount-index) < count){
-			index = Math.max(fileCount-count, 0);
+		if (index != 0 && (fileCount - index) < count) {
+			index = Math.max(fileCount - count, 0);
 		}
 
 		int widgetWidth = 100;
@@ -163,23 +165,30 @@ public class ScreenshotGalleryScreen extends Screen {
 		private BufferedImage getImage() {
 			try {
 				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
-				if (image == null) {
-					BufferedImage error = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-					Graphics2D graphics = error.createGraphics();
-					graphics.drawString("Error", 1, 15);
-					graphics.dispose();
-					return error;
+				if (image == null){
+					throw new NullPointerException("Failed to read image!");
 				}
 				return image;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+			} catch (Exception e) {
+				StringWriter stackTrace = new StringWriter();
+				PrintWriter writer = new PrintWriter(stackTrace);
+				e.printStackTrace(writer);
+				BufferedImage error = new BufferedImage(550, 256, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D graphics = error.createGraphics();
+				int y = 15;
+				for (String line : stackTrace.toString().split("\n")) {
+					graphics.drawString(line, 2, y);
+					y+= 11;
+				}
+				graphics.dispose();
+				return error;
 			}
 		}
 
-		private BufferedImage generateThumb(){
+		private BufferedImage generateThumb() {
 
 			Path cache = getThumbFile();
-			if (Files.exists(cache)){
+			if (Files.exists(cache)) {
 				try {
 					return ImageIO.read(Files.newInputStream(cache));
 				} catch (IOException e) {
@@ -189,7 +198,7 @@ public class ScreenshotGalleryScreen extends Screen {
 
 			BufferedImage image = getImage();
 			int thumbWidth = Math.min(128, image.getWidth());
-			int thumbHeight = (int) Math.min(128, (thumbWidth/(float)image.getWidth())*image.getHeight());
+			int thumbHeight = (int) Math.min(128, (thumbWidth / (float) image.getWidth()) * image.getHeight());
 			Image i = image.getScaledInstance(thumbWidth, thumbHeight, BufferedImage.SCALE_SMOOTH);
 			BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, image.getType());
 			Graphics2D graphics = scaled.createGraphics();
@@ -199,7 +208,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			try {
 				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 			} catch (IOException e) {
-				Niterucks.LOGGER.error("Failed to write thumbnail cache for "+getFile()+"!");
+				Niterucks.LOGGER.error("Failed to write thumbnail cache for " + getFile() + "!");
 				e.printStackTrace();
 			}
 
@@ -234,8 +243,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			return glId;
 		}
 
-		public int getThumbGlId(){
-			if (thumbGlId == -1){
+		public int getThumbGlId() {
+			if (thumbGlId == -1) {
 				thumbGlId = TextureUtil.genTextures();
 				TextureUtil.uploadTexture(thumbGlId, generateThumb());
 			}
@@ -253,7 +262,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		}
 
-		private Path getThumbFile(){
+		private Path getThumbFile() {
 			try {
 				String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
 					.digest(Files.readAllBytes(getFile())));
@@ -263,7 +272,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		}
 
-		private Path createThumbnailDir(){
+		private Path createThumbnailDir() {
 			Path dir = FabricLoader.getInstance().getGameDir()
 				.resolve(".cache")
 				.resolve("niterucks")
