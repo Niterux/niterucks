@@ -2,12 +2,15 @@ package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import io.github.niterux.niterucks.Niterucks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -18,7 +21,7 @@ public class ScreenshotGalleryScreen extends Screen {
 
 	private final Screen parent;
 
-	public final List<ScreenshotInfo> files = new ArrayList<>();
+	private static final List<ScreenshotInfo> files = new ArrayList<>();
 	private int index, count;
 	private ButtonWidget prev, next;
 
@@ -29,18 +32,24 @@ public class ScreenshotGalleryScreen extends Screen {
 
 	@Override
 	public void init() {
-		files.forEach(ScreenshotInfo::release);
-		files.clear();
-		buttons.clear();
-		System.gc();
-		try (Stream<Path> paths = Files.list(screenshotsDir)) {
-			paths.sorted().forEachOrdered(p -> {
-				ScreenshotInfo info = new ScreenshotInfo(p);
-				this.files.add(info);
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		int widgetWidth = 100;
+		int widgetHeight = widgetWidth * 3 / 4;
+		int padding = 5;
+		count = (width / (widgetWidth + padding)) * ((height - 85) / (widgetHeight + padding));
+
+		CompletableFuture.runAsync(() -> {
+				try (Stream<Path> paths = Files.list(screenshotsDir)) {
+					paths.sorted().forEachOrdered(p -> {
+						if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> s.equals(p))) {
+							ScreenshotInfo info = new ScreenshotInfo(p);
+							files.add(info);
+						}
+					});
+					refreshPage();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+		});
 
 		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
 		prev = new ButtonWidget(1, 2, 20, 20, 20, "<");
@@ -49,12 +58,6 @@ public class ScreenshotGalleryScreen extends Screen {
 		buttons.add(next);
 
 
-		int widgetWidth = 100;
-		int widgetHeight = widgetWidth * 3 / 4;
-		int padding = 5;
-		count = (width / (widgetWidth + padding)) * ((height - 85) / (widgetHeight + padding));
-
-		refreshPage();
 	}
 
 	private void refreshPage() {
@@ -72,12 +75,11 @@ public class ScreenshotGalleryScreen extends Screen {
 		//System.out.println("Showing screenshots "+index+"-"+ Math.min((index)+count-1, files.size()-1));
 
 		buttons.removeIf(b -> b instanceof ScreenshotWidget);
-		files.forEach(ScreenshotInfo::release);
 
 		for (int i = 0; i < Math.min(count, files.size() - index); i++) {
 			ScreenshotInfo info = files.get(i + index);
 			buttons.add(new ScreenshotWidget(info.getFile().hashCode(),
-				x, y, widgetWidth, widgetHeight, info.getFile().getFileName().toString(), info.getGlId()));
+				x, y, widgetWidth, widgetHeight, info.getFile().getFileName().toString(), info));
 			x += widgetWidth + padding;
 			if (width - x <= beginX + widgetWidth) {
 				y += widgetHeight + padding;
@@ -128,7 +130,7 @@ public class ScreenshotGalleryScreen extends Screen {
 	}
 
 	public static class ScreenshotInfo {
-		private BufferedImage image;
+		private PngMetadata metadata;
 		private int glId = -1;
 		private final Path file;
 
@@ -136,20 +138,39 @@ public class ScreenshotGalleryScreen extends Screen {
 			this.file = file;
 		}
 
-		public BufferedImage getImage() {
-			if (image == null) {
-				try {
-					image = TextureUtil.readImage(Files.newInputStream(getFile()));
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+		private BufferedImage getImage() {
+			try {
+				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
+				if (image == null) {
+					BufferedImage error = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+					error.getGraphics().drawString("Error", 1, 15);
+					error.getGraphics().dispose();
+					return error;
 				}
-				if (image == null){
-					image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-					image.getGraphics().drawString("Error", 1, 15);
-					image.getGraphics().dispose();
+				return image;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		private void readMetadata() {
+			if (metadata == null) {
+				try (InputStream in = Files.newInputStream(getFile())) {
+					metadata = PngMetadata.read(in);
+				} catch (IOException e) {
+					Niterucks.LOGGER.error(e.getMessage());
 				}
 			}
-			return image;
+		}
+
+		public int getWidth() {
+			readMetadata();
+			return metadata.width();
+		}
+
+		public int getHeight() {
+			readMetadata();
+			return metadata.height();
 		}
 
 		public int getGlId() {
@@ -164,14 +185,10 @@ public class ScreenshotGalleryScreen extends Screen {
 			return file;
 		}
 
-		public void release(){
-			if (glId != -1){
+		public void release() {
+			if (glId != -1) {
 				TextureUtil.deleteTextures(glId);
 				glId = -1;
-			}
-			if (image != null){
-				image.flush();
-				image = null;
 			}
 		}
 	}

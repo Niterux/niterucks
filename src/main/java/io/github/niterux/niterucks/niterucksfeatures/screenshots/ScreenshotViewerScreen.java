@@ -1,9 +1,12 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
@@ -27,8 +30,8 @@ public class ScreenshotViewerScreen extends Screen {
 
 	@Override
 	public void init() {
-		imageHeight = Math.min(image.getImage().getHeight(), height-80);
-		imageWidth = (imageHeight/image.getImage().getHeight()) * image.getImage().getWidth();
+		imageHeight = Math.min(image.getHeight(), height-80);
+		imageWidth = (imageHeight/image.getHeight()) * image.getWidth();
 		x = (int) (width/2-imageWidth/2);
 		y = (int) (height/2-imageHeight/2);
 		buttons.add(new ButtonWidget(1, (int) (x+imageWidth+2), y, 50, 20, "Copy"));
@@ -60,8 +63,8 @@ public class ScreenshotViewerScreen extends Screen {
 					ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < "+image.getFile());
 					Process p = builder.start();
 					p.waitFor();
-				} catch (IOException | InterruptedException ignored) {
-					Niterucks.LOGGER.error(ignored.getMessage());
+				} catch (IOException | InterruptedException e) {
+					Niterucks.LOGGER.error(e.getMessage());
 				}
 				return;
 			}
@@ -79,8 +82,10 @@ public class ScreenshotViewerScreen extends Screen {
 
 				@NotNull
 				@Override
-				public Object getTransferData(DataFlavor flavor) {
-					return image.getImage();
+				public Object getTransferData(DataFlavor flavor) throws IOException {
+					try (InputStream in = Files.newInputStream(image.getFile())) {
+						return ImageIO.read(in);
+					}
 				}
 			}, null);
 		}
