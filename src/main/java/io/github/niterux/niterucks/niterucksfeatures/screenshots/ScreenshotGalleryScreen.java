@@ -41,8 +41,13 @@ public class ScreenshotGalleryScreen extends Screen {
 				try (Stream<Path> paths = Files.list(screenshotsDir)) {
 					paths.sorted().forEachOrdered(p -> {
 						if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> s.equals(p))) {
-							ScreenshotInfo info = new ScreenshotInfo(p);
-							files.add(info);
+							try {
+								PngMetadata.validate(p);
+								ScreenshotInfo info = new ScreenshotInfo(p);
+								files.add(info);
+							} catch (IOException e){
+								Niterucks.LOGGER.error("Failed to validate image: "+p+", skipping!");
+							}
 						}
 					});
 					refreshPage();

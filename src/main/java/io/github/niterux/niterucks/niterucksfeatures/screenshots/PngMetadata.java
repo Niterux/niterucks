@@ -3,6 +3,8 @@ package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class PngMetadata {
@@ -28,6 +30,21 @@ public class PngMetadata {
 			int height = dataInputStream.readInt();
 			return new PngMetadata(width, height);
 		}
+	}
+
+	public static void validate(InputStream encoded) throws IOException {
+		DataInputStream dataInputStream = new DataInputStream(encoded);
+		if (dataInputStream.readLong() != PNG_SIGNATURE) {
+			throw new IOException("Bad PNG Signature");
+		} else if (dataInputStream.readInt() != IHDR_LENGTH) {
+			throw new IOException("Bad length for IHDR chunk!");
+		} else if (dataInputStream.readInt() != IHDR_TYPE) {
+			throw new IOException("Bad type for IHDR chunk!");
+		}
+	}
+
+	public static void validate(Path p) throws IOException {
+		validate(Files.newInputStream(p));
 	}
 
 	@Override
