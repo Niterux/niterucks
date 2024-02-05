@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -169,16 +171,23 @@ public class ScreenshotGalleryScreen extends Screen {
 		private BufferedImage getImage() {
 			try {
 				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
-				if (image == null) {
-					BufferedImage error = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-					Graphics2D graphics = error.createGraphics();
-					graphics.drawString("Error", 1, 15);
-					graphics.dispose();
-					return error;
+				if (image == null){
+					throw new NullPointerException("Failed to read image!");
 				}
 				return image;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+			} catch (Exception e) {
+				StringWriter stackTrace = new StringWriter();
+				PrintWriter writer = new PrintWriter(stackTrace);
+				e.printStackTrace(writer);
+				BufferedImage error = new BufferedImage(550, 256, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D graphics = error.createGraphics();
+				int y = 15;
+				for (String line : stackTrace.toString().split("\n")) {
+					graphics.drawString(line, 2, y);
+					y+= 11;
+				}
+				graphics.dispose();
+				return error;
 			}
 		}
 
