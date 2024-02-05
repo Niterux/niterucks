@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -45,7 +46,7 @@ public class ScreenshotGalleryScreen extends Screen {
 
 		CompletableFuture.runAsync(() -> {
 			try (Stream<Path> paths = Files.list(screenshotsDir)) {
-				paths.sorted().forEachOrdered(p -> {
+				paths.sorted(Comparator.reverseOrder()).forEachOrdered(p -> {
 					if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> {
 						try {
 							return Files.isSameFile(s, p);

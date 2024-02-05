@@ -16,7 +16,6 @@ public class ScreenshotWidget extends ButtonWidget {
 		imageWidth = width-2;
 		imageHeight = Math.min((int) ((imageWidth/(float)image.getWidth()) * image.getHeight()), height-12);
 		imageY = (y+1)+(height-2)/2-imageHeight/2;
-		System.out.println(image.getFile()+": "+image.getWidth()+"x"+image.getHeight()+" Displayed: "+imageWidth+"x"+imageHeight);
 	}
 
 	@Override
