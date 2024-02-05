@@ -41,12 +41,12 @@ public class TextureUtil {
 		if (j >= 0) {
 			GL11.glTexParameteri(3553, 33085, j);
 			GL11.glTexParameterf(3553, 33082, 0.0F);
-			GL11.glTexParameterf(3553, 33083, (float)j);
+			GL11.glTexParameterf(3553, 33083, (float) j);
 			GL11.glTexParameterf(3553, 34049, 0.0F);
 		}
 
-		for(int m = 0; m <= j; ++m) {
-			GL11.glTexImage2D(3553, m, 6408, k >> m, l >> m, 0, 32993, 33639, (IntBuffer)null);
+		for (int m = 0; m <= j; ++m) {
+			GL11.glTexImage2D(3553, m, 6408, k >> m, l >> m, 0, 32993, 33639, (IntBuffer) null);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class TextureUtil {
 		setFilterWithBlur(bl);
 		setTextureClamp(bl2);
 
-		for(int n = 0; n < k * l; n += k * m) {
+		for (int n = 0; n < k * l; n += k * m) {
 			int o = n / k;
 			int p = Math.min(m, l - o);
 			int q = k * p;
@@ -131,7 +131,7 @@ public class TextureUtil {
 	public static int[] getAnaglyphColors(int[] is) {
 		int[] js = new int[is.length];
 
-		for(int i = 0; i < is.length; ++i) {
+		for (int i = 0; i < is.length; ++i) {
 			js[i] = getAnaglyphColor(is[i]);
 		}
 

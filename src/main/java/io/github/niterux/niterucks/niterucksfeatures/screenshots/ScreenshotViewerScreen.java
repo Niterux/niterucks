@@ -14,6 +14,7 @@ import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
@@ -30,13 +31,13 @@ public class ScreenshotViewerScreen extends Screen {
 
 	@Override
 	public void init() {
-		imageHeight = Math.min(image.getHeight(), height-80);
-		imageWidth = Math.min( width-105, (imageHeight/image.getHeight()) * image.getWidth());
-		imageHeight = Math.min((imageWidth/image.getWidth()) * image.getHeight(), imageHeight);
-		x = (int) (width/2-imageWidth/2);
-		y = (int) (height/2-imageHeight/2);
-		buttons.add(new ButtonWidget(1, (int) (x+imageWidth+2), y, 50, 20, "Copy"));
-		buttons.add(new ButtonWidget(0, width/2-75, height-35, 150, 20, "Back"));
+		imageHeight = Math.min(image.getHeight(), height - 80);
+		imageWidth = Math.min(width - 105, (imageHeight / image.getHeight()) * image.getWidth());
+		imageHeight = Math.min((imageWidth / image.getWidth()) * image.getHeight(), imageHeight);
+		x = (int) (width / 2 - imageWidth / 2);
+		y = (int) (height / 2 - imageHeight / 2);
+		buttons.add(new ButtonWidget(1, (int) (x + imageWidth + 2), y, 50, 20, "Copy"));
+		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
 	}
 
 	@Override
@@ -45,23 +46,25 @@ public class ScreenshotViewerScreen extends Screen {
 
 		minecraft.textureManager.bind(glId);
 
-		DrawUtil.drawTexture(x,	y,0, 0, (int) imageWidth, (int) imageHeight, imageWidth, imageHeight);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		drawCenteredString(minecraft.textRenderer, image.getFile().getFileName().toString(), width/2, 20, -1);
+		DrawUtil.drawTexture(x, y, 0, 0, (int) imageWidth, (int) imageHeight, imageWidth, imageHeight);
+
+		drawCenteredString(minecraft.textRenderer, image.getFile().getFileName().toString(), width / 2, 20, -1);
 
 		super.render(mouseX, mouseY, tickDelta);
 	}
 
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
-		if (button.id == 0){
+		if (button.id == 0) {
 			minecraft.openScreen(parent);
-		} else if (button.id == 1){
+		} else if (button.id == 1) {
 
 			if (System.getenv().getOrDefault("DESKTOP_SESSION", "").toLowerCase(Locale.ROOT)
-				.contains("wayland")){
+				.contains("wayland")) {
 				try {
-					ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < "+image.getFile());
+					ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < " + image.getFile());
 					Process p = builder.start();
 					p.waitFor();
 				} catch (IOException | InterruptedException e) {

@@ -1,11 +1,15 @@
 package io.github.niterux.niterucks.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.zoomAmount;
 import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
 import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.adjustRainbow;
@@ -92,5 +97,59 @@ public class GameRendererMixin {
 	@Inject(method = "render", at = @At("HEAD"))
 	private void updateRainbow(CallbackInfo ci) {
 		adjustRainbow();
+	}
+
+	@Inject(method = "renderWorld(FJ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/GameRenderer;zoom:D", ordinal = 0))
+	private void renderChunkBounds(float tickDelta, long renderTimeLimit, CallbackInfo ci, @Local(ordinal = 0) LivingEntity camera) {
+		if (chunkBordersEnabled) {
+			double renderX = camera.prevTickX + (camera.x - camera.prevTickX) * (double) tickDelta;
+			double renderY = camera.prevTickY + (camera.y - camera.prevTickY) * (double) tickDelta;
+			double renderZ = camera.prevTickZ + (camera.z - camera.prevTickZ) * (double) tickDelta;
+			double feetRenderPos = camera.eyeHeightSneakOffset - camera.eyeHeight;
+			int chunkCornerX = MathHelper.floor(renderX / 16.0) * 16;
+			int chunkCornerZ = MathHelper.floor(renderZ / 16.0) * 16;
+			GL11.glLineWidth(minecraft.height / 480.0F);
+			GL11.glDisable(GL11.GL_FOG);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			//GL11.glDepthMask(false);
+			BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+			//render the 4 chunk corners
+			GL11.glColor3f(0.0F, 1.0F, 0.0F);
+			bufferBuilder.start(GL11.GL_LINES);
+			bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ);
+			bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ);
+			bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ);
+			bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ);
+			bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ + 16);
+			bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ + 16);
+			bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ + 16);
+			bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ + 16);
+			bufferBuilder.end();
+			renderChunkLoop(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+			renderChunkLoop(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+			//subchunk loop
+			GL11.glColor3f(0.0F, 1.0F, 1.0F);
+			for (int ypos = 16; ypos <= 112; ypos += 16) {
+				renderChunkLoop(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
+			}
+			//render feet pos and height pos
+			GL11.glColor3f(1.0F, 1.0F, 0.0F);
+			renderChunkLoop(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
+			renderChunkLoop(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_FOG);
+			//GL11.glDepthMask(true);
+			Niterucks.LOGGER.debug(camera.eyeHeightSneakOffset + " " + camera.eyeHeight + " " + camera.y);
+		}
+	}
+
+	@Unique
+	private void renderChunkLoop(double x, double y, double z, BufferBuilder bufferBuilder) {
+		bufferBuilder.start(GL11.GL_LINE_LOOP);
+		bufferBuilder.vertex(x, y, z);
+		bufferBuilder.vertex(x, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z);
+		bufferBuilder.end();
 	}
 }

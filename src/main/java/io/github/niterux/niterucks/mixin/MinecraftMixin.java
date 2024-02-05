@@ -5,11 +5,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GameGui;
+import net.minecraft.client.render.world.WorldRenderer;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -18,8 +21,16 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
+import static io.github.niterux.niterucks.niterucksfeatures.MiscUtils.printDebugKeys;
+
 @Mixin(value = Minecraft.class, priority = 1005)
 public class MinecraftMixin {
+	@Shadow
+	public GameGui gui;
+	@Shadow
+	public WorldRenderer worldRenderer;
+
 	@WrapOperation(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
 	private void amdFix(Operation<Void> original) throws LWJGLException {
 		PixelFormat pixelformat = new PixelFormat();
@@ -34,6 +45,27 @@ public class MinecraftMixin {
 			return false;
 		}
 		return original;
+	}
+
+	@Inject(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventKey()I", ordinal = 0, remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;handleKeyboard()V", ordinal = 0)))
+	private void addNewKeybinds(CallbackInfo ci) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+			switch (Keyboard.getEventKey()) {
+				case Keyboard.KEY_D:
+					gui.clearChat();
+					break;
+				case Keyboard.KEY_Q:
+					printDebugKeys(gui);
+					break;
+				case Keyboard.KEY_A:
+					worldRenderer.m_6748042();
+					break;
+				case Keyboard.KEY_G:
+					chunkBordersEnabled = !chunkBordersEnabled;
+					break;
+			}
+		}
+
 	}
 
 	//this will only do anything once issue #888 in fabric-loader is solved

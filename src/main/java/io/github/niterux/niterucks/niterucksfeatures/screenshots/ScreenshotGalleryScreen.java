@@ -3,6 +3,7 @@ package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import io.github.niterux.niterucks.Niterucks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import org.lwjgl.Sys;
 
 public class ScreenshotGalleryScreen extends Screen {
 
@@ -70,7 +72,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		});
 
-		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
+		buttons.add(new ButtonWidget(0, this.width / 2 + 4, this.height - 35, 150, 20, "Back"));
+		buttons.add(new ButtonWidget(3, this.width / 2 - 154, this.height - 35, 150, 20, "Open screenshots folder"));
 		prev = new ButtonWidget(1, 2, 20, 20, 20, "<");
 		buttons.add(prev);
 		next = new ButtonWidget(2, width - 22, 20, 20, 20, ">");
@@ -80,8 +83,8 @@ public class ScreenshotGalleryScreen extends Screen {
 	private void refreshPage() {
 
 		int fileCount = files.size();
-		if (index != 0 && (fileCount-index) < count){
-			index = Math.max(fileCount-count, 0);
+		if (index != 0 && (fileCount - index) < count) {
+			index = Math.max(fileCount - count, 0);
 		}
 
 		int widgetWidth = 100;
@@ -142,6 +145,9 @@ public class ScreenshotGalleryScreen extends Screen {
 			refreshPage();
 			return;
 		}
+		if (button.id == 3) {
+			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
+		}
 		for (ScreenshotInfo p : files) {
 			if (p.getFile().hashCode() == button.id) {
 				minecraft.openScreen(new ScreenshotViewerScreen(this, p));
@@ -176,10 +182,10 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		}
 
-		private BufferedImage generateThumb(){
+		private BufferedImage generateThumb() {
 
 			Path cache = getThumbFile();
-			if (Files.exists(cache)){
+			if (Files.exists(cache)) {
 				try {
 					return ImageIO.read(Files.newInputStream(cache));
 				} catch (IOException e) {
@@ -189,7 +195,7 @@ public class ScreenshotGalleryScreen extends Screen {
 
 			BufferedImage image = getImage();
 			int thumbWidth = Math.min(128, image.getWidth());
-			int thumbHeight = (int) Math.min(128, (thumbWidth/(float)image.getWidth())*image.getHeight());
+			int thumbHeight = (int) Math.min(128, (thumbWidth / (float) image.getWidth()) * image.getHeight());
 			Image i = image.getScaledInstance(thumbWidth, thumbHeight, BufferedImage.SCALE_SMOOTH);
 			BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, image.getType());
 			Graphics2D graphics = scaled.createGraphics();
@@ -199,7 +205,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			try {
 				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 			} catch (IOException e) {
-				Niterucks.LOGGER.error("Failed to write thumbnail cache for "+getFile()+"!");
+				Niterucks.LOGGER.error("Failed to write thumbnail cache for " + getFile() + "!");
 				e.printStackTrace();
 			}
 
@@ -234,8 +240,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			return glId;
 		}
 
-		public int getThumbGlId(){
-			if (thumbGlId == -1){
+		public int getThumbGlId() {
+			if (thumbGlId == -1) {
 				thumbGlId = TextureUtil.genTextures();
 				TextureUtil.uploadTexture(thumbGlId, generateThumb());
 			}
@@ -253,7 +259,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		}
 
-		private Path getThumbFile(){
+		private Path getThumbFile() {
 			try {
 				String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
 					.digest(Files.readAllBytes(getFile())));
@@ -263,7 +269,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			}
 		}
 
-		private Path createThumbnailDir(){
+		private Path createThumbnailDir() {
 			Path dir = FabricLoader.getInstance().getGameDir()
 				.resolve(".cache")
 				.resolve("niterucks")

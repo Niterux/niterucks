@@ -56,15 +56,14 @@ public class ChatScreenMixin extends Screen {
 		GL11.glEnable(GL11.GL_COLOR_LOGIC_OP);
 		GL11.glLogicOp(GL11.GL_OR_REVERSE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-		BufferBuilder var10 = BufferBuilder.INSTANCE;
-		GL11.glColor4f(0.0F, 0.0F, 0.0F, 1.0F);
-		var10.start();
-		var10.vertex(left, (double) this.height - 2, 0.0);
-		var10.vertex(right, (double) this.height - 2, 0.0);
-		var10.vertex(right, (double) this.height - 13, 0.0);
-		var10.vertex(left, (double) this.height - 13, 0.0);
-		var10.end();
+		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+		GL11.glColor4f(0.0F, 0.0F, 1.0F, 1.0F);
+		bufferBuilder.start();
+		bufferBuilder.vertex(left, this.height - 2, 0.0);
+		bufferBuilder.vertex(right, this.height - 2, 0.0);
+		bufferBuilder.vertex(right, this.height - 13, 0.0);
+		bufferBuilder.vertex(left, this.height - 13, 0.0);
+		bufferBuilder.end();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glLogicOp(GL11.GL_SET);
 		GL11.glDisable(GL11.GL_COLOR_LOGIC_OP);
@@ -132,6 +131,12 @@ public class ChatScreenMixin extends Screen {
 					selectionAnchor = -1;
 				}
 				lastChatMessage = pasteFromClipboard(lastChatMessage, caretPos);
+			}
+			if (key == Keyboard.KEY_A) {
+				if (!lastChatMessage.isEmpty()) {
+					moveCaret(lastChatMessage.length());
+					selectionAnchor = 0;
+				}
 			}
 
 			if (selectionAnchor != -1 && selectionAnchor != caretPos) {
@@ -206,10 +211,10 @@ public class ChatScreenMixin extends Screen {
 	private String coloredChatTextPreview(String original, @Share("chatText") LocalRef<String> chatText) {
 		chatText.set(original);
 		String modifiedString = original;
-		for (int var12 = 0; modifiedString.length() - 1 > var12; var12++) {
-			if (modifiedString.charAt(var12) == '&') {
-				modifiedString = modifiedString.substring(0, var12) + "§" + modifiedString.charAt(var12 + 1) + modifiedString.substring(var12);
-				var12 += 2;
+		for (int i = 0; modifiedString.length() - 1 > i; i++) {
+			if (modifiedString.charAt(i) == '&') {
+				modifiedString = modifiedString.substring(0, i) + "§" + modifiedString.charAt(i + 1) + modifiedString.substring(i);
+				i += 2;
 			}
 		}
 		return modifiedString;

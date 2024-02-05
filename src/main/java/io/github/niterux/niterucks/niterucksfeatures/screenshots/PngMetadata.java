@@ -12,6 +12,7 @@ public class PngMetadata {
 	private static final int IHDR_TYPE = 1229472850;
 	private static final int IHDR_LENGTH = 13;
 	private final int width, height;
+
 	public PngMetadata(int width, int height) {
 		this.width = width;
 		this.height = height;

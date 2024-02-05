@@ -30,7 +30,7 @@ import static io.github.niterux.niterucks.Niterucks.modVersion;
 public class GameGuiMixin extends GuiElement {
 	@Unique
 	private static final String[] directions = {
-		"South (Towards positive Z)",
+		"South (Towards Positive Z)",
 		"West (Towards Negative X)",
 		"North (Towards Negative Z)",
 		"East (Towards Positive X)"};
@@ -46,7 +46,7 @@ public class GameGuiMixin extends GuiElement {
 	private static ItemRenderer ITEM_RENDERER;
 
 	@Unique
-	float hotbarHeight;
+	double hotbarHeight;
 
 	//hotbar screen safety
 	@Inject(method = "render", at = @At("HEAD"))
@@ -56,32 +56,37 @@ public class GameGuiMixin extends GuiElement {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;m_1513977()I", ordinal = 0))
 	private void moveHealthMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
+		GL11.glTranslated(0.0, -hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", remap = false, ordinal = 1))
 	private void moveHealthMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
+		GL11.glTranslated(0.0, hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 0))
 	private void moveHotbarMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, -hotbarHeight, 0.0F);
+		GL11.glTranslated(0.0, -hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 1))
 	private void moveHotbarMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, hotbarHeight, 0.0F);
+		GL11.glTranslated(0.0, hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", remap = false, ordinal = 0, shift = At.Shift.AFTER))
 	private void moveItemsMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, -hotbarHeight, -50.0F); //50 to item rendering over chat
+		GL11.glTranslated(0.0, -hotbarHeight, -50.0); //50 to item rendering over chat
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOff()V", ordinal = 0))
 	private void moveItemsMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		GL11.glTranslatef(0.0F, hotbarHeight, 50.0F);
+		GL11.glTranslated(0.0, hotbarHeight, 50.0);
+	}
+
+	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V", ordinal = 1), index = 5)
+	private int fixSelectedSlotRendering(int height) {
+		return 24;
 	}
 
 	//print chat message to console
@@ -202,6 +207,7 @@ public class GameGuiMixin extends GuiElement {
 	@SuppressWarnings("SuspiciousNameCombination")
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 2) int width) {
+		this.drawString(var8, "For help: press F3 + Q", 2, 96, 0xd96e02);
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
 		this.drawString(var8, biomeString, width - var8.getWidth(biomeString) - 2, 22, 0x46a848);
 		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
