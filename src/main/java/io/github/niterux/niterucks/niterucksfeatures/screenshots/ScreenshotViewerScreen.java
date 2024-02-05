@@ -31,7 +31,8 @@ public class ScreenshotViewerScreen extends Screen {
 	@Override
 	public void init() {
 		imageHeight = Math.min(image.getHeight(), height-80);
-		imageWidth = (imageHeight/image.getHeight()) * image.getWidth();
+		imageWidth = Math.min( width-105, (imageHeight/image.getHeight()) * image.getWidth());
+		imageHeight = Math.min((imageWidth/image.getWidth()) * image.getHeight(), imageHeight);
 		x = (int) (width/2-imageWidth/2);
 		y = (int) (height/2-imageHeight/2);
 		buttons.add(new ButtonWidget(1, (int) (x+imageWidth+2), y, 50, 20, "Copy"));

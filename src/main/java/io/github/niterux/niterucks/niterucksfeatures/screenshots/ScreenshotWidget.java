@@ -8,9 +8,15 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class ScreenshotWidget extends ButtonWidget {
 	private final ScreenshotGalleryScreen.ScreenshotInfo image;
+	private final int imageWidth, imageHeight, imageY;
 	public ScreenshotWidget(int id, int x, int y, int width, int height, String message, ScreenshotGalleryScreen.ScreenshotInfo image) {
 		super(id, x, y, width, height, message);
 		this.image = image;
+
+		imageWidth = width-2;
+		imageHeight = Math.min((int) ((imageWidth/(float)image.getWidth()) * image.getHeight()), height-12);
+		imageY = (y+1)+(height-2)/2-imageHeight/2;
+		System.out.println(image.getFile()+": "+image.getWidth()+"x"+image.getHeight()+" Displayed: "+imageWidth+"x"+imageHeight);
 	}
 
 	@Override
@@ -22,10 +28,9 @@ public class ScreenshotWidget extends ButtonWidget {
 			GlStateManager.enableTexture();
 			GlStateManager.disableBlend();
 			GlStateManager.color3f(1, 1, 1);
-			minecraft.textureManager.bind(image.getGlId());
-			DrawUtil.drawTexture(this.x+1, this.y+1, 0, 0, this.width-2,
-				  Math.max(this.height-12, (this.width-2)*(image.getHeight()/image.getWidth())), width-2,
-				Math.max(this.height-12, (this.width-2)*(image.getHeight()/image.getWidth())));
+			minecraft.textureManager.bind(image.getThumbGlId());
+			DrawUtil.drawTexture(this.x+1, imageY, 0, 0, imageWidth, imageHeight,
+				imageWidth, imageHeight);
 
 			DrawUtil.drawScrollingText(message, x+1, y+height-11, width-2, 10, Colors.accent());
 		}

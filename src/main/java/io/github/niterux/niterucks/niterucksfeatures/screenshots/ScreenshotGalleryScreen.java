@@ -1,11 +1,16 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
@@ -37,23 +42,31 @@ public class ScreenshotGalleryScreen extends Screen {
 		int padding = 5;
 		count = (width / (widgetWidth + padding)) * ((height - 85) / (widgetHeight + padding));
 
+
 		CompletableFuture.runAsync(() -> {
-				try (Stream<Path> paths = Files.list(screenshotsDir)) {
-					paths.sorted().forEachOrdered(p -> {
-						if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> s.equals(p))) {
-							try {
-								PngMetadata.validate(p);
-								ScreenshotInfo info = new ScreenshotInfo(p);
-								files.add(info);
-							} catch (IOException e){
-								Niterucks.LOGGER.error("Failed to validate image: "+p+", skipping!");
-							}
+			try (Stream<Path> paths = Files.list(screenshotsDir)) {
+				paths.sorted().forEachOrdered(p -> {
+					if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> {
+						try {
+							return Files.isSameFile(s, p);
+						} catch (IOException e) {
+							return false;
 						}
-					});
-					refreshPage();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
+					})) {
+						try {
+							PngMetadata.validate(p);
+							ScreenshotInfo info = new ScreenshotInfo(p);
+							files.add(info);
+						} catch (IOException e) {
+							Niterucks.LOGGER.error("Failed to validate image: " + p + ", skipping!");
+						}
+
+					}
+				});
+				refreshPage();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		});
 
 		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
@@ -61,11 +74,14 @@ public class ScreenshotGalleryScreen extends Screen {
 		buttons.add(prev);
 		next = new ButtonWidget(2, width - 22, 20, 20, 20, ">");
 		buttons.add(next);
-
-
 	}
 
 	private void refreshPage() {
+
+		int fileCount = files.size();
+		if (index != 0 && (fileCount-index) < count){
+			index = Math.max(fileCount-count, 0);
+		}
 
 		int widgetWidth = 100;
 		int widgetHeight = widgetWidth * 3 / 4;
@@ -74,7 +90,6 @@ public class ScreenshotGalleryScreen extends Screen {
 		int beginY = 50;
 		int x = beginX;
 		int y = beginY;
-
 
 		//System.out.println("Images per page: "+count);
 		//System.out.println("Showing screenshots "+index+"-"+ Math.min((index)+count-1, files.size()-1));
@@ -137,6 +152,7 @@ public class ScreenshotGalleryScreen extends Screen {
 	public static class ScreenshotInfo {
 		private PngMetadata metadata;
 		private int glId = -1;
+		private int thumbGlId = -1;
 		private final Path file;
 
 		public ScreenshotInfo(Path file) {
@@ -148,14 +164,45 @@ public class ScreenshotGalleryScreen extends Screen {
 				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
 				if (image == null) {
 					BufferedImage error = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-					error.getGraphics().drawString("Error", 1, 15);
-					error.getGraphics().dispose();
+					Graphics2D graphics = error.createGraphics();
+					graphics.drawString("Error", 1, 15);
+					graphics.dispose();
 					return error;
 				}
 				return image;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		private BufferedImage generateThumb(){
+
+			Path cache = getThumbFile();
+			if (Files.exists(cache)){
+				try {
+					return ImageIO.read(Files.newInputStream(cache));
+				} catch (IOException e) {
+					Niterucks.LOGGER.warn("Failed to read cached thumbnail file, regenerating!");
+				}
+			}
+
+			BufferedImage image = getImage();
+			int thumbWidth = Math.min(128, image.getWidth());
+			int thumbHeight = (int) Math.min(128, (thumbWidth/(float)image.getWidth())*image.getHeight());
+			Image i = image.getScaledInstance(thumbWidth, thumbHeight, BufferedImage.SCALE_SMOOTH);
+			BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, image.getType());
+			Graphics2D graphics = scaled.createGraphics();
+			graphics.drawImage(i, 0, 0, null);
+			graphics.dispose();
+
+			try {
+				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
+			} catch (IOException e) {
+				Niterucks.LOGGER.error("Failed to write thumbnail cache for "+getFile()+"!");
+				e.printStackTrace();
+			}
+
+			return scaled;
 		}
 
 		private void readMetadata() {
@@ -186,6 +233,14 @@ public class ScreenshotGalleryScreen extends Screen {
 			return glId;
 		}
 
+		public int getThumbGlId(){
+			if (thumbGlId == -1){
+				thumbGlId = TextureUtil.genTextures();
+				TextureUtil.uploadTexture(thumbGlId, generateThumb());
+			}
+			return thumbGlId;
+		}
+
 		public Path getFile() {
 			return file;
 		}
@@ -194,6 +249,29 @@ public class ScreenshotGalleryScreen extends Screen {
 			if (glId != -1) {
 				TextureUtil.deleteTextures(glId);
 				glId = -1;
+			}
+		}
+
+		private Path getThumbFile(){
+			try {
+				String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
+					.digest(Files.readAllBytes(getFile())));
+				return createThumbnailDir().resolve(hash);
+			} catch (NoSuchAlgorithmException | IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		private Path createThumbnailDir(){
+			Path dir = FabricLoader.getInstance().getGameDir()
+				.resolve(".cache")
+				.resolve("niterucks")
+				.resolve("thumbnails");
+			try {
+				Files.createDirectories(dir);
+				return dir;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
