@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
+import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.client.render.world.WorldRenderer;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -30,6 +31,8 @@ public class MinecraftMixin {
 	public GameGui gui;
 	@Shadow
 	public WorldRenderer worldRenderer;
+	@Shadow
+	public TextureManager textureManager;
 
 	@WrapOperation(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
 	private void amdFix(Operation<Void> original) throws LWJGLException {
@@ -91,5 +94,10 @@ public class MinecraftMixin {
 	@Inject(method = "toggleFullscreen()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
 	private void addVsync(CallbackInfo ci) {
 		Display.setVSyncEnabled(Niterucks.CONFIG.VSYNC.get());
+	}
+
+	@Inject(method = "forceReload()V", at = @At("TAIL"))
+	private void addTexturesReloading(CallbackInfo ci) {
+		textureManager.reload();
 	}
 }

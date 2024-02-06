@@ -181,6 +181,7 @@ public class ChatScreenMixin extends Screen {
 		}
 		if (lastChatMessage.length() > 100) lastChatMessage = lastChatMessage.substring(0, 100);
 		moveCaret(caretPos);
+		if (selectionAnchor == caretPos) selectionAnchor = -1;
 	}
 
 	@WrapOperation(method = "keyPressed(CI)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ChatScreen;lastChatMessage:Ljava/lang/String;", opcode = Opcodes.PUTFIELD, ordinal = 1))
@@ -223,11 +224,10 @@ public class ChatScreenMixin extends Screen {
 	@Inject(method = "render(IIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", shift = At.Shift.AFTER))
 	private void renderCaret(int mouseY, int tickDelta, float par3, CallbackInfo ci, @Share("chatText") LocalRef<String> chatText) {
 		int caretRenderPos = calculateCaretRenderPos(chatText.get(), caretPos);
-		renderSelectionOverlay(chatText.get(), caretRenderPos);
 		if (caretPos > 0 && this.messageHistorySize / 6 % 2 == 0) {
-
 			((FillInvoker) this).invokeFill(caretRenderPos, this.height - 13, caretRenderPos + 1, this.height - 2, 0xFFd0d0d0);
 		}
+		renderSelectionOverlay(chatText.get(), caretRenderPos);
 	}
 
 	@ModifyExpressionValue(method = "render(IIF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ChatScreen;messageHistorySize:I", opcode = Opcodes.GETFIELD))
