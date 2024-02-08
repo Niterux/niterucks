@@ -68,19 +68,21 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 
 	@Override
 	protected void renderBackground() {
-		GL11.glDisable(2896);
-		GL11.glDisable(2912);
-		BufferBuilder var16 = BufferBuilder.INSTANCE;
-		GL11.glBindTexture(3553, client.textureManager.load("/gui/background.png"));
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		float var17 = 32.0F;
-		var16.start();
-		var16.color(2105376);
-		var16.vertex(left, bottom, 0.0, (left / var17), ((float)(bottom + (int) this.getScrollAmount()) / var17));
-		var16.vertex(this.right, this.bottom, 0.0, ((float)this.right / var17), ((float)(this.bottom + (int) this.getScrollAmount()) / var17));
-		var16.vertex(this.right, this.top, 0.0, ((float)this.right / var17), ((float)(this.top + (int) this.getScrollAmount()) / var17));
-		var16.vertex(this.left, this.top, 0.0, ((float)this.left / var17), ((float)(this.top + (int) this.getScrollAmount()) / var17));
-		var16.end();
+		if (client.world == null) {
+			GL11.glDisable(2896);
+			GL11.glDisable(2912);
+			BufferBuilder var16 = BufferBuilder.INSTANCE;
+			GL11.glBindTexture(3553, client.textureManager.load("/gui/background.png"));
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			float var17 = 32.0F;
+			var16.start();
+			var16.color(2105376);
+			var16.vertex(left, bottom, 0.0, (left / var17), ((float) (bottom + (int) this.getScrollAmount()) / var17));
+			var16.vertex(this.right, this.bottom, 0.0, ((float) this.right / var17), ((float) (this.bottom + (int) this.getScrollAmount()) / var17));
+			var16.vertex(this.right, this.top, 0.0, ((float) this.right / var17), ((float) (this.top + (int) this.getScrollAmount()) / var17));
+			var16.vertex(this.left, this.top, 0.0, ((float) this.left / var17), ((float) (this.top + (int) this.getScrollAmount()) / var17));
+			var16.end();
+		}
 	}
 
 	@Override
