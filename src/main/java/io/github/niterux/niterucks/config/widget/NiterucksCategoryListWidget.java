@@ -13,15 +13,18 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.WidgetIdentifieab
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.MathUtil;
 import net.minecraft.resource.language.I18n;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 	private OptionCategory current;
+	private static double scroll;
 	public NiterucksCategoryListWidget(ConfigManager manager, OptionCategory category, int screenWidth, int screenHeight, int top, int bottom, int entryHeight) {
 		super(manager, category, screenWidth, screenHeight, top, bottom, entryHeight);
 		centerListVertically = true;
+		setScrollAmount(scroll);
 	}
 
 	@Override
@@ -78,5 +81,16 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 		var16.vertex(this.right, this.top, 0.0, ((float)this.right / var17), ((float)(this.top + (int) this.getScrollAmount()) / var17));
 		var16.vertex(this.left, this.top, 0.0, ((float)this.left / var17), ((float)(this.top + (int) this.getScrollAmount()) / var17));
 		var16.end();
+	}
+
+	@Override
+	protected int getScrollbarPositionX() {
+		return width-6;
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
+		scroll = MathUtil.clamp(this.getScrollAmount() - amountY * (double) this.itemHeight / 2.0, 0, getMaxScroll());
+		return super.mouseScrolled(mouseX, mouseY, amountX, amountY);
 	}
 }
