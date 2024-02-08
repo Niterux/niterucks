@@ -5,6 +5,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
+import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
@@ -18,8 +19,10 @@ public class Niterucks implements ClientModInitializer {
 		CONFIG = new Config();
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
 			LOGGER.level = 4;
-		ConfigUI.getInstance().runWhenLoaded(() ->
-			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget"));
+		ConfigUI.getInstance().runWhenLoaded(() -> {
+			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
+			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
+		});
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
 			.getConfigDir().resolve("niterucks.json"), CONFIG.ROOT);
 		AxolotlClientConfig.getInstance()
