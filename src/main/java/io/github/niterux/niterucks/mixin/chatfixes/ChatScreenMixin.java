@@ -6,9 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.input.Keyboard;
@@ -20,6 +18,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 
 import static io.github.niterux.niterucks.niterucksfeatures.ChatUtils.*;
 
@@ -67,38 +66,6 @@ public class ChatScreenMixin extends Screen {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glLogicOp(GL11.GL_SET);
 		GL11.glDisable(GL11.GL_COLOR_LOGIC_OP);
-	}
-
-	@Unique
-	private int fastTextPosGet(String text, int xPos) {
-		int newWidth;
-		if (text == null) {
-			return 0;
-		} else {
-			if (xPos > this.textRenderer.getWidth(text)) {
-				return text.length();
-			}
-			int textWidth = 0;
-
-			int currentCharacter;
-			for (currentCharacter = 0; currentCharacter < text.length(); ++currentCharacter) {
-				if (text.charAt(currentCharacter) == 167) {
-					++currentCharacter;
-				} else {
-					int validCharacter = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(text.charAt(currentCharacter));
-					if (validCharacter >= 0) {
-						newWidth = textWidth + ((TextRendererCharacterWidthsAccessor) this.textRenderer).getCharacterWidths()[validCharacter + 32];
-						if (newWidth > xPos) {
-							return currentCharacter;
-						} else {
-							textWidth = newWidth;
-						}
-					}
-				}
-			}
-
-			return currentCharacter;
-		}
 	}
 
 	@Unique
@@ -192,7 +159,7 @@ public class ChatScreenMixin extends Screen {
 			moveCaret(Math.min(caretPos, selectionAnchor));
 			selectionAnchor = -1;
 		}
-		String newString = insertString(value, String.valueOf(chr), caretPos);
+		String newString = MiscUtils.insertText(value, chr, value.length() - caretPos);
 		original.call(instance, newString);
 	}
 
@@ -238,7 +205,7 @@ public class ChatScreenMixin extends Screen {
 	@Inject(method = "mouseClicked(III)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ChatScreen;minecraft:Lnet/minecraft/client/Minecraft;", ordinal = 0))
 	private void clickToMoveCaret(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 		if (mouseY > this.height - 14) {
-			moveCaret(this.lastChatMessage.length() - fastTextPosGet(this.lastChatMessage, mouseX - this.textRenderer.getWidth("> ") - 4));
+			moveCaret(this.lastChatMessage.length() - MiscUtils.fastTextPosGet(this.lastChatMessage, mouseX - this.textRenderer.getWidth("> ") - 4, this.textRenderer));
 		}
 	}
 }

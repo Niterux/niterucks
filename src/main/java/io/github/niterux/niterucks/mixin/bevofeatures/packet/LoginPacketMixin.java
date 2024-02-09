@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.packet;
 
 import net.minecraft.network.packet.LoginPacket;
 import org.spongepowered.asm.mixin.Mixin;

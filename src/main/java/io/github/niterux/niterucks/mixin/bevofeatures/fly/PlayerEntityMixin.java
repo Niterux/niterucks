@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.entity.living.LivingEntity;

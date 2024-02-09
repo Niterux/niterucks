@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.options.GameOptions;

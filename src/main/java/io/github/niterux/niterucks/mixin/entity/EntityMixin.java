@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.niterux.niterucks.Niterucks;
@@ -73,7 +73,7 @@ public class EntityMixin {
 		IMO this makes the entity distance culling work way better :P*/
 	@ModifyExpressionValue(method = "isWithinViewDistance(D)Z", at = @At(value = "CONSTANT", args = "doubleValue=64", ordinal = 0))
 	private double increaseEntityDistance(double original) {
-		return original * original * Niterucks.CONFIG.ENTITYDISTANCE.get();
+		return original * original * Niterucks.CONFIG.entityDistance.get();
 	}
 
 	@ModifyVariable(method = "isWithinViewDistance(D)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)

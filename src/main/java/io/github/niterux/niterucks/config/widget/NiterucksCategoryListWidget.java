@@ -24,6 +24,7 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 	private static final Identifier BACKGROUND_TEXTURE = new Identifier("/gui/background.png");
 	private OptionCategory current;
 	private static double scroll;
+
 	public NiterucksCategoryListWidget(ConfigManager manager, OptionCategory category, int screenWidth, int screenHeight, int top, int bottom, int entryHeight) {
 		super(manager, category, screenWidth, screenHeight, top, bottom, entryHeight);
 		centerListVertically = true;
@@ -44,7 +45,7 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 		addCategories(manager, categories);
 	}
 
-	private void addCategories(Collection<OptionCategory> collection, OptionCategory current){
+	private void addCategories(Collection<OptionCategory> collection, OptionCategory current) {
 		collection.add(current);
 		current.getSubCategories().forEach(c -> addCategories(collection, c));
 	}
@@ -57,8 +58,8 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 	}
 
 	protected ClickableWidget createWidget(int x, WidgetIdentifieable id) {
-		ClickableWidget widget = ConfigStyles.createWidget(x, 0, width-20, itemHeight - 5, id);
-		if (widget.getMessage().equals(I18n.translate(current.getName()))){
+		ClickableWidget widget = ConfigStyles.createWidget(x, 0, width - 20, itemHeight - 5, id);
+		if (widget.getMessage().equals(I18n.translate(current.getName()))) {
 			widget.active = false;
 		}
 		return widget;
@@ -85,7 +86,7 @@ public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 
 	@Override
 	protected int getScrollbarPositionX() {
-		return width-6;
+		return width - 6;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.frontThirdPersonCamera;
 import static io.github.niterux.niterucks.niterucksfeatures.MiscUtils.printDebugKeys;
 
 @Mixin(value = Minecraft.class, priority = 1005)
@@ -44,7 +46,7 @@ public class MinecraftMixin {
 	@ModifyExpressionValue(method = "tick()V", at = @At(value = "INVOKE",
 		target = "Lorg/lwjgl/input/Keyboard;getEventKeyState()Z", remap = false))
 	private boolean noneKeyFix(boolean original) {
-		if (Keyboard.getEventKey() == 0) {
+		if (Keyboard.getEventKey() <= 0) {
 			return false;
 		}
 		return original;
@@ -81,23 +83,37 @@ public class MinecraftMixin {
 
 	@ModifyVariable(method = "m_1075084(I)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private int swapMouseButtons(int button) {
-		if (Niterucks.CONFIG.SWAPMOUSEBUTTONS.get() && (button == 0 || button == 1)) {
+		if (Niterucks.CONFIG.swapMouseButtons.get() && (button == 0 || button == 1)) {
 			return (button == 0) ? 1 : 0;
 		} else return button;
 	}
 
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)
 	private int swapMiningMouseButton(int button) {
-		return (Niterucks.CONFIG.SWAPMOUSEBUTTONS.get()) ? 1 : button;
+		return (Niterucks.CONFIG.swapMouseButtons.get()) ? 1 : button;
 	}
 
 	@Inject(method = "toggleFullscreen()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
 	private void addVsync(CallbackInfo ci) {
-		Display.setVSyncEnabled(Niterucks.CONFIG.VSYNC.get());
+		Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get());
 	}
 
 	@Inject(method = "forceReload()V", at = @At("TAIL"))
 	private void addTexturesReloading(CallbackInfo ci) {
 		textureManager.reload();
+	}
+
+	@ModifyExpressionValue(method = "tick()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z", opcode = Opcodes.GETFIELD))
+	private boolean addFrontFacingCamera(boolean original) {
+		if (!original) {
+			return false;
+		}
+		if (!frontThirdPersonCamera) {
+			frontThirdPersonCamera = true;
+		} else {
+			frontThirdPersonCamera = false;
+			return true;
+		}
+		return false;
 	}
 }

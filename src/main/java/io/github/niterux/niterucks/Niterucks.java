@@ -6,9 +6,14 @@ import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
+import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
+import org.lwjgl.opengl.Display;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
@@ -24,7 +29,7 @@ public class Niterucks implements ClientModInitializer {
 			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
 		});
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
-			.getConfigDir().resolve("niterucks.json"), CONFIG.ROOT);
+			.getConfigDir().resolve("niterucks.json"), CONFIG.niterucks);
 		AxolotlClientConfig.getInstance()
 			.register(manager);
 		manager.load();
@@ -33,10 +38,20 @@ public class Niterucks implements ClientModInitializer {
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
+
+		ByteBuffer[] icons = new ByteBuffer[3];
+		try {
+			icons[0] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/128x.png"));
+			icons[1] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/32x.png"));
+			icons[2] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/16x.png"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		Display.setIcon(icons);
 	}
 
 	public static Screen getConfigScreen(Screen parent) {
 		return ConfigUI.getInstance().getScreen(Niterucks.class.getClassLoader(),
-			CONFIG.ROOT, parent);
+			CONFIG.niterucks, parent);
 	}
 }

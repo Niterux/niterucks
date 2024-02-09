@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.ui;
 
 import com.bawnorton.mixinsquared.TargetHandler;
 import net.minecraft.client.gui.screen.GameMenuScreen;

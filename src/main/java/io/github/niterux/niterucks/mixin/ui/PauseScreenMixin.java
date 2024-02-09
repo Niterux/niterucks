@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.ui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.terraformersmc.modmenu.config.ModMenuConfig;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameMenuScreen.class)
-public class GameMenuScreenMixin extends Screen {
+public class PauseScreenMixin extends Screen {
 	@SuppressWarnings("unchecked")
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addTextureButton(CallbackInfo ci) {

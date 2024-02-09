@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.ui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -51,7 +51,7 @@ public class GameGuiMixin extends GuiElement {
 	//hotbar screen safety
 	@Inject(method = "render", at = @At("HEAD"))
 	private void getHotbarHeight(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
-		hotbarHeight = Niterucks.CONFIG.HOTBAR_HEIGHT.get();
+		hotbarHeight = Niterucks.CONFIG.hotbarScreenSafety.get();
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;m_1513977()I", ordinal = 0))

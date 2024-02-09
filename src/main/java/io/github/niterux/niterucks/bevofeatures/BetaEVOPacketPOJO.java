@@ -6,4 +6,6 @@ public class BetaEVOPacketPOJO {
 	public boolean enabled = false;
 	public String player = "none";
 	public String color = "none";
+	public PlayerPOJO[] players;
+	public PrivilegesPOJO privileges;
 }

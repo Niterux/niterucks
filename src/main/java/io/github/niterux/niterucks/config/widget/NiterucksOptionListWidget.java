@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public class NiterucksOptionListWidget extends VanillaButtonListWidget {
 	public NiterucksOptionListWidget(ConfigManager manager, OptionCategory category, int screenWidth, int screenHeight, int top, int bottom, int entryHeight) {
 		super(manager, category, screenWidth, screenHeight, top, bottom, entryHeight);
-		setLeftPos(width/4+10);
+		setLeftPos(width / 4 + 10);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class NiterucksOptionListWidget extends VanillaButtonListWidget {
 
 			if (y > top && y < bottom) {
 				DrawUtil.drawScrollingText(I18n.translate(option.getName()), width / 2 + WIDGET_ROW_LEFT + 55,
-					y, width/4-20, entryHeight, Colors.text());
+					y, width / 4 - 20, entryHeight, Colors.text());
 			}
 		}
 	}

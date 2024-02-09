@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.entity;
 
 
 import net.minecraft.client.render.model.entity.CowModel;

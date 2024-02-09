@@ -23,7 +23,7 @@ public class RainbowManager {
 
 	public static void adjustRainbow() {
 		//The hue is immutable so instead of creating a new object I just mixined into colorkt for the lulz
-		((HueAccessor) (Object) currColor).setHue(((double) System.currentTimeMillis() / Niterucks.CONFIG.RAINBOWSPEED.get()) % 360);
+		((HueAccessor) (Object) currColor).setHue(((double) System.currentTimeMillis() / Niterucks.CONFIG.rainbowSpeed.get()) % 360);
 		Srgb SRGBColor = (Srgb) ConversionGraph.convert(currColor, kotlin.jvm.JvmClassMappingKt.getKotlinClass(Srgb.class));
 
 		assert SRGBColor != null;

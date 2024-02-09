@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.GameGui;

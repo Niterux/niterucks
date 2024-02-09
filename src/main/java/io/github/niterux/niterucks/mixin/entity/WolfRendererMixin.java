@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.entity;
 
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
@@ -16,7 +16,7 @@ import java.util.Objects;
 public class WolfRendererMixin {
 	@Inject(method = "render(Lnet/minecraft/entity/living/mob/passive/animal/tamable/WolfEntity;DDDFF)V", at = @At("TAIL"))
 	private void renderOwnerName(WolfEntity wolfEntity, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
-		if (MinecraftInstanceAccessor.getMinecraft().isMultiplayer() && Niterucks.CONFIG.WOLFTAGS.get() && !Objects.equals(wolfEntity.m_9131874(), "")) {
+		if (MinecraftInstanceAccessor.getMinecraft().isMultiplayer() && Niterucks.CONFIG.wolfNameTags.get() && !Objects.equals(wolfEntity.m_9131874(), "")) {
 			((RenderNameTagInvoker) this).renderNameTagCustom(wolfEntity, wolfEntity.m_9131874() + "'s Dog", x, y - 1, z, 64);
 		}
 	}

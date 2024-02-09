@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import net.minecraft.entity.player.PlayerInventory;
 import org.objectweb.asm.Opcodes;
@@ -16,8 +16,8 @@ public class PlayerInventoryMixin {
 	private int intersectScrolling(int scrollAmount) {
 		if (flying && flyingControls[3]) {
 			flySpeed += scrollAmount;
-			if (flySpeed > 12)
-				flySpeed = 12;
+			if (flySpeed > 14)
+				flySpeed = 14;
 			else if (flySpeed < 0)
 				flySpeed = 0;
 			return 0;

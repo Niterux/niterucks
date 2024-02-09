@@ -1,7 +1,10 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GameGui;
+import net.minecraft.client.render.TextRenderer;
 import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
@@ -9,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class MiscUtils {
 	public static void printDebugKeys(GameGui gui) {
@@ -29,37 +33,83 @@ public class MiscUtils {
 		bufferBuilder.end();
 	}
 
-	//https://stackoverflow.com/a/48875283
-	public static ByteBuffer decodePng(BufferedImage image) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-
-		// Load texture contents into a byte buffer
-		ByteBuffer buf = ByteBuffer.allocateDirect(4 * width * height);
-
-		// decode image
-		// ARGB format to -> RGBA
-		for (int h = 0; h < height; h++)
-			for (int w = 0; w < width; w++) {
-				int argb = image.getRGB(w, h);
-				buf.put((byte) (0xFF & (argb >> 16)));
-				buf.put((byte) (0xFF & (argb >> 8)));
-				buf.put((byte) (0xFF & (argb)));
-				buf.put((byte) (0xFF & (argb >> 24)));
-			}
-		buf.flip();
-		return buf;
-	}
+	//moehreag
 	public static ByteBuffer readImageBuffer(InputStream inputStream) throws IOException {
 		BufferedImage bufferedImage = ImageIO.read(inputStream);
 		int[] is = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
 		ByteBuffer byteBuffer = ByteBuffer.allocate(4 * is.length);
 
-		for(int k : is) {
+		for (int k : is) {
 			byteBuffer.putInt(k << 8 | k >> 24 & 0xFF);
 		}
 
 		byteBuffer.flip();
 		return byteBuffer;
+	}
+
+	public static int fastTextPosGet(String text, int xPos, TextRenderer textRenderer) {
+		int newWidth;
+		if (text == null) {
+			return 0;
+		} else {
+			if (xPos > textRenderer.getWidth(text)) {
+				return text.length();
+			}
+			int textWidth = 0;
+
+			int currentCharacter;
+			for (currentCharacter = 0; currentCharacter < text.length(); ++currentCharacter) {
+				if (text.charAt(currentCharacter) == 167) {
+					++currentCharacter;
+				} else {
+					int validCharacter = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(text.charAt(currentCharacter));
+					if (validCharacter >= 0) {
+						newWidth = textWidth + ((TextRendererCharacterWidthsAccessor) textRenderer).getCharacterWidths()[validCharacter + 32];
+						if (newWidth > xPos) {
+							return currentCharacter;
+						} else {
+							textWidth = newWidth;
+						}
+					}
+				}
+			}
+
+			return currentCharacter;
+		}
+	}
+
+	public static String textGradientGenerator(String text, char[] colorCodes, TextRenderer textRenderer) {
+		int stringLength = textRenderer.getWidth(text);
+		double insertionPoints = (double) stringLength / (colorCodes.length);
+		text = insertText(text, "§" + colorCodes[0], 0);
+		for (int i = 1; i < colorCodes.length; i++) {
+			text = insertText(text, "§" + colorCodes[i], fastTextPosGet(text, (int) Math.round(insertionPoints * i), textRenderer));
+		}
+		return text;
+	}
+
+	public static String insertText(String text, String textToInsert, int index) {
+		if (index < 0 || index > text.length())
+			throw new IllegalArgumentException("Invalid parameters for insertText, index = " + index + " text length = " + text.length());
+		return text.substring(0, index) + textToInsert + text.substring(index);
+	}
+
+	public static String insertText(String text, char textToInsert, int index) {
+		if (index < 0 || index > text.length())
+			throw new IllegalArgumentException("Invalid parameters for insertText, index = " + index + " text length = " + text.length());
+		return text.substring(0, index) + textToInsert + text.substring(index);
+	}
+
+	/**
+	 * replace ampersands with §
+	 */
+	public static String colorify(String text) {
+		char[] chars = text.toCharArray();
+		for (int i = 0; i < text.length(); i++) {
+			if (chars[i] == '&') {
+				chars[i] = '§';
+			}
+		}
+		return Arrays.toString(chars);
 	}
 }

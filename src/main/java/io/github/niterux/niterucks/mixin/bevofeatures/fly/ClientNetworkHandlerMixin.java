@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import io.github.niterux.niterucks.bevofeatures.BetaEVOFlyHelper;
 import net.minecraft.client.network.handler.ClientNetworkHandler;

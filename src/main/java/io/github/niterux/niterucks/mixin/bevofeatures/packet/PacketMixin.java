@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.bevofeatures;
+package io.github.niterux.niterucks.mixin.bevofeatures.packet;
 
 import io.github.niterux.niterucks.bevofeatures.BetaEVOPacket;
 import net.minecraft.network.packet.Packet;
