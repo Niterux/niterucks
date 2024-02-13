@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.frontThirdPersonCamera;
+
 public class MiscUtils {
 	public static void printDebugKeys(GameGui gui) {
 		gui.addChatMessage("§e[Debug]:§f Key bindings:");
@@ -111,5 +113,11 @@ public class MiscUtils {
 			}
 		}
 		return Arrays.toString(chars);
+	}
+	public static float fixSpriteYaw(float angle){
+		return (frontThirdPersonCamera) ? angle + 180.0F : angle;
+	}
+	public static float fixSpritePitch(float angle){
+		return (frontThirdPersonCamera) ? -angle : angle;
 	}
 }

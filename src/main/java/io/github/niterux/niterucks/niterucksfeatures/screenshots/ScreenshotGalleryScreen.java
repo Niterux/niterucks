@@ -63,7 +63,7 @@ public class ScreenshotGalleryScreen extends Screen {
 							ScreenshotInfo info = new ScreenshotInfo(p);
 							files.add(info);
 						} catch (IOException e) {
-							Niterucks.LOGGER.error("Failed to validate image: " + p + ", skipping!");
+							Niterucks.LOGGER.warn("Failed to validate image: " + p + ", skipping!");
 						}
 
 					}

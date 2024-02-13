@@ -12,7 +12,6 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
-import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.frontThirdPersonCamera;
 import static io.github.niterux.niterucks.niterucksfeatures.MiscUtils.printDebugKeys;
 
 @Mixin(value = Minecraft.class, priority = 1005)
@@ -101,19 +99,5 @@ public class MinecraftMixin {
 	@Inject(method = "forceReload()V", at = @At("TAIL"))
 	private void addTexturesReloading(CallbackInfo ci) {
 		textureManager.reload();
-	}
-
-	@ModifyExpressionValue(method = "tick()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z", opcode = Opcodes.GETFIELD))
-	private boolean addFrontFacingCamera(boolean original) {
-		if (!original) {
-			return false;
-		}
-		if (!frontThirdPersonCamera) {
-			frontThirdPersonCamera = true;
-		} else {
-			frontThirdPersonCamera = false;
-			return true;
-		}
-		return false;
 	}
 }
