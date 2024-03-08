@@ -63,7 +63,7 @@ public class ScreenshotGalleryScreen extends Screen {
 							ScreenshotInfo info = new ScreenshotInfo(p);
 							files.add(info);
 						} catch (IOException e) {
-							Niterucks.LOGGER.error("Failed to validate image: " + p + ", skipping!");
+							Niterucks.LOGGER.warn("Failed to validate image: " + p + ", skipping!");
 						}
 
 					}
@@ -97,10 +97,7 @@ public class ScreenshotGalleryScreen extends Screen {
 		int x = beginX;
 		int y = beginY;
 
-		//System.out.println("Images per page: "+count);
-		//System.out.println("Showing screenshots "+index+"-"+ Math.min((index)+count-1, files.size()-1));
-
-		buttons.removeIf(b -> b instanceof ScreenshotWidget);
+        buttons.removeIf(b -> b instanceof ScreenshotWidget);
 
 		for (int i = 0; i < Math.min(count, files.size() - index); i++) {
 			ScreenshotInfo info = files.get(i + index);
@@ -171,7 +168,7 @@ public class ScreenshotGalleryScreen extends Screen {
 		private BufferedImage getImage() {
 			try {
 				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
-				if (image == null){
+				if (image == null) {
 					throw new NullPointerException("Failed to read image!");
 				}
 				return image;
@@ -184,7 +181,7 @@ public class ScreenshotGalleryScreen extends Screen {
 				int y = 15;
 				for (String line : stackTrace.toString().split("\n")) {
 					graphics.drawString(line, 2, y);
-					y+= 11;
+					y += 11;
 				}
 				graphics.dispose();
 				return error;

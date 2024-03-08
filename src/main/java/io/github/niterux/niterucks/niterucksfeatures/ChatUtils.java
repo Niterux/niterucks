@@ -70,11 +70,7 @@ public class ChatUtils {
 	public static String cutText(String text, int caretPos, int selectionPos) {
 		int start = Math.min(text.length() - caretPos, text.length() - selectionPos);
 		int end = Math.max(text.length() - caretPos, text.length() - selectionPos);
-        return text.substring(0, start) + text.substring(end);
-	}
-
-	public static String insertString(String text, String string, int position) {
-		return text.substring(0, text.length() - position) + string + text.substring(text.length() - position);
+		return text.substring(0, start) + text.substring(end);
 	}
 
 	public static String findMatchingPlayers(String message, int caretPos) {
@@ -126,5 +122,5 @@ public class ChatUtils {
 	public enum direction {
 		LEFT,
 		RIGHT
-    }
+	}
 }

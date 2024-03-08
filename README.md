@@ -1,4 +1,5 @@
 ## Features:
+this list is quite a bit outdated, many features have been added since it was created
 - Enhanced BevoFlight (ONLY ENABLABLE BY STAFF)
 - Edited crash menu
 - Brightness slider

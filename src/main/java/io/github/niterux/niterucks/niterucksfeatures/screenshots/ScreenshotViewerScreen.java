@@ -1,5 +1,12 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
+import io.github.niterux.niterucks.Niterucks;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL11;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -8,13 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Locale;
-
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
-import io.github.niterux.niterucks.Niterucks;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
@@ -36,8 +36,9 @@ public class ScreenshotViewerScreen extends Screen {
 		imageHeight = Math.min((imageWidth / image.getWidth()) * image.getHeight(), imageHeight);
 		x = (int) (width / 2 - imageWidth / 2);
 		y = (int) (height / 2 - imageHeight / 2);
-		buttons.add(new ButtonWidget(1, (int) (x + imageWidth + 2), y, 50, 20, "Copy"));
 		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
+		buttons.add(new ButtonWidget(1, (int) (x + imageWidth + 2), y, 50, 20, "Copy"));
+		buttons.add(new ButtonWidget(2, (int) (x + imageWidth + 2), y + 24, 50, 20, "Open"));
 	}
 
 	@Override
@@ -57,41 +58,58 @@ public class ScreenshotViewerScreen extends Screen {
 
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
-		if (button.id == 0) {
-			minecraft.openScreen(parent);
-		} else if (button.id == 1) {
+		switch(button.id)
+			{
+				case 0:
+					minecraft.openScreen(parent);
+					break;
+				case 1:
+					copyImageToClipboard();
+					break;
+				case 2:
+					openImage();
+					break;
+			}
+	}
+	private void copyImageToClipboard(){
+		if (System.getenv().getOrDefault("DESKTOP_SESSION", "").toLowerCase(Locale.ROOT)
+			.contains("wayland")) {
+			try {
+				ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < " + image.getFile());
+				Process p = builder.start();
+				p.waitFor();
+			} catch (IOException | InterruptedException e) {
+				Niterucks.LOGGER.error(e.getMessage());
+			}
+			return;
+		}
 
-			if (System.getenv().getOrDefault("DESKTOP_SESSION", "").toLowerCase(Locale.ROOT)
-				.contains("wayland")) {
-				try {
-					ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < " + image.getFile());
-					Process p = builder.start();
-					p.waitFor();
-				} catch (IOException | InterruptedException e) {
-					Niterucks.LOGGER.error(e.getMessage());
-				}
-				return;
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new Transferable() {
+			@Override
+			public DataFlavor[] getTransferDataFlavors() {
+				return new DataFlavor[]{DataFlavor.imageFlavor};
 			}
 
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new Transferable() {
-				@Override
-				public DataFlavor[] getTransferDataFlavors() {
-					return new DataFlavor[]{DataFlavor.imageFlavor};
-				}
+			@Override
+			public boolean isDataFlavorSupported(DataFlavor flavor) {
+				return DataFlavor.imageFlavor.equals(flavor);
+			}
 
-				@Override
-				public boolean isDataFlavorSupported(DataFlavor flavor) {
-					return DataFlavor.imageFlavor.equals(flavor);
+			@NotNull
+			@Override
+			public Object getTransferData(DataFlavor flavor) throws IOException {
+				try (InputStream in = Files.newInputStream(image.getFile())) {
+					return ImageIO.read(in);
 				}
-
-				@NotNull
-				@Override
-				public Object getTransferData(DataFlavor flavor) throws IOException {
-					try (InputStream in = Files.newInputStream(image.getFile())) {
-						return ImageIO.read(in);
-					}
-				}
-			}, null);
+			}
+		}, null);
+	}
+	private void openImage() {
+		try {
+			Desktop.getDesktop().open(image.getFile().toFile());
+		} catch(IOException e) {
+			Niterucks.LOGGER.error("FAILED TO OPEN FILE, HARASS YOUR LOCAL PROGRAMMER!:");
+			e.printStackTrace();
 		}
 	}
 }

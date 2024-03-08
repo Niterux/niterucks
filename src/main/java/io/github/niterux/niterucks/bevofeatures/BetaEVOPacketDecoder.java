@@ -6,6 +6,9 @@ import io.github.niterux.niterucks.NiteLogger;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class BetaEVOPacketDecoder {
 	private static final NiteLogger logger = Niterucks.LOGGER;
 	private static final Gson gson = new Gson();
@@ -25,7 +28,7 @@ public class BetaEVOPacketDecoder {
 		switch (data.updateType) {
 			case "handshake":
 				if (data.protocol == 2)
-					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEVOPacket("[{\"protocol\":2,\"updateType\":\"handshake\"}]"));
+					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEVOPacket("[{\"protocol\":2,\"clientBrand\":\"Niterucks\",\"updateType\":\"handshake\"}]"));
 				break;
 			case "fly":
 				if (data.protocol == 1)
@@ -37,6 +40,14 @@ public class BetaEVOPacketDecoder {
 				break;
 			case "basicNameTagUpdate":
 				basicNameTagUpdate(data);
+				break;
+			case "playerList":
+				if (data.protocol == 1)
+					playerListUpdate(data.players);
+				break;
+			case "privileges":
+				if (data.protocol == 3)
+					BetaEVOFlyHelper.flyAllowed = data.privileges.fly;
 				break;
 			case "none":
 				logger.warn("No update type provided in betaevo packet! Outdated client?");
@@ -87,6 +98,27 @@ public class BetaEVOPacketDecoder {
 			BetaEVO.playerList.put(name, currPlayer);
 		} else {
 			BetaEVO.playerList.put(name, new PlayerNameStatus(name, color, rainbow));
+		}
+	}
+
+	private static void playerListUpdate(PlayerPOJO[] players) {
+		Niterucks.LOGGER.info("RECIEVED PLAYER LIST UPDATE!!!!!!!!!");
+		BetaEVOPlayerListHelper.playerListPacketRecieved = true;
+		Set<String> playersToRemove = new HashSet<>(BetaEVO.playerList.keySet());
+		PlayerNameStatus currPlayer;
+		for (PlayerPOJO player : players) {
+			if (BetaEVO.playerList.containsKey(player.name)) {
+				playersToRemove.remove(player.name);
+				currPlayer = BetaEVO.playerList.get(player.name);
+				currPlayer.prefix = player.prefix;
+				currPlayer.nickname = player.displayName;
+				BetaEVO.playerList.put(player.name, currPlayer);
+			} else {
+				BetaEVO.playerList.put(player.name, new PlayerNameStatus(player.name, player.displayName, player.prefix));
+			}
+		}
+		for (String player : playersToRemove) {
+			BetaEVO.playerList.remove(player);
 		}
 	}
 }

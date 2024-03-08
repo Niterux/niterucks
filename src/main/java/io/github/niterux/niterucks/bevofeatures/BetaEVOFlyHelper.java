@@ -1,9 +1,11 @@
 package io.github.niterux.niterucks.bevofeatures;
 
+import io.github.niterux.niterucks.Niterucks;
+
 public class BetaEVOFlyHelper {
 	public static boolean flyAllowed = false;
 	public static boolean flying = false;
-	public static int flySpeed = 6;
+	public static int flySpeed = Niterucks.CONFIG.defaultFlySpeed.get();
 	public static boolean flyingButtonHeld = false;
 	public static boolean flyingTouchedGround = true;
 	public static boolean[] flyingControls = {
@@ -16,7 +18,7 @@ public class BetaEVOFlyHelper {
 	public static void resetFly() {
 		flyAllowed = false;
 		flying = false;
-		flySpeed = 6;
+		flySpeed = Niterucks.CONFIG.defaultFlySpeed.get();
 		flyingButtonHeld = false;
 		flyingTouchedGround = true;
 

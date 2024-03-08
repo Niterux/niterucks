@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates;
+import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.living.LivingEntity;
@@ -21,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
-
 import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
 import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.adjustRainbow;
 
@@ -33,7 +32,7 @@ public class GameRendererMixin {
 
 	@Shadow
 	private float getFov(float f) {
-		return 10F;
+		return f;
 	}
 
 	@Shadow
@@ -50,12 +49,12 @@ public class GameRendererMixin {
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=70.0F", ordinal = 0))
 	private float changeFov(float seventy, @Share("seventy") LocalFloatRef fovRef) {
 		fovRef.set(seventy);
-		return this.handFov ? seventy : Niterucks.CONFIG.FOV.get();
+		return this.handFov ? Niterucks.CONFIG.viewmodelFov.get() : Niterucks.CONFIG.fov.get();
 	}
 
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=60.0F", ordinal = 0))
 	private float changeWaterFov(float sixty, @Share("seventy") LocalFloatRef fovRef) {
-		return this.handFov ? sixty : Niterucks.CONFIG.FOV.get() * sixty / fovRef.get();
+		return this.handFov ? Niterucks.CONFIG.viewmodelFov.get() * sixty / fovRef.get() : Niterucks.CONFIG.fov.get() * sixty / fovRef.get();
 	}
 
 	@Inject(method = "setupCamera(FI)V", at = @At(value = "HEAD"))

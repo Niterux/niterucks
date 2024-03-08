@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 public class DimensionMixin {
 	@ModifyExpressionValue(method = "initBrightnessTable()V", at = @At(value = "CONSTANT", args = "floatValue=0.05F", ordinal = 0))
 	private float boostGamma(float constant) {
-		return constant * Niterucks.CONFIG.BRIGHTNESS.get();
+		return constant * Niterucks.CONFIG.brightness.get();
 	}
 
 	@ModifyExpressionValue(method = "getCloudHeight()F", at = @At(value = "CONSTANT", args = "floatValue=108F"))
 	private float modifyCloudHeight(float original) {
-		return Niterucks.CONFIG.CLOUD_HEIGHT.get();
+		return Niterucks.CONFIG.cloudHeight.get();
 	}
 }
