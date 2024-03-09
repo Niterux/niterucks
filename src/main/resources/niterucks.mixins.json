@@ -24,6 +24,7 @@
     "entity.CowModelMixin",
     "entity.EntityMixin",
     "entity.ItemEntityMixin",
+    "entity.LivingEntityMixin",
     "entity.WolfRendererMixin",
     "entity.ZombieModelMixin",
     "frontthirdperson.EntityRendererMixin",

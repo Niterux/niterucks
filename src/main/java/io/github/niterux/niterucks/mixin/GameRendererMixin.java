@@ -84,7 +84,7 @@ public class GameRendererMixin {
 	@ModifyExpressionValue(method = "render(F)V", at = @At(value = "CONSTANT", args = "floatValue=0.6F", ordinal = 0))
 	private float addZoomFunctionality(float constant) {
 		zoom = niterucksControls[0] ? Math.pow((double) GameFeaturesStates.zoomAmount / 4, 2) : 1.0;
-		return niterucksControls[0] ? (float) (constant / Math.pow((double) GameFeaturesStates.zoomAmount / 4, 2)) : constant;
+		return constant / (float) zoom;
 	}
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;fpsLimit:I"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJ)V", ordinal = 1)))
