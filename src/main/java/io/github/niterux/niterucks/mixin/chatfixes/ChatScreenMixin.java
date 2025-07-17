@@ -92,12 +92,16 @@ public class ChatScreenMixin extends Screen {
 	private void addNewKeys(char chr, int key, CallbackInfo ci) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 			if (key == Keyboard.KEY_V) {
-				if (selectionAnchor != -1) {
-					lastChatMessage = cutText(lastChatMessage, caretPos, selectionAnchor);
-					if (caretPos > selectionAnchor) moveCaret(caretPos - Math.abs(selectionAnchor - caretPos));
-					selectionAnchor = -1;
+				try {
+					if (selectionAnchor != -1) {
+						lastChatMessage = cutText(lastChatMessage, caretPos, selectionAnchor);
+						if (caretPos > selectionAnchor) moveCaret(caretPos - Math.abs(selectionAnchor - caretPos));
+						selectionAnchor = -1;
+					}
+					lastChatMessage = pasteFromClipboard(lastChatMessage, caretPos);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
-				lastChatMessage = pasteFromClipboard(lastChatMessage, caretPos);
 			}
 			if (key == Keyboard.KEY_A) {
 				if (!lastChatMessage.isEmpty()) {

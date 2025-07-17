@@ -26,15 +26,6 @@ public class MiscUtils {
 		gui.addChatMessage("F3 + S = Reload all assets");
 	}
 
-	public static void renderChunkSquare(double x, double y, double z, BufferBuilder bufferBuilder) {
-		bufferBuilder.start(GL11.GL_LINE_LOOP);
-		bufferBuilder.vertex(x, y, z);
-		bufferBuilder.vertex(x, y, z + 16);
-		bufferBuilder.vertex(x + 16, y, z + 16);
-		bufferBuilder.vertex(x + 16, y, z);
-		bufferBuilder.end();
-	}
-
 	//moehreag
 	public static ByteBuffer readImageBuffer(InputStream inputStream) throws IOException {
 		BufferedImage bufferedImage = ImageIO.read(inputStream);
