@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 public class Niterucks implements ClientModInitializer {
 	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
 	public static Config CONFIG;
-	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString();
+	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
 
 	static {
 		CONFIG = new Config();
@@ -26,6 +26,7 @@ public class Niterucks implements ClientModInitializer {
 			LOGGER.level = 4;
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
+			ConfigUI.getInstance().addWidget("vanilla", "authme_category", "io.github.niterux.niterucks.config.widget.AuthMeCategoryWidget");
 			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
 		});
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
