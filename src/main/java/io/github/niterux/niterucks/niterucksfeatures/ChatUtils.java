@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
+import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.bevofeatures.BetaEVO;
 import io.github.niterux.niterucks.bevofeatures.PlayerNameStatus;
 
@@ -8,6 +9,7 @@ import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 public class ChatUtils {
 	private static final ArrayList<String> localChatHistory = new ArrayList<>();
@@ -60,7 +62,7 @@ public class ChatUtils {
 				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
 				return messageText.substring(0, messageText.length() - caretPos) + result + messageText.substring(messageText.length() - caretPos);
 			} catch (UnsupportedFlavorException | IOException ex) {
-				ex.printStackTrace();
+				Niterucks.LOGGER.log(Level.SEVERE, "An error occurred: ", ex);
 				return messageText;
 			}
 		}

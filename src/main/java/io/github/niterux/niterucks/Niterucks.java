@@ -39,7 +39,6 @@ public class Niterucks implements ClientModInitializer {
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
-
 		ByteBuffer[] icons = new ByteBuffer[3];
 		try {
 			icons[0] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/128x.png"));

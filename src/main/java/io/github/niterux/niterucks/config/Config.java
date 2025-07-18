@@ -16,6 +16,7 @@ public class Config {
 	public final OptionCategory niterucks = OptionCategory.create("niterucks");
 	public FloatOption fov = new FloatOption("FOV", 90.0F, 30.0F, 130.0F);
 	public FloatOption brightness = new FloatOption("Brightness", 1.0F, changeListenerBrightness, 0.0F, 3.0F);
+	public BooleanOption showSeed = new BooleanOption("Show Seed", "Show the world seed on F3 menu (debug menu)", true);
 	public DoubleOption entityDistance = new DoubleOption("Entity Distance", 1.0, 0.5, 5.0);
 	public FloatOption cloudHeight = new FloatOption("Cloud Height", 108.0F, 70.0F, 200.0F);
 	public DoubleOption hotbarScreenSafety = new DoubleOption("Hotbar Screen Safety", 3.0, 0.0, 30.0);
@@ -39,7 +40,7 @@ public class Config {
 	public final OptionCategory authMe = new AuthMeCategory();
 
 	public Config() {
-		niterucks.add(fov, brightness, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
+		niterucks.add(fov, showSeed, brightness, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
 		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov);

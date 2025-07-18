@@ -17,6 +17,7 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import io.github.niterux.niterucks.Niterucks;
@@ -50,24 +51,27 @@ public class ScreenshotGalleryScreen extends Screen {
 
 		CompletableFuture.runAsync(() -> {
 			try (Stream<Path> paths = Files.list(screenshotsDir)) {
-				paths.sorted(Comparator.reverseOrder()).forEachOrdered(p -> {
-					if (files.stream().map(ScreenshotInfo::getFile).noneMatch(s -> {
-						try {
-							return Files.isSameFile(s, p);
-						} catch (IOException e) {
-							return false;
-						}
-					})) {
-						try {
-							PngMetadata.validate(p);
-							ScreenshotInfo info = new ScreenshotInfo(p);
-							files.add(info);
-						} catch (IOException e) {
-							Niterucks.LOGGER.warn("Failed to validate image: " + p + ", skipping!");
-						}
+				paths
+					.filter(path -> path.getFileName().toString().endsWith(".png")).
+					sorted(Comparator.reverseOrder())
+					.forEachOrdered(p -> {
+						if (files.stream().map(ScreenshotInfo::getImagePath).noneMatch(s -> {
+							try {
+								return Files.isSameFile(s, p);
+							} catch (IOException e) {
+								return false;
+							}
+						})) {
+							try {
+								PngMetadata.validate(p);
+								ScreenshotInfo info = new ScreenshotInfo(p);
+								files.add(info);
+							} catch (IOException e) {
+								Niterucks.LOGGER.warning("Failed to validate image: " + p + ", skipping!");
+							}
 
-					}
-				});
+						}
+					});
 				refreshPage();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -97,12 +101,12 @@ public class ScreenshotGalleryScreen extends Screen {
 		int x = beginX;
 		int y = beginY;
 
-        buttons.removeIf(b -> b instanceof ScreenshotWidget);
+		buttons.removeIf(b -> b instanceof ScreenshotWidget);
 
 		for (int i = 0; i < Math.min(count, files.size() - index); i++) {
 			ScreenshotInfo info = files.get(i + index);
-			buttons.add(new ScreenshotWidget(info.getFile().hashCode(),
-				x, y, widgetWidth, widgetHeight, info.getFile().getFileName().toString(), info));
+			buttons.add(new ScreenshotWidget(info.getImagePath().hashCode(),
+				x, y, widgetWidth, widgetHeight, info.getImagePath().getFileName().toString(), info));
 			x += widgetWidth + padding;
 			if (width - x <= beginX + widgetWidth) {
 				y += widgetHeight + padding;
@@ -148,7 +152,7 @@ public class ScreenshotGalleryScreen extends Screen {
 			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
 		}
 		for (ScreenshotInfo p : files) {
-			if (p.getFile().hashCode() == button.id) {
+			if (p.getImagePath().hashCode() == button.id) {
 				minecraft.openScreen(new ScreenshotViewerScreen(this, p));
 				break;
 			}
@@ -159,15 +163,15 @@ public class ScreenshotGalleryScreen extends Screen {
 		private PngMetadata metadata;
 		private int glId = -1;
 		private int thumbGlId = -1;
-		private final Path file;
+		private final Path imagePath;
 
-		public ScreenshotInfo(Path file) {
-			this.file = file;
+		public ScreenshotInfo(Path imagePath) {
+			this.imagePath = imagePath;
 		}
 
 		private BufferedImage getImage() {
 			try {
-				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getFile()));
+				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getImagePath()));
 				if (image == null) {
 					throw new NullPointerException("Failed to read image!");
 				}
@@ -195,7 +199,7 @@ public class ScreenshotGalleryScreen extends Screen {
 				try {
 					return ImageIO.read(Files.newInputStream(cache));
 				} catch (IOException e) {
-					Niterucks.LOGGER.warn("Failed to read cached thumbnail file, regenerating!");
+					Niterucks.LOGGER.warning("Failed to read cached thumbnail file, regenerating!");
 				}
 			}
 
@@ -211,8 +215,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			try {
 				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 			} catch (IOException e) {
-				Niterucks.LOGGER.error("Failed to write thumbnail cache for " + getFile() + "!");
-				e.printStackTrace();
+				Niterucks.LOGGER.severe("Failed to write thumbnail cache for " + getImagePath() + "!");
+				Niterucks.LOGGER.log(Level.SEVERE, "An error occurred: ", e);
 			}
 
 			return scaled;
@@ -220,10 +224,10 @@ public class ScreenshotGalleryScreen extends Screen {
 
 		private void readMetadata() {
 			if (metadata == null) {
-				try (InputStream in = Files.newInputStream(getFile())) {
+				try (InputStream in = Files.newInputStream(getImagePath())) {
 					metadata = PngMetadata.read(in);
 				} catch (IOException e) {
-					Niterucks.LOGGER.error(e.getMessage());
+					Niterucks.LOGGER.severe(e.getMessage());
 				}
 			}
 		}
@@ -254,8 +258,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			return thumbGlId;
 		}
 
-		public Path getFile() {
-			return file;
+		public Path getImagePath() {
+			return imagePath;
 		}
 
 		public void release() {
@@ -268,7 +272,7 @@ public class ScreenshotGalleryScreen extends Screen {
 		private Path getThumbFile() {
 			try {
 				String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
-					.digest(Files.readAllBytes(getFile())));
+					.digest(Files.readAllBytes(getImagePath())));
 				return createThumbnailDir().resolve(hash);
 			} catch (NoSuchAlgorithmException | IOException e) {
 				throw new RuntimeException(e);

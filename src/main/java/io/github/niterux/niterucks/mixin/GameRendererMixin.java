@@ -7,11 +7,11 @@ import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates;
-import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.chunk.WorldChunk;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -29,12 +30,6 @@ import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.adjus
 public class GameRendererMixin {
 	@Unique
 	boolean handFov = false;
-
-	@Shadow
-	private float getFov(float f) {
-		return f;
-	}
-
 	@Shadow
 	private double zoom;
 	@Shadow
@@ -45,6 +40,21 @@ public class GameRendererMixin {
 	private Minecraft minecraft;
 	@Shadow
 	private float viewDistance;
+
+	@Unique
+	private static void renderChunkSquare(double x, double y, double z, BufferBuilder bufferBuilder) {
+		bufferBuilder.start(GL11.GL_LINE_LOOP);
+		bufferBuilder.vertex(x, y, z);
+		bufferBuilder.vertex(x, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z);
+		bufferBuilder.end();
+	}
+
+	@Shadow
+	private float getFov(float f) {
+		return f;
+	}
 
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=70.0F", ordinal = 0))
 	private float changeFov(float seventy, @Share("seventy") LocalFloatRef fovRef) {
@@ -84,7 +94,7 @@ public class GameRendererMixin {
 	@ModifyExpressionValue(method = "render(F)V", at = @At(value = "CONSTANT", args = "floatValue=0.6F", ordinal = 0))
 	private float addZoomFunctionality(float constant) {
 		zoom = niterucksControls[0] ? Math.pow((double) GameFeaturesStates.zoomAmount / 4, 2) : 1.0;
-		return niterucksControls[0] ? (float) (constant / Math.pow((double) GameFeaturesStates.zoomAmount / 4, 2)) : constant;
+		return constant / (float) zoom;
 	}
 
 	@ModifyExpressionValue(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;fpsLimit:I"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/GameRenderer;renderWorld(FJ)V", ordinal = 1)))
@@ -113,8 +123,22 @@ public class GameRendererMixin {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			//GL11.glDepthMask(false);
 			BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+
+			//check for slime chunks
+			if (minecraft.world.dimension.id == 0) {
+				WorldChunk var1 = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
+				if (var1.getRandomForSlime(987234911L).nextInt(10) == 0) {
+					GL11.glColor3f(0.0F, 1.0F, 0.0F);
+				} else {
+					GL11.glColor3f(1.0F, 0.0F, 0.0F);
+				}
+			} else {
+				GL11.glColor3f(0.0F, 1.0F, 1.0F);
+			}
+			//render feet pos and height pos
+			renderChunkSquare(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
+			renderChunkSquare(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
 			//render the 4 chunk corners
-			GL11.glColor3f(0.0F, 1.0F, 0.0F);
 			bufferBuilder.start(GL11.GL_LINES);
 			bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ);
 			bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ);
@@ -125,20 +149,25 @@ public class GameRendererMixin {
 			bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ + 16);
 			bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ + 16);
 			bufferBuilder.end();
-			MiscUtils.renderChunkSquare(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
-			MiscUtils.renderChunkSquare(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+			renderChunkSquare(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+			renderChunkSquare(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
 			//subchunk loop
-			GL11.glColor3f(0.0F, 1.0F, 1.0F);
+			GL11.glColor3f(1.0F, 0.0F, 1.0F);
 			for (int ypos = 16; ypos <= 112; ypos += 16) {
-				MiscUtils.renderChunkSquare(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
+				renderChunkSquare(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
 			}
-			//render feet pos and height pos
-			GL11.glColor3f(1.0F, 1.0F, 0.0F);
-			MiscUtils.renderChunkSquare(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
-			MiscUtils.renderChunkSquare(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
+
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glEnable(GL11.GL_FOG);
 			//GL11.glDepthMask(true);
 		}
+	}
+
+	@ModifyArg(method = "transformCamera(F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V", ordinal = 3, remap = false), index = 2)
+	private float fixCameraPivot(float original) {
+		if (Float.compare(original, -0.1f) == 0) {
+			return 0.0f;
+		}
+		return original;
 	}
 }
