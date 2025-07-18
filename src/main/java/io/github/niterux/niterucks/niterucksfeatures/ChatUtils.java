@@ -62,7 +62,7 @@ public class ChatUtils {
 				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
 				return messageText.substring(0, messageText.length() - caretPos) + result + messageText.substring(messageText.length() - caretPos);
 			} catch (UnsupportedFlavorException | IOException ex) {
-				Niterucks.LOGGER.log(Level.SEVERE, "An error occurred: ", ex);
+				Niterucks.LOGGER.error("An error occurred: ", ex);
 				return messageText;
 			}
 		}

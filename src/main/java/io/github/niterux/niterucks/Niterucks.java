@@ -11,19 +11,19 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import org.lwjgl.opengl.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
-	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
+	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
 	public static Config CONFIG;
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
 
 	static {
 		CONFIG = new Config();
-		if (FabricLoader.getInstance().isDevelopmentEnvironment())
-			LOGGER.level = 4;
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
 			ConfigUI.getInstance().addWidget("vanilla", "authme_category", "io.github.niterux.niterucks.config.widget.AuthMeCategoryWidget");
