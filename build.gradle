@@ -43,7 +43,7 @@ def configure(project) {
 
 		modImplementation "com.terraformersmc:modmenu:0.2.1+mcb1.7.3"
 		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
-		modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.1+b1.7.3")
+		modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.2+b1.7.3")
 		include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.13")
 		include(implementation("dev.kdrag0n:colorkt-jvm:1.0.5"))
 		project.ploceus.dependOsl(project.osl_version, project.environment)

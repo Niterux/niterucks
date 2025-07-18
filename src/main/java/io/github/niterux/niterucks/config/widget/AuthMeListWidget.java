@@ -10,6 +10,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ButtonListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.MathUtil;
+import io.github.niterux.niterucks.config.optionstorage.AuthMeIPUsernamePassword;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
 public class AuthMeListWidget extends ButtonListWidget {
@@ -59,10 +60,10 @@ public class AuthMeListWidget extends ButtonListWidget {
 	public static class Entry extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ButtonListWidget.Entry {
 
 		public static Entry get(int left) {
-			return get(left, new AuthData());
+			return get(left, new AuthMeIPUsernamePassword());
 		}
 
-		public static Entry get(int left, AuthData data) {
+		public static Entry get(int left, AuthMeIPUsernamePassword data) {
 			left += 1;
 			var textRenderer = MinecraftInstanceAccessor.getMinecraft().textRenderer;
 			TextFieldWidget ip = new TextFieldWidget(textRenderer, left, 0, 75, 20, "");
@@ -71,24 +72,14 @@ public class AuthMeListWidget extends ButtonListWidget {
 			username.setHint("Username");
 			TextFieldWidget password = new TextFieldWidget(textRenderer, left + 79 + 79, 0, 75, 20, "");
 			password.setHint("Password");
-			ip.setText(data.ip);
-			username.setText(data.username);
-			password.setText(data.password);
+			ip.setText(data.getIpAddress());
+			username.setText(data.getUsername());
+			password.setText(data.getPassword());
 			return new Entry(Lists.newArrayList(ip, username, password));
 		}
 
 		public Entry(Collection<ClickableWidget> widgets) {
 			super(widgets);
-		}
-	}
-
-	public static class AuthData {
-		String ip, username, password;
-
-		public AuthData() {
-			ip = "";
-			username = "";
-			password = "";
 		}
 	}
 }
