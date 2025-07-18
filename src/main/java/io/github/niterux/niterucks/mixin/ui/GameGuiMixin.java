@@ -217,23 +217,26 @@ public class GameGuiMixin extends GuiElement {
 
 	@SuppressWarnings("SuspiciousNameCombination")
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
-	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 2) int width) {
-		this.drawString(var8, "For help: press F3 + Q", 2, 96, 0xd96e02);
+	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
+		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
+		if(Niterucks.CONFIG.showSeed.get()) {
+			this.drawString(textRenderer, "Seed: " + minecraft.world.getSeed(), 2, 104, 0xd96e02);
+		}
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
-		this.drawString(var8, biomeString, width - var8.getWidth(biomeString) - 2, 22, 0x46a848);
+		this.drawString(textRenderer, biomeString, width - textRenderer.getWidth(biomeString) - 2, 22, 0x46a848);
 		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
-		this.drawString(var8, lightString, width - var8.getWidth(lightString) - 2, 32, 0x46a848);
+		this.drawString(textRenderer, lightString, width - textRenderer.getWidth(lightString) - 2, 32, 0x46a848);
 
 		if (minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY) {
 			int targetBlockID = minecraft.world.getBlock(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
 			int targetBlockMetadata = minecraft.world.getBlockMetadata(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
 			String blockString = "Block: " + targetBlockID + ":" + targetBlockMetadata;
-			this.drawString(var8, blockString, width - var8.getWidth(blockString) - 2, 42, 0x46a848);
+			this.drawString(textRenderer, blockString, width - textRenderer.getWidth(blockString) - 2, 42, 0x46a848);
 		}
 
 		if (heldItem != null) {
 			String itemString = "Item: " + heldItem.itemId + ":" + heldItem.getDamage();
-			this.drawString(var8, itemString, width - var8.getWidth(itemString) - 2, 52, 0x46a848);
+			this.drawString(textRenderer, itemString, width - textRenderer.getWidth(itemString) - 2, 52, 0x46a848);
 		}
 	}
 
