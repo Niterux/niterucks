@@ -14,20 +14,21 @@ import org.lwjgl.opengl.Display;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 public class Niterucks implements ClientModInitializer {
-	public static final NiteLogger LOGGER = new NiteLogger("Niterucks");
+	public static final Logger LOGGER = Logger.getLogger("io.github.niterux.niterucks.Niterucks");
 	public static Config CONFIG;
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString();
 
 	static {
 		CONFIG = new Config();
 		if (FabricLoader.getInstance().isDevelopmentEnvironment())
-			LOGGER.level = 4;
-		ConfigUI.getInstance().runWhenLoaded(() -> {
-			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
-			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
-		});
+			ConfigUI.getInstance().runWhenLoaded(() -> {
+				ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
+				ConfigUI.getInstance().addWidget("vanilla", "authMeList", "io.github.niterux.niterucks.config.widget.AuthMeWholeListWidget");
+				ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
+			});
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
 			.getConfigDir().resolve("niterucks.json"), CONFIG.niterucks);
 		AxolotlClientConfig.getInstance()
@@ -38,7 +39,7 @@ public class Niterucks implements ClientModInitializer {
 	@Override
 	public void initClient() {
 		LOGGER.info("initialized Niterucks!");
-
+		Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get());
 		ByteBuffer[] icons = new ByteBuffer[3];
 		try {
 			icons[0] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/128x.png"));

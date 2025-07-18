@@ -2,9 +2,9 @@ package io.github.niterux.niterucks.mixin.ui;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.niterux.niterucks.NiteLogger;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.ItemCoords;
+import io.github.niterux.niterucks.niterucksfeatures.SimpleChatLoggingFormatter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
@@ -24,6 +24,11 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 import static io.github.niterux.niterucks.Niterucks.modVersion;
 
 @Mixin(GameGui.class)
@@ -37,7 +42,7 @@ public class GameGuiMixin extends GuiElement {
 	@Unique
 	private static ItemStack heldItem;
 	@Unique
-	private static NiteLogger chatLogger = new NiteLogger("chat");
+	private static Logger chatLogger = Logger.getLogger("io.github.niterux.niterucks.mixin.ui.GameGuiMixin");
 
 	@Shadow
 	private Minecraft minecraft;
@@ -48,6 +53,12 @@ public class GameGuiMixin extends GuiElement {
 	@Unique
 	double hotbarHeight;
 
+	static {
+		chatLogger.setUseParentHandlers(false);
+		ConsoleHandler simpleChatLoggingHandler = new ConsoleHandler();
+		simpleChatLoggingHandler.setFormatter(new SimpleChatLoggingFormatter());
+		chatLogger.addHandler(simpleChatLoggingHandler);
+	}
 	//hotbar screen safety
 	@Inject(method = "render", at = @At("HEAD"))
 	private void getHotbarHeight(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {

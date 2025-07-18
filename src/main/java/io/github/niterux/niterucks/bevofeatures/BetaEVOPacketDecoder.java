@@ -2,15 +2,15 @@ package io.github.niterux.niterucks.bevofeatures;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import io.github.niterux.niterucks.NiteLogger;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class BetaEVOPacketDecoder {
-	private static final NiteLogger logger = Niterucks.LOGGER;
+	private static final Logger logger = Niterucks.LOGGER;
 	private static final Gson gson = new Gson();
 
 	public static void decode(String PacketData) {
@@ -20,7 +20,7 @@ public class BetaEVOPacketDecoder {
 				decodeUpdate(datum);
 			}
 		} catch (JsonSyntaxException e) {
-			logger.warn("Invalid BetaEvo packet data recieved! Outdated client?");
+			logger.warning("Invalid BetaEvo packet data recieved! Outdated client?");
 		}
 	}
 
@@ -50,10 +50,10 @@ public class BetaEVOPacketDecoder {
 					BetaEVOFlyHelper.flyAllowed = data.privileges.fly;
 				break;
 			case "none":
-				logger.warn("No update type provided in betaevo packet! Outdated client?");
+				logger.warning("No update type provided in betaevo packet! Outdated client?");
 				break;
 			default:
-				logger.warn("Unexpected updateType: " + data.updateType);
+				logger.warning("Unexpected updateType: " + data.updateType);
 		}
 	}
 

@@ -44,7 +44,7 @@ public class ScreenshotUtilsMixin {
 			try {
 				original.call(im, formatName, output);
 			} catch (Exception e) {
-				Niterucks.LOGGER.error(e.toString() + e.fillInStackTrace());
+				Niterucks.LOGGER.severe(e.toString() + e.fillInStackTrace());
 			}
 		});
 		return true;
