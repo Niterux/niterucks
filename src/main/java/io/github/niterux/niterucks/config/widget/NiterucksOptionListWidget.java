@@ -44,10 +44,8 @@ public class NiterucksOptionListWidget extends VanillaButtonListWidget {
 		public void render(int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			super.render(index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickDelta);
 
-			if (y > top && y < bottom) {
-				DrawUtil.drawScrollingText(I18n.translate(option.getName()), width / 4 +10,
-					y, width / 4 - 20, entryHeight, Colors.text());
-			}
+			DrawUtil.drawScrollingText(I18n.translate(option.getName()), width / 4 + 10,
+				y, width / 4 - 20, entryHeight, Colors.text());
 		}
 	}
 }

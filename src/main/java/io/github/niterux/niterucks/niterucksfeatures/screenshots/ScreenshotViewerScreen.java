@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Locale;
-import java.util.logging.Level;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
@@ -81,7 +80,7 @@ public class ScreenshotViewerScreen extends Screen {
 				Process p = builder.start();
 				p.waitFor();
 			} catch (IOException | InterruptedException e) {
-				Niterucks.LOGGER.severe(e.getMessage());
+				Niterucks.LOGGER.error("Failed to copy screenshot", e);
 			}
 			return;
 		}
@@ -115,10 +114,10 @@ public class ScreenshotViewerScreen extends Screen {
 		try {
 			Desktop.getDesktop().open(image.getImagePath().toFile());
 		} catch (IOException | IllegalArgumentException  e) {
-			Niterucks.LOGGER.severe("FAILED TO OPEN FILE, HARASS YOUR LOCAL PROGRAMMER!:");
-			Niterucks.LOGGER.log(Level.SEVERE, "An error occurred: ", e);
+			Niterucks.LOGGER.error("FAILED TO OPEN FILE, HARASS YOUR LOCAL PROGRAMMER!:");
+			Niterucks.LOGGER.error("An error occurred: ", e);
 		} catch (UnsupportedOperationException e) {
-			Niterucks.LOGGER.warning("Opening files isn't supported on your OS!");
+			Niterucks.LOGGER.warn("Opening files isn't supported on your OS!");
 		}
 	}
 }

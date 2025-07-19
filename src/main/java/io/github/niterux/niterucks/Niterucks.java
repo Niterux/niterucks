@@ -5,30 +5,31 @@ import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
+import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import org.lwjgl.opengl.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Logger;
 
 public class Niterucks implements ClientModInitializer {
-	public static final Logger LOGGER = Logger.getLogger("io.github.niterux.niterucks.Niterucks");
+	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
 	public static Config CONFIG;
-	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").get().getMetadata().getVersion().getFriendlyString();
+	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
 
 	static {
 		CONFIG = new Config();
-		if (FabricLoader.getInstance().isDevelopmentEnvironment())
-			ConfigUI.getInstance().runWhenLoaded(() -> {
-				ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
-				ConfigUI.getInstance().addWidget("vanilla", "authMeList", "io.github.niterux.niterucks.config.widget.AuthMeWholeListWidget");
-				ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
-			});
+		ConfigUI.getInstance().runWhenLoaded(() -> {
+			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
+			ConfigUI.getInstance().addWidget("vanilla", "authme_category", "io.github.niterux.niterucks.config.widget.AuthMeCategoryWidget");
+			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
+		});
 		ConfigManager manager = new JsonConfigManager(FabricLoader.getInstance()
 			.getConfigDir().resolve("niterucks.json"), CONFIG.niterucks);
 		AxolotlClientConfig.getInstance()
@@ -38,6 +39,7 @@ public class Niterucks implements ClientModInitializer {
 
 	@Override
 	public void initClient() {
+		AuthMeWholeListOptionStorage.getInstance().load();
 		LOGGER.info("initialized Niterucks!");
 		ByteBuffer[] icons = new ByteBuffer[3];
 		try {

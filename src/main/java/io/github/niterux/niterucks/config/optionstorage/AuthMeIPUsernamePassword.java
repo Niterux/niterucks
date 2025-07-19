@@ -1,10 +1,10 @@
 package io.github.niterux.niterucks.config.optionstorage;
 
 public class AuthMeIPUsernamePassword {
-	private final String ipAddress;
-	private final String username;
-	private final String password;
+	private String ipAddress;
 
+	private String username;
+	private String password;
 	public AuthMeIPUsernamePassword() {
 		this("", "", "");
 	}
@@ -29,5 +29,17 @@ public class AuthMeIPUsernamePassword {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

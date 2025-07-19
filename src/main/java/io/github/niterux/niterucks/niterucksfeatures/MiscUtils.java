@@ -1,18 +1,15 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.TextRenderer;
-import org.lwjgl.opengl.GL11;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.frontThirdPersonCamera;
 
@@ -97,13 +94,7 @@ public class MiscUtils {
 	 * replace ampersands with §
 	 */
 	public static String colorify(String text) {
-		char[] chars = text.toCharArray();
-		for (int i = 0; i < text.length(); i++) {
-			if (chars[i] == '&') {
-				chars[i] = '§';
-			}
-		}
-		return Arrays.toString(chars);
+		return text.replace('&', '§');
 	}
 	public static float fixSpriteYaw(float angle){
 		return (frontThirdPersonCamera) ? angle + 180.0F : angle;
