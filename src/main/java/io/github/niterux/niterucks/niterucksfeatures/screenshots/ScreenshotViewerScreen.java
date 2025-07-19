@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Locale;
-import java.util.logging.Level;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;

@@ -17,7 +17,6 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import io.github.niterux.niterucks.Niterucks;

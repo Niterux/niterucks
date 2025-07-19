@@ -9,7 +9,6 @@ import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
 
 public class ChatUtils {
 	private static final ArrayList<String> localChatHistory = new ArrayList<>();

@@ -5,6 +5,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.niterux.niterucks.config.Config;
+import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.fabricmc.loader.api.FabricLoader;
@@ -38,6 +39,7 @@ public class Niterucks implements ClientModInitializer {
 
 	@Override
 	public void initClient() {
+		AuthMeWholeListOptionStorage.getInstance().load();
 		LOGGER.info("initialized Niterucks!");
 		ByteBuffer[] icons = new ByteBuffer[3];
 		try {

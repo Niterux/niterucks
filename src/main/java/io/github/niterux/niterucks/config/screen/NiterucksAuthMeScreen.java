@@ -6,6 +6,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.screen.ConfigScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.widget.AuthMeListWidget;
 import io.github.niterux.niterucks.config.widget.NiterucksCategoryListWidget;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
@@ -74,6 +75,7 @@ public class NiterucksAuthMeScreen extends io.github.axolotlclient.AxolotlClient
 
 	@Override
 	public void removed() {
+		AuthMeWholeListOptionStorage.getInstance().save();
 		configManager.save();
 	}
 }

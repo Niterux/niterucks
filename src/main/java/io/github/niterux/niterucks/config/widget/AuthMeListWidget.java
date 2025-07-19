@@ -11,6 +11,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ButtonListWid
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.MathUtil;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeIPUsernamePassword;
+import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
 public class AuthMeListWidget extends ButtonListWidget {
@@ -29,6 +30,7 @@ public class AuthMeListWidget extends ButtonListWidget {
 	@Override
 	public void addEntries(ConfigManager manager, OptionCategory category) {
 		setLeftPos(width / 4 + 10);
+		AuthMeWholeListOptionStorage.getInstance().entries.forEach(e -> addEntry(Entry.get(getRowLeft(), e)));
 		addEntry(new ActionsEntry(getRowLeft()));
 	}
 
@@ -60,7 +62,9 @@ public class AuthMeListWidget extends ButtonListWidget {
 	public static class Entry extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ButtonListWidget.Entry {
 
 		public static Entry get(int left) {
-			return get(left, new AuthMeIPUsernamePassword());
+			AuthMeIPUsernamePassword newEntry = new AuthMeIPUsernamePassword();
+			AuthMeWholeListOptionStorage.getInstance().entries.add(newEntry);
+			return get(left, newEntry);
 		}
 
 		public static Entry get(int left, AuthMeIPUsernamePassword data) {
@@ -75,10 +79,13 @@ public class AuthMeListWidget extends ButtonListWidget {
 			ip.setText(data.getIpAddress());
 			username.setText(data.getUsername());
 			password.setText(data.getPassword());
+			ip.setChangedListener(data::setIpAddress);
+			username.setChangedListener(data::setUsername);
+			password.setChangedListener(data::setPassword);
 			return new Entry(Lists.newArrayList(ip, username, password));
 		}
 
-		public Entry(Collection<ClickableWidget> widgets) {
+		private Entry(Collection<ClickableWidget> widgets) {
 			super(widgets);
 		}
 	}
