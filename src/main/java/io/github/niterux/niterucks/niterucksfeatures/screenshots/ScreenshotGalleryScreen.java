@@ -17,7 +17,6 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import io.github.niterux.niterucks.Niterucks;
@@ -67,7 +66,7 @@ public class ScreenshotGalleryScreen extends Screen {
 								ScreenshotInfo info = new ScreenshotInfo(p);
 								files.add(info);
 							} catch (IOException e) {
-								Niterucks.LOGGER.warning("Failed to validate image: " + p + ", skipping!");
+								Niterucks.LOGGER.warn("Failed to validate image: {}, skipping!", p);
 							}
 
 						}
@@ -199,7 +198,7 @@ public class ScreenshotGalleryScreen extends Screen {
 				try {
 					return ImageIO.read(Files.newInputStream(cache));
 				} catch (IOException e) {
-					Niterucks.LOGGER.warning("Failed to read cached thumbnail file, regenerating!");
+					Niterucks.LOGGER.warn("Failed to read cached thumbnail file, regenerating!");
 				}
 			}
 
@@ -215,8 +214,8 @@ public class ScreenshotGalleryScreen extends Screen {
 			try {
 				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 			} catch (IOException e) {
-				Niterucks.LOGGER.severe("Failed to write thumbnail cache for " + getImagePath() + "!");
-				Niterucks.LOGGER.log(Level.SEVERE, "An error occurred: ", e);
+				Niterucks.LOGGER.error("Failed to write thumbnail cache for {}!", getImagePath());
+				Niterucks.LOGGER.error("An error occurred: ", e);
 			}
 
 			return scaled;
@@ -227,7 +226,7 @@ public class ScreenshotGalleryScreen extends Screen {
 				try (InputStream in = Files.newInputStream(getImagePath())) {
 					metadata = PngMetadata.read(in);
 				} catch (IOException e) {
-					Niterucks.LOGGER.severe(e.getMessage());
+					Niterucks.LOGGER.error(e.getMessage());
 				}
 			}
 		}

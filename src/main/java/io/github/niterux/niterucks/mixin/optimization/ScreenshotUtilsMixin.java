@@ -44,7 +44,7 @@ public class ScreenshotUtilsMixin {
 			try {
 				original.call(im, formatName, output);
 			} catch (Exception e) {
-				Niterucks.LOGGER.severe(e.toString() + e.fillInStackTrace());
+				Niterucks.LOGGER.error("Failed to save screenshot", e);
 			}
 		});
 		return true;

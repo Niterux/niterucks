@@ -2,7 +2,7 @@ package io.github.niterux.niterucks.config;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
-import io.github.niterux.niterucks.config.option.AuthMeWholeListOption;
+import io.github.niterux.niterucks.config.option.AuthMeCategory;
 import io.github.niterux.niterucks.config.option.KeyBindOption;
 import io.github.niterux.niterucks.mixin.invokers.InitBrightnessTableInvoker;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
@@ -37,16 +37,14 @@ public class Config {
 	public KeyBindOption flyButton = new KeyBindOption("fly_button", Keyboard.KEY_R);
 	public KeyBindOption adjustButton = new KeyBindOption("adjust_fly_speed", Keyboard.KEY_LCONTROL);
 	public IntegerOption defaultFlySpeed = new IntegerOption("Default Flight Speed", 6, 0, 14);
-	public final OptionCategory authMe = OptionCategory.create("AuthMe");
-	public AuthMeWholeListOption authMeWholeList = new AuthMeWholeListOption("AuthMe");
+	public final OptionCategory authMe = new AuthMeCategory();
 
 	public Config() {
-		niterucks.add(fov, showSeed, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
+		niterucks.add(fov, showSeed, brightness, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
 		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov);
 		staff.add(flyButton, adjustButton, defaultFlySpeed);
-		authMe.add(authMeWholeList);
 		niterucks.add(controls, accessibility, miscellaneous, staff, authMe);
 	}
 
