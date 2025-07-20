@@ -25,8 +25,6 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import static io.github.niterux.niterucks.Niterucks.modVersion;
@@ -43,15 +41,8 @@ public class GameGuiMixin extends GuiElement {
 	private static ItemStack heldItem;
 	@Unique
 	private static Logger chatLogger = Logger.getLogger("io.github.niterux.niterucks.mixin.ui.GameGuiMixin");
-
-	@Shadow
-	private Minecraft minecraft;
-
 	@Shadow
 	private static ItemRenderer ITEM_RENDERER;
-
-	@Unique
-	double hotbarHeight;
 
 	static {
 		chatLogger.setUseParentHandlers(false);
@@ -59,6 +50,12 @@ public class GameGuiMixin extends GuiElement {
 		simpleChatLoggingHandler.setFormatter(new SimpleChatLoggingFormatter());
 		chatLogger.addHandler(simpleChatLoggingHandler);
 	}
+
+	@Unique
+	double hotbarHeight;
+	@Shadow
+	private Minecraft minecraft;
+
 	//hotbar screen safety
 	@Inject(method = "render", at = @At("HEAD"))
 	private void getHotbarHeight(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
@@ -219,7 +216,7 @@ public class GameGuiMixin extends GuiElement {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
 		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
-		if(Niterucks.CONFIG.showSeed.get()) {
+		if (Niterucks.CONFIG.showSeed.get()) {
 			this.drawString(textRenderer, "Seed: " + minecraft.world.getSeed(), 2, 104, 0xd96e02);
 		}
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;

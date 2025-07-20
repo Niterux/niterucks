@@ -19,11 +19,10 @@ import java.nio.IntBuffer;
 
 @Mixin(TextRenderer.class)
 public class TextRendererMixin {
-	@Shadow
-	private int boundPage;
-
 	@Unique
 	float[][] chatColors = new float[32][3];
+	@Shadow
+	private int boundPage;
 
 	@ModifyArg(index = 0, method = "<init>(Lnet/minecraft/client/options/GameOptions;Ljava/lang/String;Lnet/minecraft/client/render/texture/TextureManager;)V",
 		at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glNewList(II)V", ordinal = 1, remap = false))

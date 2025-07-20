@@ -34,6 +34,14 @@ public class MinecraftMixin {
 	@Shadow
 	public TextureManager textureManager;
 
+	//this will only do anything once issue #888 in fabric-loader is solved
+	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
+	@WrapOperation(method = "m_6868991(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/awt/Frame;setLayout(Ljava/awt/LayoutManager;)V"), require = 0)
+	private static void addNiterucksIcon(Frame instance, LayoutManager layoutManager, Operation<Void> original) throws IOException {
+		original.call(instance, new BorderLayout());
+		instance.setIconImage(ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/icon.png"))));
+	}
+
 	@WrapOperation(method = "init()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;create()V", remap = false), require = 0)
 	private void amdFix(Operation<Void> original) throws LWJGLException {
 		PixelFormat pixelformat = new PixelFormat();
@@ -71,14 +79,6 @@ public class MinecraftMixin {
 
 	}
 
-	//this will only do anything once issue #888 in fabric-loader is solved
-	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
-	@WrapOperation(method = "m_6868991(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/awt/Frame;setLayout(Ljava/awt/LayoutManager;)V"), require = 0)
-	private static void addNiterucksIcon(Frame instance, LayoutManager layoutManager, Operation<Void> original) throws IOException {
-		original.call(instance, new BorderLayout());
-		instance.setIconImage(ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/icon.png"))));
-	}
-
 	@ModifyVariable(method = "m_1075084(I)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private int swapMouseButtons(int button) {
 		if (Niterucks.CONFIG.swapMouseButtons.get() && (button == 0 || button == 1)) {
@@ -89,11 +89,6 @@ public class MinecraftMixin {
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)
 	private int swapMiningMouseButton(int button) {
 		return (Niterucks.CONFIG.swapMouseButtons.get()) ? 1 : button;
-	}
-
-	@Inject(method = "toggleFullscreen()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
-	private void addVsync(CallbackInfo ci) {
-		Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get());
 	}
 
 	@Inject(method = "forceReload()V", at = @At("TAIL"))

@@ -9,11 +9,12 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(ProjectileRenderer.class)
 public class ProjectileRendererMixin {
 	@ModifyArg(method = "render(Lnet/minecraft/entity/Entity;DDDFF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glRotatef(FFFF)V", ordinal = 0, remap = false), index = 0)
-	private float fixNametagYaw(float angle){
+	private float fixNametagYaw(float angle) {
 		return MiscUtils.fixSpriteYaw(angle);
 	}
+
 	@ModifyArg(method = "render(Lnet/minecraft/entity/Entity;DDDFF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glRotatef(FFFF)V", ordinal = 1, remap = false), index = 0)
-	private float fixNametagPitch(float angle){
+	private float fixNametagPitch(float angle) {
 		return MiscUtils.fixSpritePitch(angle);
 	}
 }

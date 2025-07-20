@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
+import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.input.Keyboard;
@@ -18,23 +19,20 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 
 import static io.github.niterux.niterucks.niterucksfeatures.ChatUtils.*;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin extends Screen {
+	@Shadow
+	protected String lastChatMessage;
 	// counts from the position of the end of the string
 	@Unique
 	private int caretPos = 0;
 	@Unique
 	private int selectionAnchor = -1;
-
-
 	@Unique
 	private int localChatHistorySelection = 0;
-	@Shadow
-	protected String lastChatMessage;
 	@Shadow
 	private int messageHistorySize;
 

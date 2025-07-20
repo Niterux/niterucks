@@ -1,15 +1,15 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import com.mojang.blaze3d.platform.MemoryTracker;
+import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.opengl.GL11;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.IntBuffer;
-
-import com.mojang.blaze3d.platform.MemoryTracker;
-import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
-import org.apache.commons.io.IOUtils;
-import org.lwjgl.opengl.GL11;
 
 public class TextureUtil {
 	private static final IntBuffer BUFFER = MemoryTracker.createIntBuffer(4194304);
@@ -39,14 +39,14 @@ public class TextureUtil {
 		deleteTextures(i);
 		bind(i);
 		if (j >= 0) {
-			GL11.glTexParameteri(3553, 33085, j);
-			GL11.glTexParameterf(3553, 33082, 0.0F);
-			GL11.glTexParameterf(3553, 33083, (float) j);
-			GL11.glTexParameterf(3553, 34049, 0.0F);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, 33085, j);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, 33082, 0.0F);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, 33083, (float) j);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, 34049, 0.0F);
 		}
 
 		for (int m = 0; m <= j; ++m) {
-			GL11.glTexImage2D(3553, m, 6408, k >> m, l >> m, 0, 32993, 33639, (IntBuffer) null);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m, GL11.GL_RGBA, k >> m, l >> m, 0, 32993, 33639, (IntBuffer) null);
 		}
 	}
 
@@ -70,17 +70,17 @@ public class TextureUtil {
 			int q = k * p;
 			bufferedImage.getRGB(0, o, k, p, is, 0, k);
 			putInBuffer(is, q);
-			GL11.glTexSubImage2D(3553, 0, i, j + o, k, p, 32993, 33639, BUFFER);
+			GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, i, j + o, k, p, 32993, 33639, BUFFER);
 		}
 	}
 
 	private static void setTextureClamp(boolean bl) {
 		if (bl) {
-			GL11.glTexParameteri(3553, 10242, 10496);
-			GL11.glTexParameteri(3553, 10243, 10496);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 		} else {
-			GL11.glTexParameteri(3553, 10242, 10497);
-			GL11.glTexParameteri(3553, 10243, 10497);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		}
 	}
 
@@ -90,11 +90,11 @@ public class TextureUtil {
 
 	private static void setTextureFilter(boolean bl, boolean bl2) {
 		if (bl) {
-			GL11.glTexParameteri(3553, 10241, bl2 ? 9987 : 9729);
-			GL11.glTexParameteri(3553, 10240, 9729);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, bl2 ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		} else {
-			GL11.glTexParameteri(3553, 10241, bl2 ? 9986 : 9728);
-			GL11.glTexParameteri(3553, 10240, 9728);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, bl2 ? GL11.GL_NEAREST_MIPMAP_LINEAR : GL11.GL_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		}
 	}
 

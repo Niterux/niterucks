@@ -12,6 +12,7 @@ import java.util.Collection;
 
 public class ChatUtils {
 	private static final ArrayList<String> localChatHistory = new ArrayList<>();
+	private static final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
 	public static int makeIndexValid(int index) {
 		if (index > localChatHistory.size())
@@ -36,8 +37,6 @@ public class ChatUtils {
 			localChatHistory.remove(0);
 		localChatHistory.add(message);
 	}
-
-	private static final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
 	public static void copyToClipboard(String messageText, int caretPos, int selectionPos) {
 		int start = Math.min(messageText.length() - caretPos, messageText.length() - selectionPos);

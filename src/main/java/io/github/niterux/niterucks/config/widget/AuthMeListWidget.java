@@ -1,7 +1,5 @@
 package io.github.niterux.niterucks.config.widget;
 
-import java.util.Collection;
-
 import com.google.common.collect.Lists;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -13,6 +11,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.MathUtil;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeIPUsernamePassword;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+
+import java.util.Collection;
 
 public class AuthMeListWidget extends ButtonListWidget {
 	private static double scroll;
@@ -40,19 +40,6 @@ public class AuthMeListWidget extends ButtonListWidget {
 		return super.mouseScrolled(mouseX, mouseY, amountX, amountY);
 	}
 
-	public class ActionsEntry extends Entry {
-
-		public ActionsEntry(int left) {
-			super(Lists.newArrayList(new VanillaButtonWidget(left, 0, 20, 20, "+", btn -> {
-				AuthMeListWidget.this.children().add(AuthMeListWidget.this.getEntryCount() - 1, Entry.get(left));
-				AuthMeListWidget.this.setScrollAmount(AuthMeListWidget.this.getMaxScroll());
-			}), new VanillaButtonWidget(left + 24, 0, 20, 20, "-", btn -> {
-				AuthMeListWidget.this.remove(AuthMeListWidget.this.getEntryCount() - 2);
-				AuthMeListWidget.this.setScrollAmount(AuthMeListWidget.this.getMaxScroll());
-			})));
-		}
-	}
-
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		children().forEach(e -> e.children().forEach(el -> el.setFocused(false)));
@@ -60,6 +47,10 @@ public class AuthMeListWidget extends ButtonListWidget {
 	}
 
 	public static class Entry extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ButtonListWidget.Entry {
+
+		private Entry(Collection<ClickableWidget> widgets) {
+			super(widgets);
+		}
 
 		public static Entry get(int left) {
 			AuthMeIPUsernamePassword newEntry = new AuthMeIPUsernamePassword();
@@ -74,7 +65,7 @@ public class AuthMeListWidget extends ButtonListWidget {
 			ip.setHint("IP Address");
 			TextFieldWidget username = new TextFieldWidget(textRenderer, left + 79, 0, 75, 20, "");
 			username.setHint("Username");
-			TextFieldWidget password = new TextFieldWidget(textRenderer, left + 79 + 79, 0, 75, 20, "");
+			TextFieldWidget password = new CensoredTextFieldWidget(textRenderer, left + 79 + 79, 0, 75, 20, "");
 			password.setHint("Password");
 			ip.setText(data.getIpAddress());
 			username.setText(data.getUsername());
@@ -84,9 +75,20 @@ public class AuthMeListWidget extends ButtonListWidget {
 			password.setChangedListener(data::setPassword);
 			return new Entry(Lists.newArrayList(ip, username, password));
 		}
+	}
 
-		private Entry(Collection<ClickableWidget> widgets) {
-			super(widgets);
+	public class ActionsEntry extends Entry {
+
+		public ActionsEntry(int left) {
+			super(Lists.newArrayList(new VanillaButtonWidget(left, 0, 20, 20, "+", btn -> {
+				AuthMeListWidget.this.children().add(AuthMeListWidget.this.getEntryCount() - 1, Entry.get(left));
+				AuthMeListWidget.this.setScrollAmount(AuthMeListWidget.this.getMaxScroll());
+			}), new VanillaButtonWidget(left + 24, 0, 20, 20, "-", btn -> {
+				if (AuthMeListWidget.this.getEntryCount() <= 1)
+					return;
+				AuthMeListWidget.this.remove(AuthMeListWidget.this.getEntryCount() - 2);
+				AuthMeListWidget.this.setScrollAmount(AuthMeListWidget.this.getMaxScroll());
+			})));
 		}
 	}
 }

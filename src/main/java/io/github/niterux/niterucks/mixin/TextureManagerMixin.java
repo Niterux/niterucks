@@ -13,7 +13,7 @@ public class TextureManagerMixin {
 	@Inject(method = "reload()V", at = @At("TAIL"))
 	private void reloadChunks(CallbackInfo ci) {
 		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
-		if(minecraft.worldRenderer != null)
+		if (minecraft.worldRenderer != null)
 			MinecraftInstanceAccessor.getMinecraft().worldRenderer.m_6748042();
 	}
 }

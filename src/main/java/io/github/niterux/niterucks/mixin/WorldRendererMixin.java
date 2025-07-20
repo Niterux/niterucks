@@ -2,13 +2,13 @@ package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+import io.github.niterux.niterucks.niterucksfeatures.RainbowManager;
 import net.minecraft.client.render.world.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import io.github.niterux.niterucks.niterucksfeatures.RainbowManager;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {

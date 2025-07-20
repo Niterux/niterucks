@@ -15,7 +15,7 @@ public abstract class LivingEntityMixin extends Entity {
 	}
 
 	@Inject(method = "tickAi()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;isDead()Z"))
-	private void fixSneakingFallBug(CallbackInfo ci){
+	private void fixSneakingFallBug(CallbackInfo ci) {
 		if (Math.abs(this.velocityX) < 0.005) {
 			this.velocityX = 0.0;
 		}

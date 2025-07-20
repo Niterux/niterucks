@@ -1,10 +1,5 @@
 package io.github.niterux.niterucks.config.widget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
@@ -20,10 +15,15 @@ import net.minecraft.resource.language.I18n;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class NiterucksCategoryListWidget extends VanillaButtonListWidget {
 	private static final Identifier BACKGROUND_TEXTURE = new Identifier("/gui/background.png");
-	private OptionCategory current;
 	private static double scroll;
+	private OptionCategory current;
 
 	public NiterucksCategoryListWidget(ConfigManager manager, OptionCategory category, int screenWidth, int screenHeight, int top, int bottom, int entryHeight) {
 		super(manager, category, screenWidth, screenHeight, top, bottom, entryHeight);

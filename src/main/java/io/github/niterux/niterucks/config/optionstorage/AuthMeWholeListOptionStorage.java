@@ -1,18 +1,18 @@
 package io.github.niterux.niterucks.config.optionstorage;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.github.niterux.niterucks.Niterucks;
 import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
 import net.fabricmc.loader.api.FabricLoader;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+//import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class AuthMeWholeListOptionStorage {
 	private static final Path AUTHME_STORAGE_FILE = FabricLoader.getInstance().getConfigDir().resolve("niterucks_authme.json");
@@ -23,10 +23,14 @@ public class AuthMeWholeListOptionStorage {
 	private AuthMeWholeListOptionStorage() {
 	}
 
-	public List<AuthMeIPUsernamePassword> getForServer(String ip) {
+	public static AuthMeWholeListOptionStorage getInstance() {
+		return INSTANCE;
+	}
+
+/*	public List<AuthMeIPUsernamePassword> getForServer(String ip) {
 		if (ip == null) return Collections.emptyList();
 		return entries.stream().filter(e -> ip.equals(e.getIpAddress())).toList();
-	}
+	}*/
 
 	public void save() {
 		try {
@@ -53,13 +57,9 @@ public class AuthMeWholeListOptionStorage {
 		}
 	}
 
-	public static AuthMeWholeListOptionStorage getInstance() {
-		return INSTANCE;
-	}
-
 	public HashMap<String, ObjectObjectImmutablePair<String, String>> toHashMap() {
 		HashMap<String, ObjectObjectImmutablePair<String, String>> easyIpList = new HashMap<>();
-		entries.forEach((AuthMeIPUsernamePassword authMeIPUsernamePassword) -> easyIpList.putIfAbsent(authMeIPUsernamePassword.getIpAddress(), new ObjectObjectImmutablePair<>(authMeIPUsernamePassword.getUsername(), authMeIPUsernamePassword.getUsername())));
+		entries.forEach((AuthMeIPUsernamePassword authMeIPUsernamePassword) -> easyIpList.putIfAbsent(authMeIPUsernamePassword.getIpAddress(), new ObjectObjectImmutablePair<>(authMeIPUsernamePassword.getUsername(), authMeIPUsernamePassword.getPassword())));
 		return easyIpList;
 	}
 }

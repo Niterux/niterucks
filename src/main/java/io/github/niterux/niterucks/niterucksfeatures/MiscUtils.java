@@ -96,10 +96,12 @@ public class MiscUtils {
 	public static String colorify(String text) {
 		return text.replace('&', '§');
 	}
-	public static float fixSpriteYaw(float angle){
+
+	public static float fixSpriteYaw(float angle) {
 		return (frontThirdPersonCamera) ? angle + 180.0F : angle;
 	}
-	public static float fixSpritePitch(float angle){
+
+	public static float fixSpritePitch(float angle) {
 		return (frontThirdPersonCamera) ? -angle : angle;
 	}
 }

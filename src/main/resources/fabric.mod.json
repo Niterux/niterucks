@@ -24,6 +24,9 @@
     "modmenu": ["io.github.niterux.niterucks.config.NiterucksModmenu"],
     "client-init": [
       "io.github.niterux.niterucks.Niterucks"
+    ],
+    "preLaunch": [
+      "io.github.niterux.niterucks.niterucksfeatures.DPIScalingFix"
     ]
   },
 	"depends": {

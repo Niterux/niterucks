@@ -11,6 +11,7 @@ import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
+import net.ornithemc.osl.lifecycle.api.MinecraftEvents;
 import org.lwjgl.opengl.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,8 @@ import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
-	public static Config CONFIG;
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
+	public static Config CONFIG;
 
 	static {
 		CONFIG = new Config();
@@ -37,10 +38,15 @@ public class Niterucks implements ClientModInitializer {
 		manager.load();
 	}
 
+	public static Screen getConfigScreen(Screen parent) {
+		return ConfigUI.getInstance().getScreen(Niterucks.class.getClassLoader(),
+			CONFIG.niterucks, parent);
+	}
+
 	@Override
 	public void initClient() {
 		AuthMeWholeListOptionStorage.getInstance().load();
-		LOGGER.info("initialized Niterucks!");
+
 		ByteBuffer[] icons = new ByteBuffer[3];
 		try {
 			icons[0] = MiscUtils.readImageBuffer(Niterucks.class.getResourceAsStream("/assets/niterucks/icons/128x.png"));
@@ -50,10 +56,8 @@ public class Niterucks implements ClientModInitializer {
 			throw new RuntimeException(e);
 		}
 		Display.setIcon(icons);
-	}
 
-	public static Screen getConfigScreen(Screen parent) {
-		return ConfigUI.getInstance().getScreen(Niterucks.class.getClassLoader(),
-			CONFIG.niterucks, parent);
+		MinecraftEvents.READY.register(minecraft -> Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get()));
+		LOGGER.info("initialized Niterucks!");
 	}
 }

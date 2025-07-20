@@ -10,6 +10,18 @@ public class PlayerNameStatus {
 	protected boolean isRainbow;
 	private boolean backLight; //unimplemented
 
+	public PlayerNameStatus(String name, int color, boolean isRainbow) {
+		this.name = name;
+		this.color = color;
+		this.isRainbow = isRainbow;
+	}
+
+	public PlayerNameStatus(String name, String nickname, String prefix) {
+		this.name = name;
+		this.nickname = nickname;
+		this.prefix = prefix;
+	}
+
 	public boolean getIsRainbow() {
 		return isRainbow;
 	}
@@ -30,17 +42,5 @@ public class PlayerNameStatus {
 
 	public String getPrefix() {
 		return prefix;
-	}
-
-	public PlayerNameStatus(String name, int color, boolean isRainbow) {
-		this.name = name;
-		this.color = color;
-		this.isRainbow = isRainbow;
-	}
-
-	public PlayerNameStatus(String name, String nickname, String prefix) {
-		this.name = name;
-		this.nickname = nickname;
-		this.prefix = prefix;
 	}
 }

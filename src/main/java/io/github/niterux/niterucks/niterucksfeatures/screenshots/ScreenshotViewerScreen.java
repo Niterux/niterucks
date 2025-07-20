@@ -34,11 +34,11 @@ public class ScreenshotViewerScreen extends Screen {
 		imageHeight = Math.min(image.getHeight(), height - 80);
 		imageWidth = Math.min(width - 105, (imageHeight / image.getHeight()) * image.getWidth());
 		imageHeight = Math.min((imageWidth / image.getWidth()) * image.getHeight(), imageHeight);
-		x = (int) (width / 2 - imageWidth / 2);
-		y = (int) (height / 2 - imageHeight / 2);
+		x = (int) ((float) width / 2 - imageWidth / 2);
+		y = (int) ((float) height / 2 - imageHeight / 2);
 		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
 		buttons.add(new ButtonWidget(1, (int) (x + imageWidth + 2), y, 50, 20, "Copy"));
-		if(Desktop.isDesktopSupported())
+		if (Desktop.isDesktopSupported())
 			buttons.add(new ButtonWidget(2, (int) (x + imageWidth + 2), y + 24, 50, 20, "Open"));
 	}
 
@@ -105,15 +105,16 @@ public class ScreenshotViewerScreen extends Screen {
 					}
 				}
 			}, null);
-		} catch(IllegalStateException ignored) {}
+		} catch (IllegalStateException ignored) {
+		}
 	}
 
 	private void openImage() {
-		if(!Desktop.isDesktopSupported())
+		if (!Desktop.isDesktopSupported())
 			throw new IllegalStateException("openImage called when the awt desktop isn't supported!");
 		try {
 			Desktop.getDesktop().open(image.getImagePath().toFile());
-		} catch (IOException | IllegalArgumentException  e) {
+		} catch (IOException | IllegalArgumentException e) {
 			Niterucks.LOGGER.error("FAILED TO OPEN FILE, HARASS YOUR LOCAL PROGRAMMER!:");
 			Niterucks.LOGGER.error("An error occurred: ", e);
 		} catch (UnsupportedOperationException e) {

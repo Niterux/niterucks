@@ -1,7 +1,5 @@
 package io.github.niterux.niterucks.config.widget;
 
-import java.util.Collection;
-
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -13,6 +11,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Vanil
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import net.minecraft.resource.language.I18n;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 public class NiterucksOptionListWidget extends VanillaButtonListWidget {
 	public NiterucksOptionListWidget(ConfigManager manager, OptionCategory category, int screenWidth, int screenHeight, int top, int bottom, int entryHeight) {

@@ -28,6 +28,7 @@
     "accessors.NetworkHandlerAccessor",
     "accessors.SocketAccessor",
     "accessors.TextRendererCharacterWidthsAccessor",
+    "authme.ClientNetworkHandlerMixin",
     "bevofeatures.common.ConnectionMixin",
     "bevofeatures.fly.ClientNetworkHandlerMixin",
     "bevofeatures.fly.EntityMixin",
