@@ -39,10 +39,10 @@ def configure(project) {
 		nests project.ploceus.nests(project.nests_build) // remove this line if not using inner class patches
 
 		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		modImplementation "net.fabricmc:fabric-language-kotlin:1.10.17+kotlin.1.9.22"
+		modImplementation "net.fabricmc:fabric-language-kotlin:1.13.4+kotlin.2.2.0"
 
-		modImplementation "com.terraformersmc:modmenu:0.2.1+mcb1.7.3"
-		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.1.1")))
+		modImplementation "com.terraformersmc:modmenu:0.3.1+mcb1.7.3"
+		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.3")))
 		modImplementation include("io.github.axolotlclient.extra:AxolotlClient-config:0.0.2+b1.7.3")
 		include("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:3.0.13")
 		include(implementation("dev.kdrag0n:colorkt-jvm:1.0.5"))
