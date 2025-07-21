@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
@@ -25,6 +26,10 @@ public class EntityMixin {
 	public double x;
 	@Shadow
 	public double z;
+	@Shadow
+	public double velocityX;
+	@Shadow
+	public double velocityZ;
 	@Shadow
 	private int distanceOnNextBlock;
 	@Unique
@@ -77,5 +82,15 @@ public class EntityMixin {
 	private float fixEntityBrightnessFallback(float minEntityBrightness) {
 		//Fixes entities turning black above Y 129 and the vignette
 		return Math.max(this.world.dimension.brightnessTable[15 - this.world.ambientDarkness], minEntityBrightness);
+	}
+
+	@Inject(method = "move(DDD)V", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Ljava/util/List;", ordinal = 0)), at = @At(value = "CONSTANT", args = "doubleValue=0.0", ordinal = 0))
+	private void fixSneakingOffBlocksXAxis(double dx, double dy, double dz, CallbackInfo ci) {
+		this.velocityX = 0;
+	}
+
+	@Inject(method = "move(DDD)V", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Ljava/util/List;", ordinal = 1)), at = @At(value = "CONSTANT", args = "doubleValue=0.0", ordinal = 0))
+	private void fixSneakingOffBlocksZAxis(double dx, double dy, double dz, CallbackInfo ci) {
+		this.velocityZ = 0;
 	}
 }

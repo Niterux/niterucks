@@ -51,7 +51,6 @@
     "entity.ArmoredEntityRendererMixin",
     "entity.CowModelMixin",
     "entity.EntityMixin",
-    "entity.InputPlayerEntityMixin",
     "entity.ItemEntityMixin",
     "entity.WolfRendererMixin",
     "entity.ZombieModelMixin",
