@@ -36,7 +36,7 @@ public class Config {
 	public BooleanOption showSeed = new BooleanOption("Show Seed", "Show the world seed on F3 menu (debug menu)", true);
 	public DoubleOption entityDistance = new DoubleOption("Entity Distance", 1.0, 0.5, 5.0);
 	public FloatOption cloudHeight = new FloatOption("Cloud Height", 108.0F, 70.0F, 200.0F);
-	public DoubleOption hotbarScreenSafety = new DoubleOption("Hotbar Screen Safety", 3.0, 0.0, 30.0);
+	public IntegerOption hotbarScreenSafety = new IntegerOption("Hotbar Screen Safety", 3, 0, 30);
 	public BooleanOption useVSync = new BooleanOption("Use VSync", false, changeListenerVsync);
 	public BooleanOption rainbowBlockOutline = new BooleanOption("Rainbow Block Outline", false);
 	public KeyBindOption zoomButton = new KeyBindOption("zoom_button", Keyboard.KEY_C);

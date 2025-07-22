@@ -32,6 +32,7 @@
 	"depends": {
 		"fabricloader": ">=0.16.14",
 		"minecraft": "1.0.0-beta.7.3",
+    "java": ">=17",
 		"osl-entrypoints": ">=0.4.3",
     "modmenu": ">=0.3.1",
     "fabric-language-kotlin": ">=1.13.4+kotlin.2.2.0"

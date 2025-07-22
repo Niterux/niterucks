@@ -52,7 +52,7 @@ public class GameGuiMixin extends GuiElement {
 	}
 
 	@Unique
-	double hotbarHeight;
+	int hotbarHeight;
 	@Shadow
 	private Minecraft minecraft;
 
