@@ -20,7 +20,7 @@ public class BetaEVOPacketDecoder {
 				decodeUpdate(datum);
 			}
 		} catch (JsonSyntaxException e) {
-			logger.warn("Invalid BetaEvo packet data recieved! Outdated client?");
+			logger.warn("Invalid BetaEvo packet data received! Outdated client?");
 		}
 	}
 

@@ -4,10 +4,13 @@ import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
+import io.github.niterux.niterucks.api.screenshots.ScreenshotFormatRegistry;
 import io.github.niterux.niterucks.config.Config;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
+import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncJPGReaderWriter;
+import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncPNGReaderWriter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
@@ -25,6 +28,8 @@ public class Niterucks implements ClientModInitializer {
 	public static Config CONFIG;
 
 	static {
+		ScreenshotFormatRegistry.register(new AsyncPNGReaderWriter());
+		ScreenshotFormatRegistry.register(new AsyncJPGReaderWriter());
 		CONFIG = new Config();
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
@@ -58,6 +63,10 @@ public class Niterucks implements ClientModInitializer {
 		Display.setIcon(icons);
 
 		MinecraftEvents.READY.register(minecraft -> Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get()));
+
+		//noinspection ResultOfMethodCallIgnored
+		FabricLoader.getInstance().getGameDir().resolve("screenshots").toFile().mkdir();
+
 		LOGGER.info("initialized Niterucks!");
 	}
 }

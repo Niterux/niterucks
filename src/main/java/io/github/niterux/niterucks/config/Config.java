@@ -2,6 +2,7 @@ package io.github.niterux.niterucks.config;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.niterux.niterucks.api.screenshots.ScreenshotFormatRegistry;
 import io.github.niterux.niterucks.config.option.AuthMeCategory;
 import io.github.niterux.niterucks.config.option.KeyBindOption;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
@@ -30,6 +31,7 @@ public class Config {
 	public final OptionCategory accessibility = OptionCategory.create("Accessibility");
 	public final OptionCategory miscellaneous = OptionCategory.create("Miscellaneous");
 	public final OptionCategory staff = OptionCategory.create("Staff");
+	public final OptionCategory screenshots = OptionCategory.create("Screenshots");
 	public final OptionCategory authMe = new AuthMeCategory();
 	public FloatOption fov = new FloatOption("FOV", 90.0F, 30.0F, 130.0F);
 	public FloatOption brightness = new FloatOption("Brightness", 1.0F, changeListenerBrightness, 0.0F, 3.0F);
@@ -50,6 +52,8 @@ public class Config {
 	public KeyBindOption flyButton = new KeyBindOption("fly_button", Keyboard.KEY_R);
 	public KeyBindOption adjustButton = new KeyBindOption("adjust_fly_speed", Keyboard.KEY_LCONTROL);
 	public IntegerOption defaultFlySpeed = new IntegerOption("Default Flight Speed", 6, 0, 14);
+	public StringArrayOption screenshotFormat;
+	public BooleanOption enableScreenshotEnhancements = new BooleanOption("Enable Screenshot Enhancements", true);
 
 	public Config() {
 		brightness.set(1.0f);
@@ -58,6 +62,8 @@ public class Config {
 		accessibility.add(rainbowSpeed);
 		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov);
 		staff.add(flyButton, adjustButton, defaultFlySpeed);
-		niterucks.add(controls, accessibility, miscellaneous, staff, authMe);
+		screenshotFormat = new StringArrayOption("Format", ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriterNames(), "png");
+		screenshots.add(screenshotFormat, enableScreenshotEnhancements);
+		niterucks.add(controls, accessibility, miscellaneous, staff, screenshots, authMe);
 	}
 }
