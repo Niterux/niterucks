@@ -9,8 +9,7 @@ import io.github.niterux.niterucks.config.Config;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
-import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncJPGReaderWriter;
-import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncPNGReaderWriter;
+import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncImageIOReaderWriter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
@@ -28,8 +27,9 @@ public class Niterucks implements ClientModInitializer {
 	public static Config CONFIG;
 
 	static {
-		ScreenshotFormatRegistry.register(new AsyncPNGReaderWriter());
-		ScreenshotFormatRegistry.register(new AsyncJPGReaderWriter());
+		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("png"));
+		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("jpg"));
+		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("bmp"));
 		CONFIG = new Config();
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
