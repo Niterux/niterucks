@@ -9,7 +9,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
+import java.io.IOException;
 import java.nio.IntBuffer;
+import java.nio.file.Path;
 
 public class AsyncImageIOReaderWriter implements AsyncScreenshotReaderWriter {
 	private final String format;
@@ -39,7 +41,7 @@ public class AsyncImageIOReaderWriter implements AsyncScreenshotReaderWriter {
 		}
 	}
 
-	public Object synchronouslyReadPixelData(int width, int height) {
+	public Object mainThreadReadPixelData(int width, int height) {
 		if (screenshotRGBByteBuffer.capacity() < width * height)
 			screenshotRGBByteBuffer = BufferUtils.createIntBuffer(width * height);
 		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
@@ -49,5 +51,10 @@ public class AsyncImageIOReaderWriter implements AsyncScreenshotReaderWriter {
 
 	public String getFormatExtension() {
 		return format;
+	}
+
+	@Override
+	public BufferedImage readImageAsBufferedImage(Path imagePath) throws IOException {
+		return ImageIO.read(imagePath.toFile());
 	}
 }

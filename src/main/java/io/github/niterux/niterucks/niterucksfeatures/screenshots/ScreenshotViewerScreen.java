@@ -7,23 +7,20 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.Locale;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
-	private final ScreenshotGalleryScreen.ScreenshotInfo image;
+	private final ScreenshotInfo image;
 	private final int glId;
 	private float imageWidth, imageHeight;
 	private int x, y;
 
-	public ScreenshotViewerScreen(Screen parent, ScreenshotGalleryScreen.ScreenshotInfo image) {
+	public ScreenshotViewerScreen(Screen parent, ScreenshotInfo image) {
 		this.parent = parent;
 		this.image = image;
 		this.glId = image.getGlId();
@@ -99,10 +96,8 @@ public class ScreenshotViewerScreen extends Screen {
 
 				@NotNull
 				@Override
-				public Object getTransferData(DataFlavor flavor) throws IOException {
-					try (InputStream in = Files.newInputStream(image.getImagePath())) {
-						return ImageIO.read(in);
-					}
+				public Object getTransferData(DataFlavor flavor) {
+					return image.getImage();
 				}
 			}, null);
 		} catch (IllegalStateException ignored) {

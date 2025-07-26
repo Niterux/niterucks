@@ -6,6 +6,7 @@ import io.github.niterux.niterucks.api.screenshots.ScreenshotFormatRegistry;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class FastScreenshotUtils {
 		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 		int width = minecraft.width;
 		int height = minecraft.height;
-		Object pixelData = screenshotReaderWriter.synchronouslyReadPixelData(width, height);
+		Object pixelData = screenshotReaderWriter.mainThreadReadPixelData(width, height);
 
 		CompletableFuture<String> future = CompletableFuture.supplyAsync(() ->
 			{
@@ -59,4 +60,18 @@ public class FastScreenshotUtils {
 		}
 		return newFile;
 	}
+
+	public static boolean isCompatiblePath(Path imagePath) {
+		String filename = imagePath.getFileName().toString();
+		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().containsKey(filename.substring(filename.lastIndexOf('.') + 1));
+	}
+
+	@Nullable
+	public static AsyncScreenshotReaderWriter getReaderForPath(Path imagePath) {
+		if (!isCompatiblePath(imagePath))
+			return null;
+		String filename = imagePath.getFileName().toString();
+		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().get(filename.substring(filename.lastIndexOf('.') + 1));
+	}
+
 }

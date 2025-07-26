@@ -1,43 +1,51 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
-
-import io.github.niterux.niterucks.Niterucks;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.lwjgl.Sys;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
 public class ScreenshotGalleryScreen extends Screen {
 
 	private static final Path screenshotsDir = FabricLoader.getInstance().getGameDir().resolve("screenshots");
-
-	private final Screen parent;
-
 	private static final List<ScreenshotInfo> files = new ArrayList<>();
-	private int index, count;
+	private final Screen parent;
+	private int index = 0;
+	private int count;
 	private ButtonWidget prev, next;
+	private boolean finishedFillingFiles = false;
+	private boolean initialized = false;
 
 
 	public ScreenshotGalleryScreen(Screen parent) {
 		this.parent = parent;
+		CompletableFuture.runAsync(() -> {
+			try (Stream<Path> paths = Files.list(screenshotsDir)) {
+				paths
+					.filter(FastScreenshotUtils::isCompatiblePath).
+					sorted(Comparator.reverseOrder())
+					.forEachOrdered(p -> {
+						ScreenshotInfo info = new ScreenshotInfo(p);
+						files.add(info);
+					});
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+			finishedFillingFiles = true;
+			if (initialized)
+				refreshPage();
+		});
 	}
 
 	@Override
@@ -46,47 +54,18 @@ public class ScreenshotGalleryScreen extends Screen {
 		int widgetHeight = widgetWidth * 3 / 4;
 		int padding = 5;
 		count = (width / (widgetWidth + padding)) * ((height - 85) / (widgetHeight + padding));
-
-
-		CompletableFuture.runAsync(() -> {
-			try (Stream<Path> paths = Files.list(screenshotsDir)) {
-				paths
-					.filter(path -> path.getFileName().toString().endsWith(".png")).
-					sorted(Comparator.reverseOrder())
-					.forEachOrdered(p -> {
-						if (files.stream().map(ScreenshotInfo::getImagePath).noneMatch(s -> {
-							try {
-								return Files.isSameFile(s, p);
-							} catch (IOException e) {
-								return false;
-							}
-						})) {
-							try {
-								PngMetadata.validate(p);
-								ScreenshotInfo info = new ScreenshotInfo(p);
-								files.add(info);
-							} catch (IOException e) {
-								Niterucks.LOGGER.warn("Failed to validate image: {}, skipping!", p);
-							}
-
-						}
-					});
-				refreshPage();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
-
+		prev = new ButtonWidget(1, 2, 20, 20, 20, "<");
+		next = new ButtonWidget(2, width - 22, 20, 20, 20, ">");
 		buttons.add(new ButtonWidget(0, this.width / 2 + 4, this.height - 35, 150, 20, "Back"));
 		buttons.add(new ButtonWidget(3, this.width / 2 - 154, this.height - 35, 150, 20, "Open screenshots folder"));
-		prev = new ButtonWidget(1, 2, 20, 20, 20, "<");
 		buttons.add(prev);
-		next = new ButtonWidget(2, width - 22, 20, 20, 20, ">");
 		buttons.add(next);
+		initialized = true;
+		if (finishedFillingFiles)
+			refreshPage();
 	}
 
-	private void refreshPage() {
-
+	private synchronized void refreshPage() {
 		int fileCount = files.size();
 		if (index != 0 && (fileCount - index) < count) {
 			index = Math.max(fileCount - count, 0);
@@ -100,6 +79,11 @@ public class ScreenshotGalleryScreen extends Screen {
 		int x = beginX;
 		int y = beginY;
 
+		for(ButtonWidget button : buttons) {
+			if (button instanceof ScreenshotWidget screenshotWidget) {
+				screenshotWidget.clearBufferedImage();
+			}
+		}
 		buttons.removeIf(b -> b instanceof ScreenshotWidget);
 
 		for (int i = 0; i < Math.min(count, files.size() - index); i++) {
@@ -158,137 +142,5 @@ public class ScreenshotGalleryScreen extends Screen {
 		}
 	}
 
-	public static class ScreenshotInfo {
-		private PngMetadata metadata;
-		private int glId = -1;
-		private int thumbGlId = -1;
-		private final Path imagePath;
 
-		public ScreenshotInfo(Path imagePath) {
-			this.imagePath = imagePath;
-		}
-
-		private BufferedImage getImage() {
-			try {
-				BufferedImage image = TextureUtil.readImage(Files.newInputStream(getImagePath()));
-				if (image == null) {
-					throw new NullPointerException("Failed to read image!");
-				}
-				return image;
-			} catch (Exception e) {
-				StringWriter stackTrace = new StringWriter();
-				PrintWriter writer = new PrintWriter(stackTrace);
-				e.printStackTrace(writer);
-				BufferedImage error = new BufferedImage(550, 256, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D graphics = error.createGraphics();
-				int y = 15;
-				for (String line : stackTrace.toString().split("\n")) {
-					graphics.drawString(line, 2, y);
-					y += 11;
-				}
-				graphics.dispose();
-				return error;
-			}
-		}
-
-		private BufferedImage generateThumb() {
-
-			Path cache = getThumbFile();
-			if (Files.exists(cache)) {
-				try {
-					return ImageIO.read(Files.newInputStream(cache));
-				} catch (IOException e) {
-					Niterucks.LOGGER.warn("Failed to read cached thumbnail file, regenerating!");
-				}
-			}
-
-			BufferedImage image = getImage();
-			int thumbWidth = Math.min(128, image.getWidth());
-			int thumbHeight = (int) Math.min(128, (thumbWidth / (float) image.getWidth()) * image.getHeight());
-			Image i = image.getScaledInstance(thumbWidth, thumbHeight, BufferedImage.SCALE_SMOOTH);
-			BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, image.getType());
-			Graphics2D graphics = scaled.createGraphics();
-			graphics.drawImage(i, 0, 0, null);
-			graphics.dispose();
-
-			try {
-				ImageIO.write(scaled, "png", Files.newOutputStream(cache));
-			} catch (IOException e) {
-				Niterucks.LOGGER.error("Failed to write thumbnail cache for {}!", getImagePath());
-				Niterucks.LOGGER.error("An error occurred: ", e);
-			}
-
-			return scaled;
-		}
-
-		private void readMetadata() {
-			if (metadata == null) {
-				try (InputStream in = Files.newInputStream(getImagePath())) {
-					metadata = PngMetadata.read(in);
-				} catch (IOException e) {
-					Niterucks.LOGGER.error(e.getMessage());
-				}
-			}
-		}
-
-		public int getWidth() {
-			readMetadata();
-			return metadata.width();
-		}
-
-		public int getHeight() {
-			readMetadata();
-			return metadata.height();
-		}
-
-		public int getGlId() {
-			if (glId == -1) {
-				glId = TextureUtil.genTextures();
-				TextureUtil.uploadTexture(glId, getImage());
-			}
-			return glId;
-		}
-
-		public int getThumbGlId() {
-			if (thumbGlId == -1) {
-				thumbGlId = TextureUtil.genTextures();
-				TextureUtil.uploadTexture(thumbGlId, generateThumb());
-			}
-			return thumbGlId;
-		}
-
-		public Path getImagePath() {
-			return imagePath;
-		}
-
-		public void release() {
-			if (glId != -1) {
-				TextureUtil.deleteTextures(glId);
-				glId = -1;
-			}
-		}
-
-		private Path getThumbFile() {
-			try {
-				String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
-					.digest(Files.readAllBytes(getImagePath())));
-				return createThumbnailDir().resolve(hash);
-			} catch (NoSuchAlgorithmException | IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		private Path createThumbnailDir() {
-			Path dir = FabricLoader.getInstance().getGameDir()
-				.resolve(".cache")
-				.resolve("niterucks")
-				.resolve("thumbnails");
-			try {
-				Files.createDirectories(dir);
-				return dir;
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
 }

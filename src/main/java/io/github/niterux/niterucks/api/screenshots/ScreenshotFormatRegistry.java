@@ -15,6 +15,5 @@ public class ScreenshotFormatRegistry {
 
 	public static String[] getRegisteredScreenshotReaderWriterNames() {
 		return registeredScreenshotReaderWriters.keySet().toArray(new String[0]);
-
 	}
 }

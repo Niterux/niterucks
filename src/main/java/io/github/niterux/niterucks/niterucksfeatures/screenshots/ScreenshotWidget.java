@@ -7,10 +7,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class ScreenshotWidget extends ButtonWidget {
-	private final ScreenshotGalleryScreen.ScreenshotInfo image;
+	private final ScreenshotInfo image;
 	private final int imageWidth, imageHeight, imageY;
 
-	public ScreenshotWidget(int id, int x, int y, int width, int height, String message, ScreenshotGalleryScreen.ScreenshotInfo image) {
+	public ScreenshotWidget(int id, int x, int y, int width, int height, String message, ScreenshotInfo image) {
 		super(id, x, y, width, height, message);
 		this.image = image;
 
@@ -20,9 +20,9 @@ public class ScreenshotWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void render(Minecraft minecraft, int i, int j) {
+	public void render(Minecraft minecraft, int mouseX, int mouseY) {
 		if (this.visible) {
-			boolean hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
+			boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			DrawUtil.outlineRect(this.x, this.y, width, height, hovered ? -1 : Colors.foreground().toInt());
 
 			GlStateManager.enableTexture();
@@ -34,5 +34,9 @@ public class ScreenshotWidget extends ButtonWidget {
 
 			DrawUtil.drawScrollingText(message, x + 1, y + height - 11, width - 2, 10, Colors.accent());
 		}
+	}
+
+	public void clearBufferedImage() {
+		image.clearBufferedImage();
 	}
 }
