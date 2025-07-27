@@ -36,9 +36,9 @@ public interface AsyncScreenshotReaderWriter {
 	Object mainThreadReadPixelData(int width, int height);
 
 	/**
-	 * The file extension that you declare your reader/writer to be compatible with.
+	 * The file extension that you declare your {@link AsyncScreenshotReaderWriter} to be compatible with.
 	 * @return
-	 * The file extension your {@link AsyncScreenshotReaderWriter} writes in.
+	 * The file extension your {@link AsyncScreenshotReaderWriter} uses.
 	 */
 	String getFormatExtension();
 
