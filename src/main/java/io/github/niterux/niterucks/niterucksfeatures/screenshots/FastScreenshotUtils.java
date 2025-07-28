@@ -8,10 +8,18 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
@@ -74,4 +82,55 @@ public class FastScreenshotUtils {
 		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().get(filename.substring(filename.lastIndexOf('.') + 1));
 	}
 
+	public static BufferedImage getThumbnail(ScreenshotInfo screenshotInfo) {
+		Path cache = getThumbFile(screenshotInfo);
+		if (Files.exists(cache)) {
+			try {
+				return ImageIO.read(Files.newInputStream(cache));
+			} catch (IOException e) {
+				Niterucks.LOGGER.debug("Failed to read cached thumbnail file, regenerating!");
+			}
+		}
+
+		int thumbWidth = Math.min(128, screenshotInfo.getWidth());
+		int thumbHeight = (int) Math.min(128, (thumbWidth / (float) screenshotInfo.getWidth()) * screenshotInfo.getHeight());
+		BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, screenshotInfo.getImage().getType());
+		Graphics2D scaledGraphics = scaled.createGraphics();
+		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		scaledGraphics.drawImage(screenshotInfo.getImage(), 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
+		scaledGraphics.dispose();
+
+		try {
+			ImageIO.write(scaled, "png", Files.newOutputStream(cache));
+		} catch (IOException e) {
+			Niterucks.LOGGER.error("Failed to write thumbnail cache for {}!", screenshotInfo.getImagePath());
+			Niterucks.LOGGER.error("An error occurred: ", e);
+		}
+
+		return scaled;
+	}
+
+	private static Path getThumbFile(ScreenshotInfo screenshotInfo) {
+		try {
+			String hash = Base64.getUrlEncoder().encodeToString(MessageDigest.getInstance("MD5")
+				.digest(screenshotInfo.getImagePath().getFileName().toString().getBytes(StandardCharsets.UTF_8)));
+			return createThumbnailDir().resolve(hash);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	private static Path createThumbnailDir() {
+		Path dir = FabricLoader.getInstance().getGameDir()
+			.resolve(".cache")
+			.resolve("niterucks")
+			.resolve("thumbnails");
+		try {
+			Files.createDirectories(dir);
+			return dir;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

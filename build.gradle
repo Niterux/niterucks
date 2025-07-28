@@ -12,7 +12,7 @@ def configure(project) {
 	project.apply plugin: 'ploceus'
 
 	project.base {
-		archivesName = "${project.rootProject.archives_base_name}-${project.environment}"
+		archivesName = "${project.rootProject.archives_base_name}"
 	}
 	project.version = "${project.rootProject.version}"
 	project.maven_group = project.rootProject.maven_group
@@ -82,7 +82,7 @@ def configure(project) {
 
 		// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
 		// Uncomment this line to generate them.
-		// withJavadocJar()
+		 withJavadocJar()
 	}
 
 	// If you plan to use a different file for the license, don't forget to change the file name here!
