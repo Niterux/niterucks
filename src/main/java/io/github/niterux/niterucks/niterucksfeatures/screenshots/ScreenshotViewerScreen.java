@@ -1,6 +1,5 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -13,30 +12,35 @@ import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.util.Locale;
 
+import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.*;
+
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
 	private final ScreenshotInfo image;
 	private final int glId;
-	private float imageWidth, imageHeight;
+	private int imageDisplayWidth, imageDisplayHeight;
 	private int x, y;
+	private final float imageVMax, imageUMax;
 
 	public ScreenshotViewerScreen(Screen parent, ScreenshotInfo image) {
 		this.parent = parent;
 		this.image = image;
 		this.glId = image.getGlId();
+		imageVMax = getPowerOf2Ratio(image.getWidth());
+		imageUMax = getPowerOf2Ratio(image.getHeight());
 	}
 
 	@Override
 	public void init() {
-		imageHeight = Math.min(image.getHeight(), height - 80);
-		imageWidth = Math.min(width - 105, (imageHeight / image.getHeight()) * image.getWidth());
-		imageHeight = Math.min((imageWidth / image.getWidth()) * image.getHeight(), imageHeight);
-		x = (int) ((float) width / 2 - imageWidth / 2);
-		y = (int) ((float) height / 2 - imageHeight / 2);
+		imageDisplayHeight = Math.min(image.getHeight(), height - 80);
+		imageDisplayWidth = Math.min(width - 105, imageDisplayHeight * image.getWidth() / image.getHeight());
+		imageDisplayHeight = Math.min(imageDisplayWidth * image.getHeight() / image.getWidth(), imageDisplayHeight);
+		x = width / 2 - imageDisplayWidth / 2;
+		y = height / 2 - imageDisplayHeight / 2;
 		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
-		buttons.add(new ButtonWidget(1, (int) (x + imageWidth + 2), y, 50, 20, "Copy"));
+		buttons.add(new ButtonWidget(1, x + imageDisplayWidth + 2, y, 50, 20, "Copy"));
 		if (Desktop.isDesktopSupported())
-			buttons.add(new ButtonWidget(2, (int) (x + imageWidth + 2), y + 24, 50, 20, "Open"));
+			buttons.add(new ButtonWidget(2, x + imageDisplayWidth + 2, y + 24, 50, 20, "Open"));
 	}
 
 	@Override
@@ -47,7 +51,7 @@ public class ScreenshotViewerScreen extends Screen {
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		DrawUtil.drawTexture(x, y, 0, 0, (int) imageWidth, (int) imageHeight, imageWidth, imageHeight);
+		TextureUtil.renderTexturePortion(x, y, imageDisplayWidth + x, y + imageDisplayHeight, 0, 0, imageVMax, imageUMax);
 
 		drawCenteredString(minecraft.textRenderer, image.getImagePath().getFileName().toString(), width / 2, 20, -1);
 

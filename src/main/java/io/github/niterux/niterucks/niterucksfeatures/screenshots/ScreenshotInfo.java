@@ -1,5 +1,7 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import org.lwjgl.opengl.GL11;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.PrintWriter;
@@ -53,8 +55,8 @@ public class ScreenshotInfo {
 
 	public int getGlId() {
 		if (glId == -1) {
-			glId = TextureUtil.genTextures();
-			TextureUtil.uploadTexture(glId, getImage());
+			glId = GL11.glGenTextures();
+			TextureUtil.putBufferedImageIntoGlId(glId, getImage());
 		}
 		return glId;
 	}
@@ -65,7 +67,7 @@ public class ScreenshotInfo {
 
 	public void release() {
 		if (glId != -1) {
-			TextureUtil.deleteTextures(glId);
+			GL11.glDeleteTextures(glId);
 			glId = -1;
 		}
 	}

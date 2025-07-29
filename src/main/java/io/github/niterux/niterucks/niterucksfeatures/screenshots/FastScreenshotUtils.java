@@ -45,7 +45,9 @@ public class FastScreenshotUtils {
 					return "Failed to obtain access to a screenshot file to write to." + e.getMessage();
 				}
 				try {
-					return screenshotReaderWriter.writeScreenshot(fileOutput, width, height, pixelData);
+					String message = screenshotReaderWriter.writeScreenshot(fileOutput, width, height, pixelData);
+					getThumbnail(new ScreenshotInfo(fileOutput.toPath()));
+					return message;
 				} catch (Exception e) {
 					return "An error occurred while writing your screenshot!" + e.getMessage();
 				}
@@ -96,10 +98,9 @@ public class FastScreenshotUtils {
 		int thumbHeight = (int) Math.min(128, (thumbWidth / (float) screenshotInfo.getWidth()) * screenshotInfo.getHeight());
 		BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, screenshotInfo.getImage().getType());
 		Graphics2D scaledGraphics = scaled.createGraphics();
-		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		scaledGraphics.drawImage(screenshotInfo.getImage(), 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
 		scaledGraphics.dispose();
-
 		try {
 			ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 		} catch (IOException e) {

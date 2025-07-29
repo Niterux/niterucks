@@ -32,6 +32,7 @@ public class ScreenshotGalleryScreen extends Screen {
 	private ExecutorService thumbnailImageGetter;
 
 	public ScreenshotGalleryScreen(Screen parent) {
+		files.clear();
 		setThreadPool();
 		this.parent = parent;
 		CompletableFuture.runAsync(() -> {
@@ -72,10 +73,6 @@ public class ScreenshotGalleryScreen extends Screen {
 
 	private synchronized void refreshPage() {
 		int fileCount = files.size();
-		if (index != 0 && (fileCount - index) < count) {
-			index = Math.max(fileCount - count, 0);
-		}
-
 		int widgetWidth = 100;
 		int widgetHeight = widgetWidth * 3 / 4;
 		int padding = 5;
@@ -95,7 +92,7 @@ public class ScreenshotGalleryScreen extends Screen {
 		buttons.removeAll(screenshotWidgets);
 		screenshotWidgets.clear();
 
-		int widgetCount = Math.min(count, files.size() - index);
+		int widgetCount = Math.min(count, fileCount - index);
 		ScreenshotInfo[] applicableScreenshotInfoObjects = new ScreenshotInfo[widgetCount];
 		System.arraycopy(files.toArray(), index, applicableScreenshotInfoObjects, 0, widgetCount);
 
@@ -119,19 +116,20 @@ public class ScreenshotGalleryScreen extends Screen {
 
 
 		prev.active = index > 0;
-		next.active = files.size() - index > count;
+		next.active = fileCount > count + index;
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		for (int i = 0; i < thumbnailImageGetterFuturesReferences.size(); i++) {
 			Future<?> future = thumbnailImageGetterFuturesReferences.get(i);
-			if (future.isDone()) {
+			if (future != null && future.isDone()) {
 				try {
 					BufferedImage image = (BufferedImage) future.get();
-					int thumbGlId = TextureUtil.genTextures();
-					TextureUtil.uploadTexture(thumbGlId, image);
-					screenshotWidgets.get(i).onResolvedImage(thumbGlId, (double) image.getWidth() / image.getHeight());
+					int thumbGlId = GL11.glGenTextures();
+					TextureUtil.putBufferedImageIntoGlId(thumbGlId, image);
+					screenshotWidgets.get(i).onResolvedImage(thumbGlId, (double) image.getWidth() / image.getHeight(), image.getWidth(), image.getHeight());
+					thumbnailImageGetterFuturesReferences.set(i, null);
 				} catch (InterruptedException | ExecutionException e) {
 					throw new RuntimeException(e);
 				}
