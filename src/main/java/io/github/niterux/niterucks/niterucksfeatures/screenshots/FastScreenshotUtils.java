@@ -88,7 +88,6 @@ public class FastScreenshotUtils {
 		Path cache = getThumbFile(screenshotInfo);
 		if (Files.exists(cache)) {
 			try {
-				ImageIO.read(Files.newInputStream(cache));
 				return ImageIO.read(Files.newInputStream(cache));
 			} catch (IOException e) {
 				Niterucks.LOGGER.debug("Failed to read cached thumbnail file, regenerating!");

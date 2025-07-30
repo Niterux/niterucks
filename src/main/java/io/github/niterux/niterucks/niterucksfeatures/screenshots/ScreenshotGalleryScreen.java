@@ -21,12 +21,7 @@ import java.util.stream.Stream;
 public class ScreenshotGalleryScreen extends Screen {
 	private static final Path screenshotsDir = FabricLoader.getInstance().getGameDir().resolve("screenshots");
 	private static final List<ScreenshotInfo> files = new ArrayList<>();
-	private static final LinkedBlockingQueue<Runnable> thumbnailTaskQueue = new LinkedBlockingQueue<>();
-	private static final ThreadPoolExecutor thumbnailImageGetter = new ThreadPoolExecutor(4, 4, Long.MAX_VALUE, TimeUnit.DAYS, thumbnailTaskQueue);
-
-	static {
-		thumbnailImageGetter.prestartAllCoreThreads();
-	}
+	private static final ThreadPoolExecutor thumbnailImageGetter = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 
 	private final Screen parent;
 	private final ArrayList<ScreenshotWidget> screenshotWidgets = new ArrayList<>();
@@ -177,7 +172,7 @@ public class ScreenshotGalleryScreen extends Screen {
 	}
 
 	private void cleanUpScreenshotGalleryPage() {
-		thumbnailTaskQueue.clear();
+		thumbnailImageGetter.getQueue().clear();
 		for (ScreenshotWidget screenshotWidget : screenshotWidgets) {
 			screenshotWidget.clearBufferedImage();
 			int glId = screenshotWidget.getGlId();
