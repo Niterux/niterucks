@@ -4,6 +4,7 @@ import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -49,7 +50,7 @@ public class ScreenshotViewerScreen extends Screen {
 
 		minecraft.textureManager.bind(glId);
 
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glColor3f(1.0F, 1.0F, 1.0F);
 
 		TextureUtil.renderTexturePortion(x, y, imageDisplayWidth + x, y + imageDisplayHeight, 0, 0, imageVMax, imageUMax);
 
@@ -62,6 +63,7 @@ public class ScreenshotViewerScreen extends Screen {
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
 			case 0:
+				image.release();
 				minecraft.openScreen(parent);
 				break;
 			case 1:
@@ -71,6 +73,17 @@ public class ScreenshotViewerScreen extends Screen {
 				openImage();
 				break;
 		}
+	}
+
+	@Override
+	public void handleKeyboard() {
+		if (Keyboard.getEventKey() == 1) {
+			image.release();
+			this.minecraft.openScreen(null);
+			this.minecraft.closeScreen();
+			return;
+		}
+		super.handleKeyboard();
 	}
 
 	private void copyImageToClipboard() {

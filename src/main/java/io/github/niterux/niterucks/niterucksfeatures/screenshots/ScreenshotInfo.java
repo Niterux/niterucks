@@ -40,7 +40,6 @@ public class ScreenshotInfo {
 				graphics.drawString(line, 2, y);
 				y += 11;
 			}
-			graphics.dispose();
 			this.image = error;
 		}
 	}
@@ -55,8 +54,7 @@ public class ScreenshotInfo {
 
 	public int getGlId() {
 		if (glId == -1) {
-			glId = GL11.glGenTextures();
-			TextureUtil.putBufferedImageIntoGlId(glId, getImage());
+			glId = TextureUtil.putBufferedImageIntoGlId(getImage());
 		}
 		return glId;
 	}

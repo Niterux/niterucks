@@ -88,6 +88,7 @@ public class FastScreenshotUtils {
 		Path cache = getThumbFile(screenshotInfo);
 		if (Files.exists(cache)) {
 			try {
+				ImageIO.read(Files.newInputStream(cache));
 				return ImageIO.read(Files.newInputStream(cache));
 			} catch (IOException e) {
 				Niterucks.LOGGER.debug("Failed to read cached thumbnail file, regenerating!");
@@ -100,7 +101,6 @@ public class FastScreenshotUtils {
 		Graphics2D scaledGraphics = scaled.createGraphics();
 		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		scaledGraphics.drawImage(screenshotInfo.getImage(), 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
-		scaledGraphics.dispose();
 		try {
 			ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 		} catch (IOException e) {
@@ -119,7 +119,6 @@ public class FastScreenshotUtils {
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	private static Path createThumbnailDir() {

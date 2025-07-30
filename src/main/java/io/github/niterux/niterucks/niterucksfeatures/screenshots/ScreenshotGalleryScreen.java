@@ -4,6 +4,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.image.BufferedImage;
@@ -18,9 +19,15 @@ import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 public class ScreenshotGalleryScreen extends Screen {
-
 	private static final Path screenshotsDir = FabricLoader.getInstance().getGameDir().resolve("screenshots");
 	private static final List<ScreenshotInfo> files = new ArrayList<>();
+	private static final LinkedBlockingQueue<Runnable> thumbnailTaskQueue = new LinkedBlockingQueue<>();
+	private static final ThreadPoolExecutor thumbnailImageGetter = new ThreadPoolExecutor(4, 4, Long.MAX_VALUE, TimeUnit.DAYS, thumbnailTaskQueue);
+
+	static {
+		thumbnailImageGetter.prestartAllCoreThreads();
+	}
+
 	private final Screen parent;
 	private final ArrayList<ScreenshotWidget> screenshotWidgets = new ArrayList<>();
 	private final ArrayList<Future<?>> thumbnailImageGetterFuturesReferences = new ArrayList<>();
@@ -29,11 +36,9 @@ public class ScreenshotGalleryScreen extends Screen {
 	private ButtonWidget prev, next;
 	private boolean finishedFillingFiles = false;
 	private boolean initialized = false;
-	private ExecutorService thumbnailImageGetter;
 
 	public ScreenshotGalleryScreen(Screen parent) {
 		files.clear();
-		setThreadPool();
 		this.parent = parent;
 		CompletableFuture.runAsync(() -> {
 			try (Stream<Path> paths = Files.list(screenshotsDir)) {
@@ -71,6 +76,66 @@ public class ScreenshotGalleryScreen extends Screen {
 			refreshPage();
 	}
 
+	@Override
+	public void render(int mouseX, int mouseY, float tickDelta) {
+		for (int i = 0; i < thumbnailImageGetterFuturesReferences.size(); i++) {
+			Future<?> future = thumbnailImageGetterFuturesReferences.get(i);
+			if (future != null && future.isDone()) {
+				try {
+					BufferedImage image = (BufferedImage) future.get();
+					int thumbGlId = TextureUtil.putBufferedImageIntoGlId(image);
+					screenshotWidgets.get(i).onResolvedImage(thumbGlId, (double) image.getWidth() / image.getHeight(), image.getWidth(), image.getHeight());
+					thumbnailImageGetterFuturesReferences.set(i, null);
+				} catch (InterruptedException | ExecutionException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		renderBackground();
+		drawCenteredString(minecraft.textRenderer, "Screenshots", width / 2, 20, -1);
+		super.render(mouseX, mouseY, tickDelta);
+	}
+
+	@Override
+	protected void buttonClicked(ButtonWidget button) {
+		if (button.id == 0) {
+			cleanUpScreenshotGalleryPage();
+			minecraft.openScreen(parent);
+			return;
+		}
+		if (button.id == 1) {
+			index = Math.max(0, index - count);
+			refreshPage();
+			return;
+		}
+		if (button.id == 2) {
+			index = Math.min(count + index, files.size() - 1);
+			refreshPage();
+			return;
+		}
+		if (button.id == 3) {
+			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
+		}
+		for (ScreenshotInfo p : files) {
+			if (p.getImagePath().hashCode() == button.id) {
+				cleanUpScreenshotGalleryPage();
+				minecraft.openScreen(new ScreenshotViewerScreen(this, p));
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void handleKeyboard() {
+		if (Keyboard.getEventKey() == 1) {
+			cleanUpScreenshotGalleryPage();
+			this.minecraft.openScreen(null);
+			this.minecraft.closeScreen();
+			return;
+		}
+		super.handleKeyboard();
+	}
+
 	private synchronized void refreshPage() {
 		int fileCount = files.size();
 		int widgetWidth = 100;
@@ -80,20 +145,14 @@ public class ScreenshotGalleryScreen extends Screen {
 		int beginY = 50;
 		int x = beginX;
 		int y = beginY;
-		thumbnailImageGetter.shutdownNow();
-		setThreadPool();
-		for (ScreenshotWidget screenshotWidget : screenshotWidgets) {
-			screenshotWidget.clearBufferedImage();
-			int glId = screenshotWidget.getGlId();
-			if (glId > -1)
-				GL11.glDeleteTextures(glId);
-		}
+		cleanUpScreenshotGalleryPage();
 		thumbnailImageGetterFuturesReferences.clear();
 		buttons.removeAll(screenshotWidgets);
 		screenshotWidgets.clear();
 
 		int widgetCount = Math.min(count, fileCount - index);
 		ScreenshotInfo[] applicableScreenshotInfoObjects = new ScreenshotInfo[widgetCount];
+		//noinspection SuspiciousSystemArraycopy
 		System.arraycopy(files.toArray(), index, applicableScreenshotInfoObjects, 0, widgetCount);
 
 		for (int i = 0; i < widgetCount; i++) {
@@ -113,65 +172,19 @@ public class ScreenshotGalleryScreen extends Screen {
 				break;
 			}
 		}
-
-
 		prev.active = index > 0;
 		next.active = fileCount > count + index;
 	}
 
-	@Override
-	public void render(int mouseX, int mouseY, float tickDelta) {
-		for (int i = 0; i < thumbnailImageGetterFuturesReferences.size(); i++) {
-			Future<?> future = thumbnailImageGetterFuturesReferences.get(i);
-			if (future != null && future.isDone()) {
-				try {
-					BufferedImage image = (BufferedImage) future.get();
-					int thumbGlId = GL11.glGenTextures();
-					TextureUtil.putBufferedImageIntoGlId(thumbGlId, image);
-					screenshotWidgets.get(i).onResolvedImage(thumbGlId, (double) image.getWidth() / image.getHeight(), image.getWidth(), image.getHeight());
-					thumbnailImageGetterFuturesReferences.set(i, null);
-				} catch (InterruptedException | ExecutionException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-		renderBackground();
-		drawCenteredString(minecraft.textRenderer, "Screenshots", width / 2, 20, -1);
-		super.render(mouseX, mouseY, tickDelta);
-	}
-
-	@Override
-	protected void buttonClicked(ButtonWidget button) {
-		if (button.id == 0) {
-			files.forEach(ScreenshotInfo::release);
-			files.clear();
-			buttons.clear();
-			System.gc();
-			minecraft.openScreen(parent);
-			return;
-		}
-		if (button.id == 1) {
-			index = Math.max(0, index - count);
-			refreshPage();
-			return;
-		}
-		if (button.id == 2) {
-			index = Math.min(count + index, files.size() - 1);
-			refreshPage();
-			return;
-		}
-		if (button.id == 3) {
-			Sys.openURL("file://" + new File(String.valueOf(FabricLoader.getInstance().getGameDir()), "screenshots").getAbsolutePath());
-		}
-		for (ScreenshotInfo p : files) {
-			if (p.getImagePath().hashCode() == button.id) {
-				minecraft.openScreen(new ScreenshotViewerScreen(this, p));
-				break;
-			}
+	private void cleanUpScreenshotGalleryPage() {
+		thumbnailTaskQueue.clear();
+		for (ScreenshotWidget screenshotWidget : screenshotWidgets) {
+			screenshotWidget.clearBufferedImage();
+			int glId = screenshotWidget.getGlId();
+			if (glId > -1)
+				GL11.glDeleteTextures(glId);
 		}
 	}
 
-	private void setThreadPool() {
-		thumbnailImageGetter = Executors.newFixedThreadPool(4);
-	}
+
 }
