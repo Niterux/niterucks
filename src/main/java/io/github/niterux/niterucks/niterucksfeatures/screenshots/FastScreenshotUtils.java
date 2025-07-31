@@ -100,6 +100,7 @@ public class FastScreenshotUtils {
 		Graphics2D scaledGraphics = scaled.createGraphics();
 		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		scaledGraphics.drawImage(screenshotInfo.getImage(), 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
+		screenshotInfo.clearBufferedImage();
 		try {
 			ImageIO.write(scaled, "png", Files.newOutputStream(cache));
 		} catch (IOException e) {

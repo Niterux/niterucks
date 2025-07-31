@@ -23,6 +23,7 @@
     "WorldRendererMixin",
     "accessors.BlockEntityRendererDispatcherAccessor",
     "accessors.ConnectionAccessor",
+    "accessors.FrustumAccessor",
     "accessors.lastChatMessageAccessor",
     "accessors.MinecraftInstanceAccessor",
     "accessors.NetworkHandlerAccessor",
