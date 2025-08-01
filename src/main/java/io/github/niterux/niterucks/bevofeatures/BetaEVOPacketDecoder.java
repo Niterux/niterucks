@@ -15,6 +15,7 @@ public class BetaEVOPacketDecoder {
 
 	public static void decode(String PacketData) {
 		try {
+			logger.info(PacketData);
 			BetaEVOPacketPOJO[] data = gson.fromJson(PacketData, BetaEVOPacketPOJO[].class);
 			for (BetaEVOPacketPOJO datum : data) {
 				decodeUpdate(datum);
@@ -28,7 +29,7 @@ public class BetaEVOPacketDecoder {
 		switch (data.updateType) {
 			case "handshake":
 				if (data.protocol == 2)
-					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEVOPacket("[{\"protocol\":2,\"clientBrand\":\"Niterucks\",\"updateType\":\"handshake\"}]"));
+					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEVOPacket("[{\"protocol\":3,\"clientBrand\":\"Niterucks\",\"updateType\":\"handshake\"}]"));
 				break;
 			case "fly":
 				if (data.protocol == 1)
@@ -50,10 +51,10 @@ public class BetaEVOPacketDecoder {
 					BetaEVOFlyHelper.flyAllowed = data.privileges.fly;
 				break;
 			case "none":
-				logger.warn("No update type provided in betaevo packet! Outdated client?");
+				logger.info("No update type provided in betaevo packet! Outdated client?");
 				break;
 			default:
-				logger.warn("Unexpected updateType: {}", data.updateType);
+				logger.info("Unexpected updateType: {}", data.updateType);
 		}
 	}
 
@@ -102,8 +103,8 @@ public class BetaEVOPacketDecoder {
 	}
 
 	private static void playerListUpdate(PlayerPOJO[] players) {
-		Niterucks.LOGGER.info("RECIEVED PLAYER LIST UPDATE!!!!!!!!!");
-		BetaEVOPlayerListHelper.playerListPacketRecieved = true;
+		Niterucks.LOGGER.info("RECEIVED PLAYER LIST UPDATE!!!!!!!!!");
+		BetaEVO.playerListPacketReceived = true;
 		Set<String> playersToRemove = new HashSet<>(BetaEVO.playerList.keySet());
 		PlayerNameStatus currPlayer;
 		for (PlayerPOJO player : players) {

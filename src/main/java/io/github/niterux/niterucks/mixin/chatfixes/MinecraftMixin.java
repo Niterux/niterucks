@@ -1,6 +1,6 @@
 package io.github.niterux.niterucks.mixin.chatfixes;
 
-import io.github.niterux.niterucks.mixin.accessors.lastChatMessageAccessor;
+import io.github.niterux.niterucks.mixin.accessors.LastChatMessageAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,7 +28,7 @@ public class MinecraftMixin {
 		if (this.isMultiplayer() && Keyboard.getEventKey() == Keyboard.KEY_SLASH) {
 			Screen chatWithSlash = new ChatScreen();
 			this.openScreen(chatWithSlash);
-			((lastChatMessageAccessor) chatWithSlash).setLastChatMessage("/");
+			((LastChatMessageAccessor) chatWithSlash).setLastChatMessage("/");
 		}
 	}
 }

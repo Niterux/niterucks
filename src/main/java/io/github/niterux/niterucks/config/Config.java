@@ -36,9 +36,10 @@ public class Config {
 	public FloatOption fov = new FloatOption("FOV", 90.0F, 30.0F, 130.0F);
 	public FloatOption brightness = new FloatOption("Brightness", 1.0F, changeListenerBrightness, 0.0F, 3.0F);
 	public BooleanOption showSeed = new BooleanOption("Show Seed", "Show the world seed on F3 menu (debug menu)", true);
+	public BooleanOption useFeetCoordinates = new BooleanOption("useFeetCoordinates", true);
 	public DoubleOption entityDistance = new DoubleOption("Entity Distance", 1.0, 0.5, 5.0);
 	public FloatOption cloudHeight = new FloatOption("Cloud Height", 108.0F, 70.0F, 200.0F);
-	public IntegerOption hotbarScreenSafety = new IntegerOption("Hotbar Screen Safety", 3, 0, 30);
+	public IntegerOption hotbarScreenSafety = new IntegerOption("Hotbar Screen Safety", "How far up from the bottom of the screen<br>should the hotbar be displayed in pixels.", 3, 0, 30);
 	public BooleanOption useVSync = new BooleanOption("Use VSync", false, changeListenerVsync);
 	public BooleanOption rainbowBlockOutline = new BooleanOption("Rainbow Block Outline", false);
 	public KeyBindOption zoomButton = new KeyBindOption("zoom_button", Keyboard.KEY_C);
@@ -57,7 +58,7 @@ public class Config {
 
 	public Config() {
 		brightness.set(1.0f);
-		niterucks.add(fov, showSeed, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
+		niterucks.add(fov, showSeed, useFeetCoordinates, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
 		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov);

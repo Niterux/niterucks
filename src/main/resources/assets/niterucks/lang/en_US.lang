@@ -7,3 +7,5 @@ zoom_button=Zoom
 fly_button=Fly
 adjust_fly_speed=Adjust fly speed
 authme=AuthMe
+useFeetCoordinates=Use Feet Coordinates
+useFeetCoordinates.tooltip=Use feet coordinates on<br>the F3 menu (debug menu)<br>Instead of the default<br>eye level coordinates

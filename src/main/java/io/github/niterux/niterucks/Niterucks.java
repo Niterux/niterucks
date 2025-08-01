@@ -4,11 +4,15 @@ import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
+import io.github.niterux.niterucks.api.playerlist.PlayerListProviderRegistry;
 import io.github.niterux.niterucks.api.screenshots.ScreenshotFormatRegistry;
+import io.github.niterux.niterucks.bevofeatures.BetaEVOPlayerListProvider;
 import io.github.niterux.niterucks.config.Config;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.JSONRESTAPIPlayerListProvider;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.RESTAPIPlayerListProviderConfig;
 import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncImageIOReaderWriter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
@@ -19,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
@@ -30,6 +36,14 @@ public class Niterucks implements ClientModInitializer {
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("png"));
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("jpg"));
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("bmp"));
+		PlayerListProviderRegistry.register(new BetaEVOPlayerListProvider());
+		try {
+			RESTAPIPlayerListProviderConfig modernBetaConfig = new RESTAPIPlayerListProviderConfig(new String[]{"fart"}, new URL("https", "modernbeta.org", "endpoint"));
+			PlayerListProviderRegistry.register(new JSONRESTAPIPlayerListProvider(modernBetaConfig));
+		} catch (MalformedURLException e) {
+			LOGGER.debug("Failed to add ModernBeta as a supported PlayerListProvider! {0}", e);
+		}
+
 		CONFIG = new Config();
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
