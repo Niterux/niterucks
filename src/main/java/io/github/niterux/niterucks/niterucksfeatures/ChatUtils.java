@@ -1,14 +1,13 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
 import io.github.niterux.niterucks.Niterucks;
-import io.github.niterux.niterucks.bevofeatures.BetaEVO;
-import io.github.niterux.niterucks.bevofeatures.PlayerNameStatus;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+
+import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getPlayerList;
 
 public class ChatUtils {
 	private static final ArrayList<String> localChatHistory = new ArrayList<>();
@@ -85,12 +84,12 @@ public class ChatUtils {
 
 		String[] words = message.substring(0, message.length() - caretPos).split("\\W");
 		String word = words[words.length - 1].toLowerCase();
-		Collection<PlayerNameStatus> players = BetaEVO.playerList.values();
-		if (players.isEmpty())
+		String[] players = getPlayerList();
+		if (players == null)
 			return message;
-		for (PlayerNameStatus player : players) {
-			if (player.getName().toLowerCase().startsWith(word)) {
-				return message.substring(0, (message.length() - caretPos) - word.length() - nonWordChars) + player.getName() + ' ' + message.substring(message.length() - caretPos);
+		for (String player : players) {
+			if (player.toLowerCase().startsWith(word)) {
+				return message.substring(0, (message.length() - caretPos) - word.length() - nonWordChars) + player + ' ' + message.substring(message.length() - caretPos);
 			}
 		}
 		return message;

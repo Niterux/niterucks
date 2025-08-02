@@ -28,8 +28,8 @@ public class ScreenshotUtilsMixin {
 	}
 
 	@WrapMethod(method = "saveScreenshot")
-	private static String fasterScreenshot(File gameDir, int width, int height, Operation<String> original){
-		if(Niterucks.CONFIG.enableScreenshotEnhancements.get()) {
+	private static String fasterScreenshot(File gameDir, int width, int height, Operation<String> original) {
+		if (Niterucks.CONFIG.enableScreenshotEnhancements.get()) {
 			FastScreenshotUtils.takeScreenshot();
 			return null;
 		}

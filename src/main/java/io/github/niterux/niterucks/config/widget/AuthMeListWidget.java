@@ -13,6 +13,7 @@ import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionSto
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 
 import java.util.Collection;
+import java.util.List;
 
 public class AuthMeListWidget extends ButtonListWidget {
 	private static double scroll;
@@ -87,6 +88,8 @@ public class AuthMeListWidget extends ButtonListWidget {
 				if (AuthMeListWidget.this.getEntryCount() <= 1)
 					return;
 				AuthMeListWidget.this.remove(AuthMeListWidget.this.getEntryCount() - 2);
+				List<AuthMeIPUsernamePassword> entries = AuthMeWholeListOptionStorage.getInstance().entries;
+				entries.remove(entries.size() - 1);
 				AuthMeListWidget.this.setScrollAmount(AuthMeListWidget.this.getMaxScroll());
 			})));
 		}

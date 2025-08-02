@@ -20,13 +20,17 @@ public class RainbowManager {
 		return RGB;
 	}
 
-	public static void adjustRainbow() {
-		currColor = new Oklch(currColor.getLightness(), currColor.getChroma(), ((double) System.currentTimeMillis() / Niterucks.CONFIG.rainbowSpeed.get()) % 360);
+	public static void computeRainbow() {
+		currColor = new Oklch(currColor.getLightness(), currColor.getChroma(), getRotation());
 		Srgb SRGBColor = (Srgb) ConversionGraph.convert(currColor, kotlin.jvm.JvmClassMappingKt.getKotlinClass(Srgb.class));
 
 		assert SRGBColor != null;
 		RGB[0] = SRGBColor.getR();
 		RGB[1] = SRGBColor.getG();
 		RGB[2] = SRGBColor.getB();
+	}
+
+	private static double getRotation() {
+		return ((System.currentTimeMillis() * 360 * Niterucks.CONFIG.rainbowSpeed.get()) / 1000) % 360;
 	}
 }

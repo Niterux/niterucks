@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.niterucksControls;
-import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.adjustRainbow;
+import static io.github.niterux.niterucks.niterucksfeatures.RainbowManager.computeRainbow;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -106,7 +106,7 @@ public class GameRendererMixin {
 
 	@Inject(method = "render", at = @At("HEAD"))
 	private void updateRainbow(CallbackInfo ci) {
-		adjustRainbow();
+		computeRainbow();
 	}
 
 	@Inject(method = "renderWorld(FJ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/GameRenderer;zoom:D", ordinal = 0))

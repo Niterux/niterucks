@@ -1,6 +1,5 @@
 package io.github.niterux.niterucks.bevofeatures;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
@@ -11,12 +10,10 @@ import java.util.Set;
 
 public class BetaEVOPacketDecoder {
 	private static final Logger logger = Niterucks.LOGGER;
-	private static final Gson gson = new Gson();
 
 	public static void decode(String PacketData) {
 		try {
-			logger.info(PacketData);
-			BetaEVOPacketPOJO[] data = gson.fromJson(PacketData, BetaEVOPacketPOJO[].class);
+			BetaEVOPacketPOJO[] data = Niterucks.GSON.fromJson(PacketData, BetaEVOPacketPOJO[].class);
 			for (BetaEVOPacketPOJO datum : data) {
 				decodeUpdate(datum);
 			}

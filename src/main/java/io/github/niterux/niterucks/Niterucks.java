@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks;
 
+import com.google.gson.Gson;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
@@ -11,8 +12,11 @@ import io.github.niterux.niterucks.config.Config;
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.screen.NiterucksConfigScreen;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
-import io.github.niterux.niterucks.niterucksfeatures.playerlist.JSONRESTAPIPlayerListProvider;
-import io.github.niterux.niterucks.niterucksfeatures.playerlist.RESTAPIPlayerListProviderConfig;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.pojos.LegacyTrackerPlayerListPOJO;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.pojos.ModernBetaPlayerListPOJO;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.providers.BetacraftJSONRESTAPIPlayerListProvider;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.providers.RESTAPIPlayerListProviderConfig;
 import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncImageIOReaderWriter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,13 +27,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
+	public static final Gson GSON = new Gson();
 	public static Config CONFIG;
 
 	static {
@@ -37,16 +42,24 @@ public class Niterucks implements ClientModInitializer {
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("jpg"));
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("bmp"));
 		PlayerListProviderRegistry.register(new BetaEVOPlayerListProvider());
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider(new String[]{"mc.retromc.org", "betalands.com"}, "https://api.retromc.org/api/v1/server/players", ModernBetaPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider("sweetwaterbeta.us", "https://servers.legacyminecraft.com/api/getPlayersOnline?id=42", LegacyTrackerPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider("2beta2t.net", "https://servers.legacyminecraft.com/api/getPlayersOnline?id=9", LegacyTrackerPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider("betamc.org", "https://servers.legacyminecraft.com/api/getPlayersOnline?id=55", LegacyTrackerPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider(new String[]{"mc.retromc.org", "betalands.com"}, "https://servers.legacyminecraft.com/api/getPlayersOnline?id=10", LegacyTrackerPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider(new String[]{"oldschoolminecraft.net", "os-mc.net"}, "https://servers.legacyminecraft.com/api/getPlayersOnline?id=7", LegacyTrackerPlayerListPOJO.class);
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider("betacraft.uk", "https://servers.legacyminecraft.com/api/getPlayersOnline?id=3", LegacyTrackerPlayerListPOJO.class);
 		try {
-			RESTAPIPlayerListProviderConfig modernBetaConfig = new RESTAPIPlayerListProviderConfig(new String[]{"fart"}, new URL("https", "modernbeta.org", "endpoint"));
-			PlayerListProviderRegistry.register(new JSONRESTAPIPlayerListProvider(modernBetaConfig));
-		} catch (MalformedURLException e) {
-			LOGGER.debug("Failed to add ModernBeta as a supported PlayerListProvider! {0}", e);
+			PlayerListProviderRegistry.register(new BetacraftJSONRESTAPIPlayerListProvider(new RESTAPIPlayerListProviderConfig(new String[]{""}, URI.create("https://api.betacraft.uk/v2/server_list"))));
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
+		PlayerListUtil.simpleRegisterJSONPlayerListProvider("beta.modernbeta.org", "https://map.modernbeta.org/maps/world/live/players.json", ModernBetaPlayerListPOJO.class);
 
 		CONFIG = new Config();
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			ConfigUI.getInstance().addWidget("vanilla", "keybinding", "io.github.niterux.niterucks.config.widget.KeyBindWidget");
+			ConfigUI.getInstance().addWidget("vanilla", "screenshotformat[]", "io.github.niterux.niterucks.config.widget.ScreenshotFormatArrayWidget");
 			ConfigUI.getInstance().addWidget("vanilla", "authme_category", "io.github.niterux.niterucks.config.widget.AuthMeCategoryWidget");
 			ConfigUI.getInstance().addScreen("vanilla", NiterucksConfigScreen.class);
 		});
@@ -75,7 +88,7 @@ public class Niterucks implements ClientModInitializer {
 			throw new RuntimeException(e);
 		}
 		Display.setIcon(icons);
-
+		CONFIG.screenshotFormat.setEnabled(CONFIG.enableScreenshotEnhancements.get());
 		MinecraftEvents.READY.register(minecraft -> Display.setVSyncEnabled(Niterucks.CONFIG.useVSync.get()));
 
 		//noinspection ResultOfMethodCallIgnored

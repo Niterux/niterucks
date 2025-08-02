@@ -21,11 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientNetworkHandler.class)
 public abstract class ClientNetworkHandlerMixin {
-	@Shadow
-	public abstract void sendPacket(Packet packet);
-
 	@Unique
 	private ObjectObjectImmutablePair<String, String> usernamePassword = null;
+
+	@Shadow
+	public abstract void sendPacket(Packet packet);
 
 	@Inject(method = "<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V", at = @At("TAIL"))
 	private void keepAddress(Minecraft minecraft, String address, int port, CallbackInfo ci) {
@@ -35,7 +35,7 @@ public abstract class ClientNetworkHandlerMixin {
 	@SuppressWarnings("MixinAnnotationTarget")
 	@ModifyExpressionValue(method = "*", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/Session;username:Ljava/lang/String;"), require = 0)
 	private String overrideUsername(String original) {
-		if(usernamePassword != null) {
+		if (usernamePassword != null) {
 			return usernamePassword.left();
 		}
 		return original;
@@ -44,7 +44,7 @@ public abstract class ClientNetworkHandlerMixin {
 	@ModifyExpressionValue(method = "handleHandshake", at = @At(value = "INVOKE", target = "Ljava/lang/String;equals(Ljava/lang/Object;)Z", ordinal = 0))
 	private boolean forceOffline(boolean original) {
 		//noinspection ConstantValue
-		if(usernamePassword != null && !MinecraftInstanceAccessor.getMinecraft().session.username.equals(usernamePassword.left())) {
+		if (usernamePassword != null && !MinecraftInstanceAccessor.getMinecraft().session.username.equals(usernamePassword.left())) {
 			return true;
 		}
 		return original;
@@ -58,8 +58,8 @@ public abstract class ClientNetworkHandlerMixin {
 	}
 
 	@Inject(method = "handleLogin(Lnet/minecraft/network/packet/LoginPacket;)V", at = @At("TAIL"))
-	private void sendLoginChatMessage(LoginPacket packet, CallbackInfo ci){
-		if(usernamePassword != null) {
+	private void sendLoginChatMessage(LoginPacket packet, CallbackInfo ci) {
+		if (usernamePassword != null) {
 			this.sendPacket(new net.minecraft.network.packet.ChatMessagePacket("/login " + usernamePassword.right()));
 		}
 	}

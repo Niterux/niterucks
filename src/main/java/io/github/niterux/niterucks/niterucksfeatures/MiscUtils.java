@@ -1,6 +1,8 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
+import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
+import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.TextRenderer;
@@ -93,7 +95,7 @@ public class MiscUtils {
 	/**
 	 * replace ampersands with §
 	 */
-	public static String colorify(String text) {
+	public static String replaceAllAmpersandsWithColorCharacter(String text) {
 		return text.replace('&', '§');
 	}
 
@@ -103,5 +105,34 @@ public class MiscUtils {
 
 	public static float fixSpritePitch(float angle) {
 		return (frontThirdPersonCamera) ? -angle : angle;
+	}
+
+	public static void renderTooltip(String tooltip, int mouseX, int mouseY, int width, int tooltipPadding, FillInvoker fillInvoker) {
+		renderTooltip(new String[]{tooltip}, mouseX, mouseY, width, tooltipPadding, fillInvoker);
+	}
+
+	public static void renderTooltip(String[] tooltip, int mouseX, int mouseY, int width, int tooltipPadding, FillInvoker fillInvoker) {
+		TextRenderer textRenderer = MinecraftInstanceAccessor.getMinecraft().textRenderer;
+
+		int tooltipWidth = 0, tooltipPositionX = mouseX + 9, tooltipPositionY;
+		tooltipPositionY = tooltip.length * -8 + mouseY - 7;
+		for (String tooltipLine : tooltip)
+			tooltipWidth = Math.max(textRenderer.getWidth(tooltipLine), tooltipWidth);
+		tooltipWidth += tooltipPadding * 2;
+		tooltipPositionX = Math.min(width - tooltipWidth, tooltipPositionX);
+
+		//noinspection SuspiciousNameCombination
+		fillInvoker.invokeFill(
+			tooltipPositionX,
+			tooltipPositionY,
+			tooltipPositionX + tooltipWidth,
+			tooltip.length * 8 + tooltipPositionY + (tooltipPadding * 2),
+			0xC0000000);
+		for (int i = 0; i < tooltip.length; i++) {
+			textRenderer.drawWithShadow(tooltip[i],
+				tooltipPositionX + tooltipPadding,
+				i * 8 + tooltipPositionY + tooltipPadding,
+				0xFFFFFFFF);
+		}
 	}
 }

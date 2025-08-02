@@ -139,7 +139,6 @@ public class DebugMenuMixin extends GuiElement {
 		return 0xd5312f;
 	}
 
-	@SuppressWarnings("SuspiciousNameCombination")
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
 		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
@@ -148,7 +147,9 @@ public class DebugMenuMixin extends GuiElement {
 		}
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
 		this.drawString(textRenderer, biomeString, width - textRenderer.getWidth(biomeString) - 2, 22, 0x46a848);
-		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.y), MathHelper.floor(minecraft.player.z));
+		// Precise enough? 🤞
+		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset) : 0;
+		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(Math.nextUp(Double.sum(minecraft.player.y, -eyeOffset))), MathHelper.floor(minecraft.player.z));
 		this.drawString(textRenderer, lightString, width - textRenderer.getWidth(lightString) - 2, 32, 0x46a848);
 
 		if (minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY) {

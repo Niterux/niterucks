@@ -13,15 +13,15 @@ import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 import java.util.Locale;
 
-import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.*;
+import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.getPowerOf2Ratio;
 
 public class ScreenshotViewerScreen extends Screen {
 	private final Screen parent;
 	private final ScreenshotInfo image;
 	private final int glId;
+	private final float imageVMax, imageUMax;
 	private int imageDisplayWidth, imageDisplayHeight;
 	private int x, y;
-	private final float imageVMax, imageUMax;
 
 	public ScreenshotViewerScreen(Screen parent, ScreenshotInfo image) {
 		this.parent = parent;

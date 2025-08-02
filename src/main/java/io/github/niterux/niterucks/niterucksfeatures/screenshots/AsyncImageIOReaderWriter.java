@@ -14,9 +14,9 @@ import java.nio.IntBuffer;
 import java.nio.file.Path;
 
 public class AsyncImageIOReaderWriter implements AsyncScreenshotReaderWriter {
-	private final String format;
 	private static IntBuffer screenshotRGBByteBuffer = BufferUtils.createIntBuffer(854 * 480);
 	private static BufferedImage localBufferedImageAllocation = createAppropriateBufferedImage(854, 480);
+	private final String format;
 
 	public AsyncImageIOReaderWriter(String format) {
 		this.format = format;

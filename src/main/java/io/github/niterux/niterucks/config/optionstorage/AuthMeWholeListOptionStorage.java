@@ -1,6 +1,5 @@
 package io.github.niterux.niterucks.config.optionstorage;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.github.niterux.niterucks.Niterucks;
 import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-//import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,7 +16,6 @@ public class AuthMeWholeListOptionStorage {
 	private static final Path AUTHME_STORAGE_FILE = FabricLoader.getInstance().getConfigDir().resolve("niterucks_authme.json");
 	private static final AuthMeWholeListOptionStorage INSTANCE = new AuthMeWholeListOptionStorage();
 	public final List<AuthMeIPUsernamePassword> entries = new ArrayList<>();
-	private final Gson gson = new Gson();
 
 	private AuthMeWholeListOptionStorage() {
 	}
@@ -36,7 +33,7 @@ public class AuthMeWholeListOptionStorage {
 		try {
 			Files.createDirectories(AUTHME_STORAGE_FILE.getParent());
 			try (var out = Files.newBufferedWriter(AUTHME_STORAGE_FILE)) {
-				gson.toJson(entries, out);
+				Niterucks.GSON.toJson(entries, out);
 			}
 		} catch (IOException e) {
 			Niterucks.LOGGER.warn("Failed to save authme entries", e);
@@ -49,7 +46,7 @@ public class AuthMeWholeListOptionStorage {
 			return;
 		}
 		try (var in = Files.newBufferedReader(AUTHME_STORAGE_FILE)) {
-			List<AuthMeIPUsernamePassword> loaded = gson.fromJson(in, new TypeToken<>() {
+			List<AuthMeIPUsernamePassword> loaded = Niterucks.GSON.fromJson(in, new TypeToken<>() {
 			});
 			entries.addAll(loaded);
 		} catch (IOException e) {

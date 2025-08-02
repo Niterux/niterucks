@@ -1,5 +1,8 @@
 package io.github.niterux.niterucks.niterucksfeatures.screenshots;
 
+import io.github.niterux.niterucks.Niterucks;
+import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
+import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -45,7 +48,7 @@ public class ScreenshotGalleryScreen extends Screen {
 						files.add(info);
 					});
 			} catch (IOException e) {
-				e.printStackTrace();
+				Niterucks.LOGGER.error("Failed to get a list of files in the screenshot directory!", e);
 				throw new RuntimeException(e);
 			}
 			finishedFillingFiles = true;
@@ -89,6 +92,10 @@ public class ScreenshotGalleryScreen extends Screen {
 		renderBackground();
 		drawCenteredString(minecraft.textRenderer, "Screenshots", width / 2, 20, -1);
 		super.render(mouseX, mouseY, tickDelta);
+		for (ScreenshotWidget screenshotWidget : screenshotWidgets) {
+			if (screenshotWidget.isHovered())
+				MiscUtils.renderTooltip(screenshotWidget.message, mouseX, mouseY, width, 3, (FillInvoker) this);
+		}
 	}
 
 	@Override

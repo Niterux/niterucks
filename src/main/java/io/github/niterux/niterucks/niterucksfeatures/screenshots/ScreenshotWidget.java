@@ -6,13 +6,15 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
-import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.*;
+import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.getPowerOf2Ratio;
+import static io.github.niterux.niterucks.niterucksfeatures.screenshots.TextureUtil.renderTexturePortion;
 
 public class ScreenshotWidget extends ButtonWidget {
 	private final ScreenshotInfo image;
 	private final int imageWidth;
 	private int glId = -1;
 	private int imageHeight, imageY, resolvedImageWidth, resolvedImageHeight;
+	private boolean hovered = false;
 
 	public ScreenshotWidget(int id, int x, int y, int width, int height, String message, ScreenshotInfo image) {
 		super(id, x, y, width, height, message);
@@ -27,7 +29,7 @@ public class ScreenshotWidget extends ButtonWidget {
 	@Override
 	public void render(Minecraft minecraft, int mouseX, int mouseY) {
 		if (this.visible) {
-			boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+			hovered = this.isMouseOver(minecraft, mouseX, mouseY);
 			DrawUtil.outlineRect(this.x, this.y, width, height, hovered ? -1 : Colors.foreground().toInt());
 
 			GlStateManager.color3f(1, 1, 1);
@@ -51,5 +53,9 @@ public class ScreenshotWidget extends ButtonWidget {
 		this.resolvedImageHeight = resolvedImageHeight;
 		imageHeight = (int) Math.min(imageWidth / thumbnailAspectRatio, height - 12);
 		imageY = (y + 1) + (height - 2) / 2 - imageHeight / 2;
+	}
+
+	public boolean isHovered() {
+		return hovered;
 	}
 }

@@ -1,59 +1,72 @@
 package io.github.niterux.niterucks.mixin.playerlist;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.niterux.niterucks.api.playerlist.PlayerListProvider;
-import io.github.niterux.niterucks.api.playerlist.PlayerListProviderRegistry;
-import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListControls;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListControls;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
+
+import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getMaxPlayers;
+import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getPlayerList;
+
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
-	@Inject(method = "render(FZII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;getSleepTimer()I", ordinal = 0))
+	@Unique
+	private final static int HORIZONTAL_SPACING = 120;
+	@Unique
+	private final static int PLAYER_COUNT_Y_OFFSET = 14;
+	@Unique
+	private final static int VERTICAL_SPACING = 10;
+	@Unique
+	private final static int VERTICAL_MARGINAL_AREA = 6;
+	@Shadow
+	private Minecraft minecraft;
+
+	@Inject(method = "render(FZII)V", at = @At(value = "TAIL"))
 	private void renderTabMenu(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width, @Local(ordinal = 3) int height) {
+		if (!PlayerListControls.playerListKeyDown || !minecraft.isMultiplayer()) {
+			return;
+		}
 		String[] players = getPlayerList();
 		if (players == null)
 			return;
-		if (PlayerListControls.playerListKeyDown) {
-			int maxPlayersInAColumn = 15;
-			int horizontalSpacing = 150;
-			int playerListWidth = (players.length / maxPlayersInAColumn + 1) * horizontalSpacing;
-			int playerListHeight = Math.min(players.length, maxPlayersInAColumn) * 11 + 1;
-			int playerListDrawX = width / 2 - playerListWidth / 2;
-			int PlayerListDrawY = height / 6;
-			//noinspection SuspiciousNameCombination
-			((FillInvoker) this).invokeFill(playerListDrawX, PlayerListDrawY, playerListDrawX + playerListWidth, PlayerListDrawY + playerListHeight, 0x80000000);
+		Arrays.sort(players);
+		int playerListDrawY = Math.max(height / (VERTICAL_MARGINAL_AREA * 2), PLAYER_COUNT_Y_OFFSET);
+		int playerListMaxHeight = height * (VERTICAL_MARGINAL_AREA - 2) / VERTICAL_MARGINAL_AREA;
+		int maxPlayersInAColumn = playerListMaxHeight / VERTICAL_SPACING;
 
-			for (int i = 0; i < players.length; i++) {
-				int nameDrawX = playerListDrawX + i / maxPlayersInAColumn * horizontalSpacing;
-				int nameDrawY = PlayerListDrawY + i % maxPlayersInAColumn * 11 + 1;
-				this.drawString(textRenderer,
-					MiscUtils.colorify(players[i]),
-					nameDrawX,
-					nameDrawY,
-					0xFFFFFF);
-			}
+		int playerListWidth = (int) (Math.ceil((double) players.length / maxPlayersInAColumn) * HORIZONTAL_SPACING);
+		int playerListHeight = Math.min(players.length * VERTICAL_SPACING, playerListMaxHeight) + 1;
+		int playerListDrawX = width / 2 - playerListWidth / 2;
+
+		int maxPlayerCount = getMaxPlayers();
+		String playerCountFormatted = MessageFormat.format("Players: {0}", players.length);
+		if (maxPlayerCount > 0)
+			playerCountFormatted = MessageFormat.format("Players: {0}/{1}", players.length, maxPlayerCount);
+		this.drawCenteredString(textRenderer, playerCountFormatted, width / 2, playerListDrawY - PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
+		//noinspection SuspiciousNameCombination
+		((FillInvoker) this).invokeFill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
+
+		for (int i = 0; i < players.length; i++) {
+			int nameDrawX = playerListDrawX + i / maxPlayersInAColumn * HORIZONTAL_SPACING;
+			int nameDrawY = playerListDrawY + i % maxPlayersInAColumn * VERTICAL_SPACING + 1;
+			this.drawCenteredString(textRenderer,
+				MiscUtils.replaceAllAmpersandsWithColorCharacter(players[i]),
+				nameDrawX + (HORIZONTAL_SPACING / 2),
+				nameDrawY,
+				0xFFFFFF);
 		}
 	}
-
-	@Unique
-	private String[] getPlayerList() {
-		String[] players = null;
-		for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
-		{
-			if (players != null)
-				continue;
-			players = playerListProvider.getPlayerNames();
-		}
-		return players;
-	}
-
 }

@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.bevofeatures;
 
 import io.github.niterux.niterucks.api.playerlist.PlayerListProvider;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class BetaEVOPlayerListProvider implements PlayerListProvider {
 		if (BetaEVO.playerList.isEmpty() || !BetaEVO.playerListPacketReceived)
 			return null;
 		ArrayList<String> players = new ArrayList<>();
-		for(PlayerNameStatus playerNameStatus : BetaEVO.playerList.values()) {
+		for (PlayerNameStatus playerNameStatus : BetaEVO.playerList.values()) {
 			String playerName = "";
 			if (playerNameStatus.getName() != null)
 				playerName = playerNameStatus.getName();
@@ -39,12 +38,22 @@ public class BetaEVOPlayerListProvider implements PlayerListProvider {
 	}
 
 	@Override
-	public @NotNull Boolean providesPingCount() {
+	public boolean providesPingCount() {
 		return false;
 	}
 
 	@Override
 	public @Nullable Integer[] getPingCounts() {
 		return null;
+	}
+
+	@Override
+	public boolean providesMaxPlayersCount() {
+		return false;
+	}
+
+	@Override
+	public int getMaxPlayerCount() {
+		return 0;
 	}
 }

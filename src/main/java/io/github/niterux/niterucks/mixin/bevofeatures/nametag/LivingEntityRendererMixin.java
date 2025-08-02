@@ -23,7 +23,7 @@ public class LivingEntityRendererMixin {
 				int alpha = (int) args.get(3) & 0xFF000000;
 				args.set(3, playerNameStatus.getColor() + alpha);
 				if (playerNameStatus.getNickname() != null && playerNameStatus.getPrefix() != null) {
-					args.set(0, MiscUtils.colorify(playerNameStatus.getNickname()) + ' ' + MiscUtils.colorify(playerNameStatus.getPrefix()));
+					args.set(0, MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getNickname()) + ' ' + MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getPrefix()));
 				}
 			}
 		}
