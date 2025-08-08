@@ -50,6 +50,8 @@ public class Config {
 	public DoubleOption rainbowSpeed = new DoubleOption("Rainbow Speed", "Sets the speed of rainbow rotation in rotations per second.", 0.5, 0.1, 2.0);
 	public BooleanOption wolfNameTags = new BooleanOption("Wolf Name Tags", true);
 	public BooleanOption useBetacraftAPI = new BooleanOption("Use Betacraft API", "Run the Betacraft API in the background<br>to get a list of players for the servers<br>that you join.<br>Some servers provide their own APIs<br>that can be used to get a player list<br>but this will always run in the background<br>if it is enabled.", false);
+	public BooleanOption enableVBO = new BooleanOption("Enable VBOs", "Requires a restart to take effect.", false);
+	public BooleanOption pitchBillboarding = new BooleanOption("Billboard Items on Pitch", "Billboard item entities on pitch, makes them face the camera.", false);
 	public BooleanOption showItemIDs = new BooleanOption("Show Item ID's", "Shows the ID and metadata value of items in<br>your inventory when hovered over.", false);
 	public BooleanOption newSkeleton = new BooleanOption("Beta 1.8 Skeleton Model", true);
 	public FloatOption viewmodelFov = new FloatOption("Viewmodel FOV", 70.0F, 30.0F, 130.0F);
@@ -63,7 +65,7 @@ public class Config {
 		niterucks.add(fov, showSeed, useFeetCoordinates, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
-		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov, useBetacraftAPI);
+		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov, useBetacraftAPI, enableVBO, pitchBillboarding);
 		staff.add(flyButton, adjustButton, defaultFlySpeed);
 		screenshots.add(enableScreenshotEnhancements, screenshotFormat);
 		niterucks.add(controls, accessibility, miscellaneous, staff, screenshots, authMe);

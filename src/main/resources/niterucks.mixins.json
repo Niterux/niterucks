@@ -66,6 +66,7 @@
     "invokers.FillInvoker",
     "invokers.InitBrightnessTableInvoker",
     "invokers.RenderNameTagInvoker",
+    "optimization.BufferBuilderMixin",
     "optimization.MinecraftMixin",
     "optimization.ScreenshotUtilsMixin",
     "optimization.SignRendererMixin",
