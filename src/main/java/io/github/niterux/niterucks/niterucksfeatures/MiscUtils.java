@@ -4,7 +4,6 @@ import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import io.github.niterux.niterucks.mixin.accessors.TextRendererCharacterWidthsAccessor;
 import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.TextRenderer;
 
 import javax.imageio.ImageIO;
@@ -16,16 +15,6 @@ import java.nio.ByteBuffer;
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.frontThirdPersonCamera;
 
 public class MiscUtils {
-	public static void printDebugKeys(GameGui gui) {
-		gui.addChatMessage("§e[Debug]:§f Key bindings:");
-		gui.addChatMessage("F3 + A = Reload chunks");
-		gui.addChatMessage("F3 + D = Clear chat");
-		gui.addChatMessage("F3 + G = Show chunk boundaries");
-		gui.addChatMessage("F3 + Q = Show this list");
-		gui.addChatMessage("F3 + S = Reload all assets");
-		gui.addChatMessage("F3 + P = Snap the camera to the nearest 45 degree angle");
-	}
-
 	//moehreag
 	public static ByteBuffer readImageBuffer(InputStream inputStream) throws IOException {
 		BufferedImage bufferedImage = ImageIO.read(inputStream);
@@ -38,6 +27,22 @@ public class MiscUtils {
 
 		byteBuffer.flip();
 		return byteBuffer;
+	}
+
+	public static String textGradientGenerator(String text, char[] colorCodes, TextRenderer textRenderer) {
+		int stringLength = textRenderer.getWidth(text);
+		double insertionPoints = (double) stringLength / (colorCodes.length);
+		text = insertText(text, "§" + colorCodes[0], 0);
+		for (int i = 1; i < colorCodes.length; i++) {
+			text = insertText(text, "§" + colorCodes[i], fastTextPosGet(text, (int) Math.round(insertionPoints * i), textRenderer));
+		}
+		return text;
+	}
+
+	public static String insertText(String text, String textToInsert, int index) {
+		if (index < 0 || index > text.length())
+			throw new IllegalArgumentException("Invalid parameters for insertText, index = " + index + " text length = " + text.length());
+		return text.substring(0, index) + textToInsert + text.substring(index);
 	}
 
 	public static int fastTextPosGet(String text, int xPos, TextRenderer textRenderer) {
@@ -69,22 +74,6 @@ public class MiscUtils {
 
 			return currentCharacter;
 		}
-	}
-
-	public static String textGradientGenerator(String text, char[] colorCodes, TextRenderer textRenderer) {
-		int stringLength = textRenderer.getWidth(text);
-		double insertionPoints = (double) stringLength / (colorCodes.length);
-		text = insertText(text, "§" + colorCodes[0], 0);
-		for (int i = 1; i < colorCodes.length; i++) {
-			text = insertText(text, "§" + colorCodes[i], fastTextPosGet(text, (int) Math.round(insertionPoints * i), textRenderer));
-		}
-		return text;
-	}
-
-	public static String insertText(String text, String textToInsert, int index) {
-		if (index < 0 || index > text.length())
-			throw new IllegalArgumentException("Invalid parameters for insertText, index = " + index + " text length = " + text.length());
-		return text.substring(0, index) + textToInsert + text.substring(index);
 	}
 
 	public static String insertText(String text, char textToInsert, int index) {

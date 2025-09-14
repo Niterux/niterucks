@@ -4,4 +4,5 @@ public class GameFeaturesStates {
 	public static int zoomAmount = 6;
 	public static boolean chunkBordersEnabled = false;
 	public static boolean frontThirdPersonCamera = false;
+	public static boolean hitboxEnabled = false;
 }

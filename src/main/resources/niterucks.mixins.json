@@ -50,6 +50,7 @@
     "entity.ArmoredEntityRendererMixin",
     "entity.CowModelMixin",
     "entity.EntityMixin",
+    "entity.EntityRenderDispatcherMixin",
     "entity.ItemEntityMixin",
     "entity.WolfRendererMixin",
     "entity.ZombieModelMixin",

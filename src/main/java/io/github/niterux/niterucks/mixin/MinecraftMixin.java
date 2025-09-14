@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
-import static io.github.niterux.niterucks.niterucksfeatures.MiscUtils.printDebugKeys;
+import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.hitboxEnabled;
 
 @Mixin(value = Minecraft.class, priority = 1005)
 public class MinecraftMixin {
@@ -37,11 +37,6 @@ public class MinecraftMixin {
 	public TextureManager textureManager;
 	@Shadow
 	public LivingEntity camera;
-	@Unique
-	private void snapCamera() {
-		camera.yaw = Math.round(camera.yaw / 45) * 45;
-		camera.pitch = Math.round(camera.pitch / 45) * 45;
-	}
 
 	//this will only do anything once issue #888 in fabric-loader is solved
 	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
@@ -83,6 +78,9 @@ public class MinecraftMixin {
 				case Keyboard.KEY_G:
 					chunkBordersEnabled = !chunkBordersEnabled;
 					break;
+				case Keyboard.KEY_B:
+					hitboxEnabled = !hitboxEnabled;
+					break;
 				case Keyboard.KEY_P:
 					snapCamera();
 					break;
@@ -91,11 +89,30 @@ public class MinecraftMixin {
 
 	}
 
+	@Unique
+	private static void printDebugKeys(GameGui gui) {
+		gui.addChatMessage("§e[Debug]:§f Key bindings:");
+		gui.addChatMessage("F3 + A = Reload chunks");
+		gui.addChatMessage("F3 + B = Show hitboxes");
+		gui.addChatMessage("F3 + D = Clear chat");
+		gui.addChatMessage("F3 + G = Show chunk boundaries");
+		gui.addChatMessage("F3 + Q = Show this list");
+		gui.addChatMessage("F3 + S = Reload all assets");
+		gui.addChatMessage("F3 + P = Snap the camera to the nearest 45 degree angle");
+	}
+
+	@Unique
+	private void snapCamera() {
+		camera.yaw = Math.round(camera.yaw / 45) * 45;
+		camera.pitch = Math.round(camera.pitch / 45) * 45;
+	}
+
 	@ModifyVariable(method = "m_1075084(I)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private int swapMouseButtons(int button) {
 		if (Niterucks.CONFIG.swapMouseButtons.get() && (button == 0 || button == 1)) {
 			return (button == 0) ? 1 : 0;
-		} else return button;
+		} else
+			return button;
 	}
 
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)

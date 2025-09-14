@@ -41,21 +41,6 @@ public class GameRendererMixin {
 	@Shadow
 	private float viewDistance;
 
-	@Unique
-	private static void renderChunkSquare(double x, double y, double z, BufferBuilder bufferBuilder) {
-		bufferBuilder.start(GL11.GL_LINE_LOOP);
-		bufferBuilder.vertex(x, y, z);
-		bufferBuilder.vertex(x, y, z + 16);
-		bufferBuilder.vertex(x + 16, y, z + 16);
-		bufferBuilder.vertex(x + 16, y, z);
-		bufferBuilder.end();
-	}
-
-	@Shadow
-	private float getFov(float f) {
-		return f;
-	}
-
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=70.0F", ordinal = 0))
 	private float changeFov(float seventy, @Share("seventy") LocalFloatRef fovRef) {
 		fovRef.set(seventy);
@@ -86,6 +71,11 @@ public class GameRendererMixin {
 		GL11.glLoadIdentity();
 	}
 
+	@Shadow
+	private float getFov(float f) {
+		return f;
+	}
+
 	@Inject(method = "renderItemInHand(FI)V", at = @At("HEAD"))
 	private void injectGlMode(CallbackInfo info) {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -111,56 +101,66 @@ public class GameRendererMixin {
 
 	@Inject(method = "renderWorld(FJ)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/GameRenderer;zoom:D", ordinal = 0))
 	private void renderChunkBounds(float tickDelta, long renderTimeLimit, CallbackInfo ci, @Local(ordinal = 0) LivingEntity camera) {
-		if (GameFeaturesStates.chunkBordersEnabled) {
-			double renderX = camera.prevTickX + (camera.x - camera.prevTickX) * (double) tickDelta;
-			double renderY = camera.prevTickY + (camera.y - camera.prevTickY) * (double) tickDelta;
-			double renderZ = camera.prevTickZ + (camera.z - camera.prevTickZ) * (double) tickDelta;
-			double feetRenderPos = camera.eyeHeightSneakOffset - camera.eyeHeight;
-			int chunkCornerX = MathHelper.floor(renderX / 16.0) * 16;
-			int chunkCornerZ = MathHelper.floor(renderZ / 16.0) * 16;
-			GL11.glLineWidth(minecraft.height / 480.0F);
-			GL11.glDisable(GL11.GL_FOG);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			//GL11.glDepthMask(false);
-			BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+		if (!GameFeaturesStates.chunkBordersEnabled)
+			return;
+		double renderX = camera.prevTickX + (camera.x - camera.prevTickX) * (double) tickDelta;
+		double renderY = camera.prevTickY + (camera.y - camera.prevTickY) * (double) tickDelta;
+		double renderZ = camera.prevTickZ + (camera.z - camera.prevTickZ) * (double) tickDelta;
+		double feetRenderPos = camera.eyeHeightSneakOffset - camera.eyeHeight;
+		int chunkCornerX = MathHelper.floor(renderX / 16.0) * 16;
+		int chunkCornerZ = MathHelper.floor(renderZ / 16.0) * 16;
+		GL11.glLineWidth(minecraft.height / 480.0F);
+		GL11.glDisable(GL11.GL_FOG);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		//GL11.glDepthMask(false);
+		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
 
-			//check for slime chunks
-			if (minecraft.world.dimension.id == 0) {
-				WorldChunk var1 = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
-				if (var1.getRandomForSlime(987234911L).nextInt(10) == 0) {
-					GL11.glColor3f(0.0F, 1.0F, 0.0F);
-				} else {
-					GL11.glColor3f(1.0F, 0.0F, 0.0F);
-				}
+		//check for slime chunks
+		if (minecraft.world.dimension.id == 0) {
+			WorldChunk var1 = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
+			if (var1.getRandomForSlime(987234911L).nextInt(10) == 0) {
+				GL11.glColor3f(0.0F, 1.0F, 0.0F);
 			} else {
-				GL11.glColor3f(0.0F, 1.0F, 1.0F);
+				GL11.glColor3f(1.0F, 0.0F, 0.0F);
 			}
-			//render feet pos and height pos
-			renderChunkSquare(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
-			renderChunkSquare(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
-			//render the 4 chunk corners
-			bufferBuilder.start(GL11.GL_LINES);
-			bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ);
-			bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ);
-			bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ);
-			bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ);
-			bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ + 16);
-			bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ + 16);
-			bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ + 16);
-			bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ + 16);
-			bufferBuilder.end();
-			renderChunkSquare(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
-			renderChunkSquare(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
-			//subchunk loop
-			GL11.glColor3f(1.0F, 0.0F, 1.0F);
-			for (int ypos = 16; ypos <= 112; ypos += 16) {
-				renderChunkSquare(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
-			}
-
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_FOG);
-			//GL11.glDepthMask(true);
+		} else {
+			GL11.glColor3f(0.0F, 1.0F, 1.0F);
 		}
+		//render feet pos and height pos
+		renderChunkSquare(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
+		renderChunkSquare(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
+		//render the 4 chunk corners
+		bufferBuilder.start(GL11.GL_LINES);
+		bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ);
+		bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ);
+		bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ);
+		bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ);
+		bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ + 16);
+		bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ + 16);
+		bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ + 16);
+		bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ + 16);
+		bufferBuilder.end();
+		renderChunkSquare(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+		renderChunkSquare(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
+		//subchunk loop
+		GL11.glColor3f(1.0F, 0.0F, 1.0F);
+		for (int ypos = 16; ypos <= 112; ypos += 16) {
+			renderChunkSquare(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
+		}
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_FOG);
+		//GL11.glDepthMask(true);
+	}
+
+	@Unique
+	private static void renderChunkSquare(double x, double y, double z, BufferBuilder bufferBuilder) {
+		bufferBuilder.start(GL11.GL_LINE_LOOP);
+		bufferBuilder.vertex(x, y, z);
+		bufferBuilder.vertex(x, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z);
+		bufferBuilder.end();
 	}
 
 	@ModifyArg(method = "transformCamera(F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V", ordinal = 3, remap = false), index = 2)
