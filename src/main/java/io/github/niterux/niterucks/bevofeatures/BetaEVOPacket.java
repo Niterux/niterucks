@@ -17,16 +17,16 @@ public class BetaEVOPacket extends Packet {
 	public BetaEVOPacket() {
 	}
 
-	public void read(DataInputStream var1) throws IOException {
-		this.message = BetaEVOPacket.readString(var1, 1000);
+	public void read(DataInputStream inputStream) throws IOException {
+		this.message = BetaEVOPacket.readString(inputStream, 1000);
 		BetaEVOPacketDecoder.decode(this.message);
 	}
 
-	public void write(DataOutputStream var1) throws IOException {
-		BetaEVOPacket.writeString(this.message, var1);
+	public void write(DataOutputStream outputStream) throws IOException {
+		BetaEVOPacket.writeString(this.message, outputStream);
 	}
 
-	public void handle(PacketHandler var1) {
+	public void handle(PacketHandler packetHandler) {
 
 	}
 

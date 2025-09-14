@@ -117,8 +117,8 @@ public class GameRendererMixin {
 
 		//check for slime chunks
 		if (minecraft.world.dimension.id == 0) {
-			WorldChunk var1 = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
-			if (var1.getRandomForSlime(987234911L).nextInt(10) == 0) {
+			WorldChunk thisChunk = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
+			if (thisChunk.getRandomForSlime(987234911L).nextInt(10) == 0) {
 				GL11.glColor3f(0.0F, 1.0F, 0.0F);
 			} else {
 				GL11.glColor3f(1.0F, 0.0F, 0.0F);

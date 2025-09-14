@@ -23,10 +23,10 @@ public class GameGuiMixin extends GuiElement {
 			remap = false
 		)
 	)
-	private void addFlyText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer var8, @Local(ordinal = 3) int height) {
+	private void addFlyText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 3) int height) {
 		if (flying) {
-			this.drawString(var8, "Flying", 2, height - 25, 0x55FF55);
-			this.drawString(var8, "Fly Speed: " + flySpeed, 2, height - 15, 0x55FF55);
+			this.drawString(textRenderer, "Flying", 2, height - 25, 0x55FF55);
+			this.drawString(textRenderer, "Fly Speed: " + flySpeed, 2, height - 15, 0x55FF55);
 		}
 	}
 
