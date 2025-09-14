@@ -8,12 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.texture.TextureManager;
 import net.minecraft.client.render.world.WorldRenderer;
+import net.minecraft.entity.living.LivingEntity;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -33,6 +35,13 @@ public class MinecraftMixin {
 	public WorldRenderer worldRenderer;
 	@Shadow
 	public TextureManager textureManager;
+	@Shadow
+	public LivingEntity camera;
+	@Unique
+	private void snapCamera() {
+		camera.yaw = Math.round(camera.yaw / 45) * 45;
+		camera.pitch = Math.round(camera.pitch / 45) * 45;
+	}
 
 	//this will only do anything once issue #888 in fabric-loader is solved
 	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
@@ -73,6 +82,9 @@ public class MinecraftMixin {
 					break;
 				case Keyboard.KEY_G:
 					chunkBordersEnabled = !chunkBordersEnabled;
+					break;
+				case Keyboard.KEY_P:
+					snapCamera();
 					break;
 			}
 		}

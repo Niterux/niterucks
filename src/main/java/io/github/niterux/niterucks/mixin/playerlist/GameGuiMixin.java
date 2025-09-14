@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin.playerlist;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.niterux.niterucks.mixin.invokers.FillInvoker;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListControls;
 import net.minecraft.client.Minecraft;
@@ -48,7 +47,7 @@ public class GameGuiMixin extends GuiElement {
 		int maxPlayersInAColumn = playerListMaxHeight / VERTICAL_SPACING;
 
 		int playerListWidth = (int) (Math.ceil((double) players.length / maxPlayersInAColumn) * HORIZONTAL_SPACING);
-		int playerListHeight = Math.min(players.length * VERTICAL_SPACING, playerListMaxHeight) + 1;
+		int playerListHeight = Math.min(players.length, maxPlayersInAColumn) * VERTICAL_SPACING + 1;
 		int playerListDrawX = width / 2 - playerListWidth / 2;
 
 		int maxPlayerCount = getMaxPlayers();
@@ -57,7 +56,7 @@ public class GameGuiMixin extends GuiElement {
 			playerCountFormatted = MessageFormat.format("Players: {0}/{1}", players.length, maxPlayerCount);
 		this.drawCenteredString(textRenderer, playerCountFormatted, width / 2, playerListDrawY - PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
 		//noinspection SuspiciousNameCombination
-		((FillInvoker) this).invokeFill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
+		fill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
 
 		for (int i = 0; i < players.length; i++) {
 			int nameDrawX = playerListDrawX + i / maxPlayersInAColumn * HORIZONTAL_SPACING;

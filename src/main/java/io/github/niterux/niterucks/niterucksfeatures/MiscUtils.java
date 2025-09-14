@@ -23,6 +23,7 @@ public class MiscUtils {
 		gui.addChatMessage("F3 + G = Show chunk boundaries");
 		gui.addChatMessage("F3 + Q = Show this list");
 		gui.addChatMessage("F3 + S = Reload all assets");
+		gui.addChatMessage("F3 + P = Snap the camera to the nearest 45 degree angle");
 	}
 
 	//moehreag
