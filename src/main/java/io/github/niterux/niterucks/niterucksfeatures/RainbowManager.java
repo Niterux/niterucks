@@ -26,6 +26,6 @@ public class RainbowManager {
 	}
 
 	private static double getRotation() {
-		return ((System.currentTimeMillis() * Niterucks.CONFIG.rainbowSpeed.get()) / (1000d / 360d)) % 360d;
+		return System.currentTimeMillis() * Niterucks.CONFIG.rainbowSpeed.get() % 1000d * 0.36d;
 	}
 }
