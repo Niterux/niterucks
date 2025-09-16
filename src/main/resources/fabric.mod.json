@@ -18,7 +18,11 @@
 	"icon": "assets/niterucks/icon.png",
 	"environment": "client",
 	"mixins": [
-		"niterucks.mixins.json"
+    "niterucks.mixins.json",
+    {
+      "config": "niterucks-client.mixins.json",
+      "environment": "client"
+    }
 	],
   "entrypoints": {
     "modmenu": ["io.github.niterux.niterucks.config.NiterucksModmenu"],
