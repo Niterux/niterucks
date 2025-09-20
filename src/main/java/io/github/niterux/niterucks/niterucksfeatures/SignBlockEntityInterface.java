@@ -9,4 +9,6 @@ public interface SignBlockEntityInterface {
 	String[] niterucks$getLinesUpdateChecker();
 
 	void niterucks$copyToUpdateChecker(String[] lines);
+
+	void niterucks$releaseList();
 }
