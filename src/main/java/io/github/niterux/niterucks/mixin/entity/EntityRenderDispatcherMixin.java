@@ -18,43 +18,38 @@ public class EntityRenderDispatcherMixin {
 	private void renderHitbox(Entity entity, double dx, double dy, double dz, float yaw, float tickDelta, CallbackInfo ci) {
 		if (!GameFeaturesStates.hitboxEnabled)
 			return;
+		Box hitbox = entity.shape.move(dx - entity.x, dy - entity.y, dz - entity.z);
 		GL11.glPushAttrib(GL11.GL_CURRENT_BIT | GL11.GL_ENABLE_BIT);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glLineWidth(MinecraftInstanceAccessor.getMinecraft().height / 480.0F);
 		GL11.glColor3f(1, 1, 1);
 		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
-		float renderPosX = (float) (dx - entity.x);
-		float renderPosY = (float) (dy - entity.y);
-		float renderPosZ = (float) (dz - entity.z);
-		bufferBuilder.addOffset(renderPosX, renderPosY, renderPosZ);
 		bufferBuilder.start(GL11.GL_LINE_LOOP);
-		Box shape = entity.shape;
 		// Hamiltonian path
-		bufferBuilder.vertex(shape.minX, shape.minY, shape.minZ);
-		bufferBuilder.vertex(shape.minX, shape.minY, shape.maxZ);
-		bufferBuilder.vertex(shape.minX, shape.maxY, shape.maxZ);
-		bufferBuilder.vertex(shape.maxX, shape.maxY, shape.maxZ);
-		bufferBuilder.vertex(shape.maxX, shape.minY, shape.maxZ);
-		bufferBuilder.vertex(shape.maxX, shape.minY, shape.minZ);
-		bufferBuilder.vertex(shape.maxX, shape.maxY, shape.minZ);
-		bufferBuilder.vertex(shape.minX, shape.maxY, shape.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
 		bufferBuilder.end();
 		// Extra edges
 		bufferBuilder.start(GL11.GL_LINES);
-		bufferBuilder.vertex(shape.minX, shape.minY, shape.minZ);
-		bufferBuilder.vertex(shape.maxX, shape.minY, shape.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
 
-		bufferBuilder.vertex(shape.minX, shape.minY, shape.maxZ);
-		bufferBuilder.vertex(shape.maxX, shape.minY, shape.maxZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
 
-		bufferBuilder.vertex(shape.maxX, shape.maxY, shape.minZ);
-		bufferBuilder.vertex(shape.maxX, shape.maxY, shape.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
 
-		bufferBuilder.vertex(shape.minX, shape.maxY, shape.minZ);
-		bufferBuilder.vertex(shape.minX, shape.maxY, shape.maxZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);
 		bufferBuilder.end();
-		bufferBuilder.addOffset(-renderPosX, -renderPosY, -renderPosZ);
 		GL11.glPopAttrib();
 	}
 }
