@@ -40,19 +40,18 @@ public class TextRendererMixin {
 	}
 
 	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 0))
-	private IntBuffer modifyDrawColor(IntBuffer instance, int i, Operation<IntBuffer> original, @Local(ordinal = 2, argsOnly = true) int color) {
-		int colorIndex = i - this.boundPage - 256;
+	private IntBuffer modifyDrawColor(IntBuffer instance, int drawListIndex, Operation<IntBuffer> original, @Local(ordinal = 2, argsOnly = true) int color) {
+		int colorIndex = drawListIndex - this.boundPage - 256;
 		float alpha = (float) (color >> 24 & 0xFF) / 255.0F;
-		if (alpha == 0.0F) {
+		if (alpha == 0.0F)
 			alpha = 1.0F;
-		}
 		GL11.glColor4f(chatColors[colorIndex][0], chatColors[colorIndex][1], chatColors[colorIndex][2], alpha);
 		return instance;
 	}
 
 	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 1))
-	private IntBuffer manuallyDrawChar(IntBuffer instance, int i, Operation<IntBuffer> original) {
-		GL11.glCallList(i);
+	private IntBuffer manuallyDrawChar(IntBuffer instance, int drawListIndex, Operation<IntBuffer> original) {
+		GL11.glCallList(drawListIndex);
 		return instance;
 	}
 }

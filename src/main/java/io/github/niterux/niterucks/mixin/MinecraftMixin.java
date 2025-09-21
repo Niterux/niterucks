@@ -56,37 +56,35 @@ public class MinecraftMixin {
 	@ModifyExpressionValue(method = "tick()V", at = @At(value = "INVOKE",
 		target = "Lorg/lwjgl/input/Keyboard;getEventKeyState()Z", remap = false))
 	private boolean noneKeyFix(boolean original) {
-		if (Keyboard.getEventKey() <= 0) {
+		if (Keyboard.getEventKey() <= 0)
 			return false;
-		}
 		return original;
 	}
 
 	@Inject(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventKey()I", ordinal = 0, remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;handleKeyboard()V", ordinal = 0)))
 	private void addNewKeybinds(CallbackInfo ci) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
-			switch (Keyboard.getEventKey()) {
-				case Keyboard.KEY_D:
-					gui.clearChat();
-					break;
-				case Keyboard.KEY_Q:
-					printDebugKeys(gui);
-					break;
-				case Keyboard.KEY_A:
-					worldRenderer.m_6748042();
-					break;
-				case Keyboard.KEY_G:
-					chunkBordersEnabled = !chunkBordersEnabled;
-					break;
-				case Keyboard.KEY_B:
-					hitboxEnabled = !hitboxEnabled;
-					break;
-				case Keyboard.KEY_P:
-					snapCamera();
-					break;
-			}
+		if (!Keyboard.isKeyDown(Keyboard.KEY_F3))
+			return;
+		switch (Keyboard.getEventKey()) {
+			case Keyboard.KEY_D:
+				gui.clearChat();
+				break;
+			case Keyboard.KEY_Q:
+				printDebugKeys(gui);
+				break;
+			case Keyboard.KEY_A:
+				worldRenderer.m_6748042();
+				break;
+			case Keyboard.KEY_G:
+				chunkBordersEnabled = !chunkBordersEnabled;
+				break;
+			case Keyboard.KEY_B:
+				hitboxEnabled = !hitboxEnabled;
+				break;
+			case Keyboard.KEY_P:
+				snapCamera();
+				break;
 		}
-
 	}
 
 	@Unique
@@ -117,7 +115,7 @@ public class MinecraftMixin {
 
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)
 	private int swapMiningMouseButton(int button) {
-		return (Niterucks.CONFIG.swapMouseButtons.get()) ? 1 : button;
+		return Niterucks.CONFIG.swapMouseButtons.get() ? 1 : button;
 	}
 
 	@Inject(method = "forceReload()V", at = @At("TAIL"))

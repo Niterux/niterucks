@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Connection.class)
 public class ConnectionMixin {
 	@Inject(method = "disconnect(Ljava/lang/String;[Ljava/lang/Object;)V", at = @At("HEAD"))
-	private void wipeSession(String args, Object[] par2, CallbackInfo ci) {
+	private void wipeSession(String reason, Object[] args, CallbackInfo ci) {
 		BetaEVOFlyHelper.resetFly();
 		BetaEVO.playerList.clear();
 	}

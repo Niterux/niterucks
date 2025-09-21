@@ -49,7 +49,7 @@ public class GameRendererMixin {
 
 	@ModifyExpressionValue(method = "getFov(F)F", at = @At(value = "CONSTANT", args = "floatValue=60.0F", ordinal = 0))
 	private float changeWaterFov(float sixty, @Share("seventy") LocalFloatRef fovRef) {
-		return this.handFov ? Niterucks.CONFIG.viewmodelFov.get() * sixty / fovRef.get() : Niterucks.CONFIG.fov.get() * sixty / fovRef.get();
+		return sixty / fovRef.get() * (this.handFov ? Niterucks.CONFIG.viewmodelFov.get() : Niterucks.CONFIG.fov.get());
 	}
 
 	@Inject(method = "setupCamera(FI)V", at = @At(value = "HEAD"))
@@ -60,13 +60,7 @@ public class GameRendererMixin {
 	@Inject(method = "renderItemInHand(FI)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPushMatrix()V", remap = false))
 	private void changePerspective(float tickDelta, int anaglyphFilter, CallbackInfo ci) {
 		this.handFov = true;
-		if (zoom != 1.0) {
-			GL11.glTranslatef((float) zoomX, (float) (-zoomY), 0.0F);
-			GL11.glScaled(zoom, zoom, 1.0);
-			GLU.gluPerspective(getFov(tickDelta), (float) minecraft.width / (float) minecraft.height, 0.05F, viewDistance * 2.0F);
-		} else {
-			GLU.gluPerspective(getFov(tickDelta), (float) minecraft.width / (float) minecraft.height, 0.05F, viewDistance * 2.0F);
-		}
+		GLU.gluPerspective(getFov(tickDelta), (float) minecraft.width / (float) minecraft.height, 0.05F, viewDistance * 2.0F);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 	}
@@ -113,24 +107,25 @@ public class GameRendererMixin {
 		GL11.glDisable(GL11.GL_FOG);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		//GL11.glDepthMask(false);
+		GL11.glColor3f(1.0F, 1.0F, 1.0F);
 		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+		bufferBuilder.start(GL11.GL_LINES);
 
 		//check for slime chunks
 		if (minecraft.world.dimension.id == 0) {
 			WorldChunk thisChunk = minecraft.world.getChunk(MathHelper.floor(renderX), MathHelper.floor(renderZ));
 			if (thisChunk.getRandomForSlime(987234911L).nextInt(10) == 0) {
-				GL11.glColor3f(0.0F, 1.0F, 0.0F);
+				bufferBuilder.color(0, 255, 0, 255);
 			} else {
-				GL11.glColor3f(1.0F, 0.0F, 0.0F);
+				bufferBuilder.color(255, 0, 0, 255);
 			}
 		} else {
-			GL11.glColor3f(0.0F, 1.0F, 1.0F);
+			bufferBuilder.color(0, 255, 255, 255);
 		}
 		//render feet pos and height pos
 		renderChunkSquare(chunkCornerX - renderX, feetRenderPos, chunkCornerZ - renderZ, bufferBuilder);
 		renderChunkSquare(chunkCornerX - renderX, feetRenderPos + camera.height, chunkCornerZ - renderZ, bufferBuilder);
 		//render the 4 chunk corners
-		bufferBuilder.start(GL11.GL_LINES);
 		bufferBuilder.vertex(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ);
 		bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ);
 		bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ);
@@ -139,14 +134,13 @@ public class GameRendererMixin {
 		bufferBuilder.vertex(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ + 16);
 		bufferBuilder.vertex(chunkCornerX - renderX + 16, 128 - renderY, chunkCornerZ - renderZ + 16);
 		bufferBuilder.vertex(chunkCornerX - renderX + 16, 0 - renderY, chunkCornerZ - renderZ + 16);
-		bufferBuilder.end();
 		renderChunkSquare(chunkCornerX - renderX, 128 - renderY, chunkCornerZ - renderZ, bufferBuilder);
 		renderChunkSquare(chunkCornerX - renderX, 0 - renderY, chunkCornerZ - renderZ, bufferBuilder);
 		//subchunk loop
-		GL11.glColor3f(1.0F, 0.0F, 1.0F);
-		for (int ypos = 16; ypos <= 112; ypos += 16) {
+		bufferBuilder.color(255, 0, 255, 255);
+		for (int ypos = 16; ypos <= 112; ypos += 16)
 			renderChunkSquare(chunkCornerX - renderX, ypos - renderY, chunkCornerZ - renderZ, bufferBuilder);
-		}
+		bufferBuilder.end();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_FOG);
@@ -155,19 +149,23 @@ public class GameRendererMixin {
 
 	@Unique
 	private static void renderChunkSquare(double x, double y, double z, BufferBuilder bufferBuilder) {
-		bufferBuilder.start(GL11.GL_LINE_LOOP);
 		bufferBuilder.vertex(x, y, z);
 		bufferBuilder.vertex(x, y, z + 16);
+
+		bufferBuilder.vertex(x, y, z + 16);
+		bufferBuilder.vertex(x + 16, y, z + 16);
+
 		bufferBuilder.vertex(x + 16, y, z + 16);
 		bufferBuilder.vertex(x + 16, y, z);
-		bufferBuilder.end();
+
+		bufferBuilder.vertex(x + 16, y, z);
+		bufferBuilder.vertex(x, y, z);
 	}
 
 	@ModifyArg(method = "transformCamera(F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V", ordinal = 3, remap = false), index = 2)
 	private float fixCameraPivot(float original) {
-		if (Float.compare(original, -0.1f) == 0) {
+		if (Float.compare(original, -0.1f) == 0)
 			return 0.0f;
-		}
 		return original;
 	}
 }

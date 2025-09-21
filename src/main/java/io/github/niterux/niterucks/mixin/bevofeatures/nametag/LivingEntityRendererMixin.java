@@ -16,16 +16,18 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 public class LivingEntityRendererMixin {
 	@ModifyArgs(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)V"))
 	private void makeUsernameColoredBehindWalls(Args args, @Local(ordinal = 0, argsOnly = true) LivingEntity entity) {
-		if (entity instanceof RemotePlayerEntity) {
-			String playerName = ((RemotePlayerEntity) entity).name;
-			if (BetaEVO.playerList.containsKey(playerName)) {
-				PlayerNameStatus playerNameStatus = BetaEVO.playerList.get(playerName);
-				int alpha = (int) args.get(3) & 0xFF000000;
-				args.set(3, playerNameStatus.getColor() + alpha);
-				if (playerNameStatus.getNickname() != null && playerNameStatus.getPrefix() != null) {
-					args.set(0, MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getNickname()) + ' ' + MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getPrefix()));
-				}
-			}
+		if (!(entity instanceof RemotePlayerEntity))
+			return;
+
+		String playerName = ((RemotePlayerEntity) entity).name;
+		if (!BetaEVO.playerList.containsKey(playerName))
+			return;
+
+		PlayerNameStatus playerNameStatus = BetaEVO.playerList.get(playerName);
+		int alpha = (int) args.get(3) & 0xFF000000;
+		args.set(3, playerNameStatus.getColor() + alpha);
+		if (playerNameStatus.getNickname() != null && playerNameStatus.getPrefix() != null) {
+			args.set(0, MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getNickname()) + ' ' + MiscUtils.replaceAllAmpersandsWithColorCharacter(playerNameStatus.getPrefix()));
 		}
 	}
 }

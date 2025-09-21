@@ -94,16 +94,16 @@ public class GameGuiMixin extends GuiElement {
 	)
 	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
 		ItemStack heldItem = minecraft.player.inventory.getMainHandStack();
-		if (heldItem != null) {
-			if (heldItem.getMaxDamage() > 0) {
-				String damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
-				this.drawCenteredString(textRenderer, damageText, width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
-			}
-			if (heldItem.size > 1 || heldItem.getMaxSize() > 1) { //account for overstacked items
-				this.drawCenteredString(textRenderer, String.valueOf(heldItem.size), width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
-			}
-			ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX + ItemCoords.itemIconOffsetX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);
+		if (heldItem == null)
+			return;
+		if (heldItem.getMaxDamage() > 0) {
+			String damageText = String.valueOf(heldItem.getMaxDamage() - heldItem.getDamage());
+			this.drawCenteredString(textRenderer, damageText, width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.damageOffsetY, 0x55FF55);
 		}
+		if (heldItem.size > 1 || heldItem.getMaxSize() > 1) { //account for overstacked items
+			this.drawCenteredString(textRenderer, String.valueOf(heldItem.size), width / 2 - ItemCoords.displayX + ItemCoords.textOffsetX, height - ItemCoords.displayY + ItemCoords.stackOffsetY, 0x55FF55);
+		}
+		ITEM_RENDERER.renderGuiItemWithEnchantmentGlint(this.minecraft.textRenderer, this.minecraft.textureManager, heldItem, width / 2 - ItemCoords.displayX + ItemCoords.itemIconOffsetX, height - ItemCoords.displayY + ItemCoords.itemIconOffsetY);
 	}
 
 	//print chat message to console

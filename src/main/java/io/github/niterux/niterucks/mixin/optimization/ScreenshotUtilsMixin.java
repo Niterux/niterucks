@@ -29,11 +29,10 @@ public class ScreenshotUtilsMixin {
 
 	@WrapMethod(method = "saveScreenshot")
 	private static String fasterScreenshot(File gameDir, int width, int height, Operation<String> original) {
-		if (Niterucks.CONFIG.enableScreenshotEnhancements.get()) {
-			FastScreenshotUtils.takeScreenshot();
-			return null;
-		}
-		return original.call(gameDir, width, height);
+		if (!Niterucks.CONFIG.enableScreenshotEnhancements.get())
+			return original.call(gameDir, width, height);
+		FastScreenshotUtils.takeScreenshot();
+		return null;
 	}
 /*
 	//I can't capture the BufferedImage using @Local or @ModifyVariable for some reason, tried really hard I promise, unfortunately this is the only way.

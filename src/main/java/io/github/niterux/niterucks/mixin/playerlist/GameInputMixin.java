@@ -11,10 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameInput.class)
 public class GameInputMixin {
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
-	private void addNewInputs(int i, boolean bl, CallbackInfo ci) {
-		if (i == Niterucks.CONFIG.playerListButton.get().keyCode) {
-			PlayerListControls.playerListKeyDown = bl;
-		}
+	private void addNewInputs(int keyCode, boolean pushed, CallbackInfo ci) {
+		if (keyCode == Niterucks.CONFIG.playerListButton.get().keyCode)
+			PlayerListControls.playerListKeyDown = pushed;
 	}
 
 	@Inject(method = "m_6793679()V", at = @At("TAIL"))

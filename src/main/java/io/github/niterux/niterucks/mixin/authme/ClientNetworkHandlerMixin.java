@@ -24,12 +24,20 @@ public abstract class ClientNetworkHandlerMixin {
 	@Unique
 	private ObjectObjectImmutablePair<String, String> usernamePassword = null;
 
-	@Shadow
-	public abstract void sendPacket(Packet packet);
-
 	@Inject(method = "<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V", at = @At("TAIL"))
 	private void keepAddress(Minecraft minecraft, String address, int port, CallbackInfo ci) {
 		this.usernamePassword = getAuthMeEntry(address, port);
+	}
+
+	@Unique
+	private ObjectObjectImmutablePair<String, String> getAuthMeEntry(String address, int port) {
+		String addressAndPort = address + ":" + port;
+		var authMeHashMap = AuthMeWholeListOptionStorage.getInstance().toHashMap();
+		var result = authMeHashMap.get(addressAndPort);
+		if (result == null && port == 25565) {
+			result = authMeHashMap.get(address);
+		}
+		return result;
 	}
 
 	@SuppressWarnings("MixinAnnotationTarget")
@@ -64,14 +72,6 @@ public abstract class ClientNetworkHandlerMixin {
 		}
 	}
 
-	@Unique
-	private ObjectObjectImmutablePair<String, String> getAuthMeEntry(String address, int port) {
-		String addressAndPort = address + ":" + port;
-		var authMeHashMap = AuthMeWholeListOptionStorage.getInstance().toHashMap();
-		var result = authMeHashMap.get(addressAndPort);
-		if (result == null && port == 25565) {
-			result = authMeHashMap.get(address);
-		}
-		return result;
-	}
+	@Shadow
+	public abstract void sendPacket(Packet packet);
 }

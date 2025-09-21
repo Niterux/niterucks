@@ -141,14 +141,14 @@ public class DebugMenuMixin extends GuiElement {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
-		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
+		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset) : 0;
 		if (Niterucks.CONFIG.showSeed.get()) {
 			this.drawString(textRenderer, "Seed: " + minecraft.world.getSeed(), 2, 104, 0xd96e02);
 		}
+		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
 		this.drawString(textRenderer, biomeString, width - textRenderer.getWidth(biomeString) - 2, 22, 0x46a848);
 		// Precise enough? 🤞
-		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset) : 0;
 		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(Math.nextUp(Double.sum(minecraft.player.y, -eyeOffset))), MathHelper.floor(minecraft.player.z));
 		this.drawString(textRenderer, lightString, width - textRenderer.getWidth(lightString) - 2, 32, 0x46a848);
 
@@ -159,10 +159,10 @@ public class DebugMenuMixin extends GuiElement {
 			this.drawString(textRenderer, blockString, width - textRenderer.getWidth(blockString) - 2, 42, 0x46a848);
 		}
 		ItemStack heldItem = minecraft.player.inventory.getMainHandStack();
-		if (heldItem != null) {
-			String itemString = "Item: " + heldItem.itemId + ":" + heldItem.getDamage();
-			this.drawString(textRenderer, itemString, width - textRenderer.getWidth(itemString) - 2, 52, 0x46a848);
-		}
+		if (heldItem == null)
+			return;
+		String itemString = "Item: " + heldItem.itemId + ":" + heldItem.getDamage();
+		this.drawString(textRenderer, itemString, width - textRenderer.getWidth(itemString) - 2, 52, 0x46a848);
 	}
 
 	@ModifyArg(
@@ -185,16 +185,16 @@ public class DebugMenuMixin extends GuiElement {
 		),
 		index = 1
 	)
-	private String goodFaceDirection(String par2) {
+	private String goodFaceDirection(String text) {
 		//todo, make the code less cursed
 		int facingDir = (int) this.minecraft.player.yaw;
-		int i;
+		int index;
 		if (facingDir < -45) {
-			i = ((facingDir - 45) / 90) % 4;
-			return "Facing: " + directions[(i + 4) % 4];
+			index = ((facingDir - 45) / 90) % 4;
+			return "Facing: " + directions[(index + 4) % 4];
 		} else {
-			i = ((facingDir + 45) / 90) % 4;
-			return "Facing: " + directions[i];
+			index = ((facingDir + 45) / 90) % 4;
+			return "Facing: " + directions[index];
 		}
 	}
 
@@ -208,6 +208,11 @@ public class DebugMenuMixin extends GuiElement {
 	)
 	private double roundCoordsX(double x) {
 		return truncate(x);
+	}
+
+	@Unique
+	private double truncate(double coord) {
+		return (double) Math.round(coord * 1000) / 1000;
 	}
 
 	@ModifyExpressionValue(
@@ -233,10 +238,5 @@ public class DebugMenuMixin extends GuiElement {
 	)
 	private double roundCoordsZ(double z) {
 		return truncate(z);
-	}
-
-	@Unique
-	private double truncate(double coord) {
-		return (double) Math.round(coord * 1000) / 1000;
 	}
 }

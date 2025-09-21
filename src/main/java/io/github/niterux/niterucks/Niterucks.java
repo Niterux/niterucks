@@ -39,6 +39,7 @@ public class Niterucks implements ClientModInitializer {
 	public static final Gson GSON = new Gson();
 	public static final ReferenceArraySet<SignBlockEntity> SIGN_DRAWLIST_OBJECT_CACHE_LIST = new ReferenceArraySet<>();
 	public static Config CONFIG;
+	public static String currentServer = "";
 
 	static {
 		ScreenshotFormatRegistry.register(new AsyncImageIOReaderWriter("png"));

@@ -39,7 +39,7 @@ public class EntityMixin {
 
 	@Inject(method = "move(DDD)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/entity/Entity;horizontalVelocity:F", ordinal = 1, shift = At.Shift.BEFORE))
 	private void fixStep(CallbackInfo ci) {
-		if (horizontalVelocity > distanceOnNextBlock && !(currentBlockId != 0 || belowCurrentBlockId != 0)) {
+		if (horizontalVelocity > distanceOnNextBlock && (currentBlockId == 0 && belowCurrentBlockId == 0)) {
 			//this is annoying, because distanceOnNextBlock is an integer, I have to convert it to an int
 			//meaning there will be a random variance between the time you land and start walking for footsteps to start
 			distanceOnNextBlock = (int) Math.ceil(horizontalVelocity);

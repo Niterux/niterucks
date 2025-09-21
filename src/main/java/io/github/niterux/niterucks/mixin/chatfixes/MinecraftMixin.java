@@ -14,15 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
-	@Shadow
-	public boolean isMultiplayer() {
-		return true;
-	}
-
-	@Shadow
-	public void openScreen(Screen screen) {
-	}
-
 	@Inject(method = "tick()V", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/client/Minecraft;isMultiplayer()Z"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;handleKeyboard()V", ordinal = 0)))
 	private void openSlashChat(CallbackInfo ci) {
 		if (this.isMultiplayer() && Keyboard.getEventKey() == Keyboard.KEY_SLASH) {
@@ -30,5 +21,14 @@ public class MinecraftMixin {
 			this.openScreen(chatWithSlash);
 			((LastChatMessageAccessor) chatWithSlash).setLastChatMessage("/");
 		}
+	}
+
+	@Shadow
+	public boolean isMultiplayer() {
+		return true;
+	}
+
+	@Shadow
+	public void openScreen(Screen screen) {
 	}
 }

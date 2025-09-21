@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftMixin {
 	@Inject(method = "tryTakeScreenshot()V", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/ScreenshotUtils;saveScreenshot(Ljava/io/File;II)Ljava/lang/String;"))
 	private void synchronizeAndThreadScreenshots(CallbackInfo ci) {
-		if (Niterucks.CONFIG.enableScreenshotEnhancements.get()) {
-			FastScreenshotUtils.takeScreenshot();
-			ci.cancel();
-		}
+		if (!Niterucks.CONFIG.enableScreenshotEnhancements.get())
+			return;
+		FastScreenshotUtils.takeScreenshot();
+		ci.cancel();
 	}
 }

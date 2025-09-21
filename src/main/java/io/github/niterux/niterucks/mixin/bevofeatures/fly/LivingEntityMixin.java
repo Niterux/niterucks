@@ -20,12 +20,12 @@ public class LivingEntityMixin {
 	See bevofeatures.LocalPlayerEntityMixin to see how I prevent fall damage with a field redirect
 	*/
 	@ModifyVariable(method = "applyFallDamage(F)V", at = @At(value = "HEAD"), ordinal = 0, argsOnly = true)
-	private float removeFallDamageClient(float value) {
+	private float removeFallDamageClient(float fallDistance) {
 		//noinspection ConstantValue
 		if (!flyingTouchedGround && ((LivingEntity) (Object) this instanceof InputPlayerEntity)) {
-			value = 0F;
+			fallDistance = 0F;
 		}
-		return value;
+		return fallDistance;
 	}
 
 	@ModifyExpressionValue(method = "moveEntityWithVelocity(FF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;onGround:Z", opcode = Opcodes.GETFIELD))

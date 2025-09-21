@@ -69,6 +69,7 @@
     "invokers.RenderNameTagInvoker",
     "optimization.BufferBuilderMixin",
     "optimization.MinecraftMixin",
+    "optimization.MultiplayerChunkCacheMixin",
     "optimization.ScreenshotUtilsMixin",
     "optimization.signs.SignBlockEntityMixin",
     "optimization.signs.SignRendererMixin",

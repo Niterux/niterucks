@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 
-@Mixin(value = GameOptions.class, priority = 9999)
+@Mixin(value = GameOptions.class, priority = 3000)
 public class GameOptionsMixin {
 	@Shadow
 	public int guiScale;

@@ -12,13 +12,13 @@ import static io.github.niterux.niterucks.niterucksfeatures.KeyStateManager.nite
 @Mixin(GameInput.class)
 public class GameInputMixin {
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
-	private void addNewInputs(int bl, boolean par2, CallbackInfo ci) {
+	private void addNewInputs(int keyCode, boolean pushed, CallbackInfo ci) {
 		byte InputNum = -1;
-		if (bl == Niterucks.CONFIG.zoomButton.get().keyCode) {
+		if (keyCode == Niterucks.CONFIG.zoomButton.get().keyCode) {
 			InputNum = 0;
 		}
 		if (InputNum > -1) {
-			niterucksControls[InputNum] = par2;
+			niterucksControls[InputNum] = pushed;
 		}
 	}
 

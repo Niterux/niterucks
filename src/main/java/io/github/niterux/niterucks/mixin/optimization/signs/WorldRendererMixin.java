@@ -20,6 +20,7 @@ import java.util.List;
 public class WorldRendererMixin {
 	@Shadow
 	public List<BlockEntity> globalBlockEntities;
+
 	@Inject(method = "renderEntities", at = @At("TAIL"))
 	private void removeOldSignDrawLists(Vec3d pos, Culler culler, float tickDelta, CallbackInfo ci) {
 		Iterator<SignBlockEntity> iterator = Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.iterator();

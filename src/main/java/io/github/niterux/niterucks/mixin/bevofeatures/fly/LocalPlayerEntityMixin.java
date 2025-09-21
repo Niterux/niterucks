@@ -35,7 +35,8 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 		}
 		if (MinecraftInstanceAccessor.getMinecraft().screen == null) {
 			if (flyingControls[0]) {
-				if (flyAllowed & !flyingButtonHeld) flying = !flying;
+				if (flyAllowed & !flyingButtonHeld)
+					flying = !flying;
 				flyingButtonHeld = true;
 			} else {
 				flyingButtonHeld = false;

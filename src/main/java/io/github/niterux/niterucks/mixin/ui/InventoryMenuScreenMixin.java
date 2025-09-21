@@ -13,10 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 public class InventoryMenuScreenMixin {
 	@ModifyExpressionValue(method = "render(IIF)V", at = @At(value = "INVOKE", target = "Ljava/lang/String;trim()Ljava/lang/String;"))
 	private String addItemID(String original, @Local(ordinal = 0) InventorySlot slot) {
-		if (Niterucks.CONFIG.showItemIDs.get()) {
-			ItemStack stack = slot.getStack();
-			return original + " §7" + stack.itemId + ':' + stack.getMetadata();
-		}
-		return original;
+		if (!Niterucks.CONFIG.showItemIDs.get())
+			return original;
+		ItemStack stack = slot.getStack();
+		return original + " §7" + stack.itemId + ':' + stack.getMetadata();
 	}
 }

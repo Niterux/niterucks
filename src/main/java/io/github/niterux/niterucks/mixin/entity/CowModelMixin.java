@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-// I can't believe fixing the horns on the cow model is something someone actually wanted
 @Mixin(CowModel.class)
 public class CowModelMixin {
 	@ModifyArgs(method = "<init>()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelPart;setPivot(FFF)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelPart;setPivot(FFF)V", ordinal = 1), to = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/model/ModelPart;setPivot(FFF)V", ordinal = 2)))

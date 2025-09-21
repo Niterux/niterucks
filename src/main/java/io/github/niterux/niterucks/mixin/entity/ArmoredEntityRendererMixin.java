@@ -21,20 +21,19 @@ public class ArmoredEntityRendererMixin {
 	@Inject(method = "renderDecoration(Lnet/minecraft/entity/living/LivingEntity;F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glTranslatef(FFF)V", ordinal = 3, remap = false))
 	private void pushUselessMatrix(LivingEntity entity, float tickDelta, CallbackInfo ci, @Local(ordinal = 0) ItemStack itemStack) {
 		isBow = (itemStack.itemId == Item.BOW.id && Niterucks.CONFIG.newSkeleton.get());
-		if (isBow) {
+		if (isBow)
 			GL11.glPushMatrix();
-		}
 	}
 
 	@Inject(method = "renderDecoration(Lnet/minecraft/entity/living/LivingEntity;F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glRotatef(FFFF)V", ordinal = 6, shift = At.Shift.AFTER, remap = false))
 	private void poseBow(LivingEntity entity, float tickDelta, CallbackInfo ci) {
-		if (isBow) {
-			GL11.glPopMatrix();
-			GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
-			GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-			GL11.glScalef(0.625F, -0.625F, 0.625F);
-			GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-		}
+		if (!isBow)
+			return;
+		GL11.glPopMatrix();
+		GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
+		GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
+		GL11.glScalef(0.625F, -0.625F, 0.625F);
+		GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 	}
 }

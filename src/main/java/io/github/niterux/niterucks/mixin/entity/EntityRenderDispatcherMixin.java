@@ -25,27 +25,39 @@ public class EntityRenderDispatcherMixin {
 		GL11.glLineWidth(MinecraftInstanceAccessor.getMinecraft().height / 480.0F);
 		GL11.glColor3f(1, 1, 1);
 		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
-		bufferBuilder.start(GL11.GL_LINE_LOOP);
-		// Hamiltonian path
-		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
-		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
-		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);
-		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
-		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
-		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
-		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
-		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
-		bufferBuilder.end();
-		// Extra edges
 		bufferBuilder.start(GL11.GL_LINES);
 		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
+
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.minZ);
 		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
 
-		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.minZ);
 		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
 
-		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
 		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
+
+		bufferBuilder.vertex(hitbox.maxX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+
+		bufferBuilder.vertex(hitbox.minX, hitbox.minY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);
+
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
+
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.maxZ);
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+
+		bufferBuilder.vertex(hitbox.maxX, hitbox.maxY, hitbox.minZ);
+		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
 
 		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.minZ);
 		bufferBuilder.vertex(hitbox.minX, hitbox.maxY, hitbox.maxZ);

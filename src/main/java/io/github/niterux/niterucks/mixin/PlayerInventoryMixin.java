@@ -15,15 +15,13 @@ public class PlayerInventoryMixin {
 		target = "Lnet/minecraft/entity/player/PlayerInventory;selectedSlot:I",
 		opcode = Opcodes.GETFIELD, ordinal = 0), ordinal = 0, argsOnly = true)
 	private int intersectScrolling(int scrollAmount) {
-		if (niterucksControls[0]) {
-			zoomAmount += scrollAmount;
-			if (zoomAmount > 12)
-				zoomAmount = 12;
-			else if (zoomAmount < 5)
-				zoomAmount = 5;
-			return 0;
-		}
-		return scrollAmount;
+		if (!niterucksControls[0])
+			return scrollAmount;
+		zoomAmount += scrollAmount;
+		if (zoomAmount > 12)
+			zoomAmount = 12;
+		else if (zoomAmount < 5)
+			zoomAmount = 5;
+		return 0;
 	}
-
 }

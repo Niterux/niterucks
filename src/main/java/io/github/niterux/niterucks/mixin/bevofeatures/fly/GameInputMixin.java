@@ -20,22 +20,22 @@ public class GameInputMixin extends PlayerInput {
 	private GameOptions options;
 
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
-	private void addNewInputs(int bl, boolean par2, CallbackInfo ci) {
+	private void addNewInputs(int keyCode, boolean pushed, CallbackInfo ci) {
 		byte InputNum = -1;
-		if (bl == Niterucks.CONFIG.flyButton.get().keyCode) {
+		if (keyCode == Niterucks.CONFIG.flyButton.get().keyCode) {
 			InputNum = 0;
 		}
-		if (bl == this.options.jumpKey.keyCode) {
+		if (keyCode == this.options.jumpKey.keyCode) {
 			InputNum = 1;
 		}
-		if (bl == this.options.sneakKey.keyCode) {
+		if (keyCode == this.options.sneakKey.keyCode) {
 			InputNum = 2;
 		}
-		if (bl == Niterucks.CONFIG.adjustButton.get().keyCode) {
+		if (keyCode == Niterucks.CONFIG.adjustButton.get().keyCode) {
 			InputNum = 3;
 		}
 		if (InputNum > -1) {
-			flyingControls[InputNum] = par2;
+			flyingControls[InputNum] = pushed;
 		}
 	}
 
@@ -47,7 +47,7 @@ public class GameInputMixin extends PlayerInput {
 	}
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/GameInput;sneaking:Z"))
-	private void sneakJumpOverride(PlayerEntity par1, CallbackInfo ci) {
+	private void sneakJumpOverride(PlayerEntity playerEntity, CallbackInfo ci) {
 		if (flying) {
 			this.jumping = false;
 			this.sneaking = false;
@@ -55,9 +55,9 @@ public class GameInputMixin extends PlayerInput {
 	}
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At("TAIL"))
-	private void speedOverride(PlayerEntity par1, CallbackInfo ci) {
+	private void speedOverride(PlayerEntity playerEntity, CallbackInfo ci) {
 		if (flying) {
-			par1.updateVelocity(this.movementSideways, this.movementForward, (float) flySpeed / 20);
+			playerEntity.updateVelocity(this.movementSideways, this.movementForward, (float) flySpeed / 20);
 		}
 	}
 

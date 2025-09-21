@@ -36,13 +36,12 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 	private static boolean skipNextRender = true;
 
 	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 0, shift = At.Shift.AFTER, remap = false))
-	private void prepareTextRendering(SignBlockEntity currentBlockEntity, double x, double y, double z, float g5, CallbackInfo ci) {
+	private void prepareTextRendering(SignBlockEntity currentBlockEntity, double x, double y, double z, float tickDelta, CallbackInfo ci) {
 		skipNextRender = true;
 		hasUpdate = false;
 		BlockEntityRenderDispatcher publicDispatcher = ((BlockEntityRendererDispatcherAccessor) this).getRenderDispatcher();
-		if (currentBlockEntity.squaredDistanceTo(publicDispatcher.cameraX, publicDispatcher.cameraY, publicDispatcher.cameraZ) > 600d) {
+		if (currentBlockEntity.squaredDistanceTo(publicDispatcher.cameraX, publicDispatcher.cameraY, publicDispatcher.cameraZ) > 600d)
 			return;
-		}
 		if (!MinecraftInstanceAccessor.getMinecraft().worldRenderer.globalBlockEntities.contains(currentBlockEntity)) {
 			skipNextRender = false;
 			return;
@@ -72,7 +71,7 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 	}
 
 	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 1, remap = false))
-	private void renderAfterCompiling(SignBlockEntity currentBlockEntity, double d, double e, double f4, float g5, CallbackInfo ci) {
+	private void renderAfterCompiling(SignBlockEntity currentBlockEntity, double x, double y, double z, float tickDelta, CallbackInfo ci) {
 		if (!hasUpdate)
 			return;
 		GL11.glEndList();
@@ -83,9 +82,9 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 	}
 
 	@WrapMethod(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V")
-	private void cullSign(SignBlockEntity signBlockEntity, double x, double y, double z, float g5, Operation<Void> original) {
+	private void cullSign(SignBlockEntity signBlockEntity, double x, double y, double z, float tickDelta, Operation<Void> original) {
 		if (FrustumAccessor.getInstanceNoCompute().m_9750073(x, y, z, x + 1, y + 1, z + 1))
-			original.call(signBlockEntity, x, y, z, g5);
+			original.call(signBlockEntity, x, y, z, tickDelta);
 	}
 
 	@Unique

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(value = GameMenuScreen.class, priority = 1500)
 public class ModMenuFixMixin extends Screen {
-	@SuppressWarnings({"MixinAnnotationTarget", "InvalidMemberReference", "UnresolvedMixinReference"})
+	@SuppressWarnings({"InvalidMemberReference", "UnresolvedMixinReference"})
 	@TargetHandler(
 		mixin = "com.terraformersmc.modmenu.mixin.MixinGameMenu",
 		name = "onInit"

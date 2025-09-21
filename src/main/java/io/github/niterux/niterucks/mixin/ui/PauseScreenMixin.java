@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameMenuScreen.class)
 public class PauseScreenMixin extends Screen {
-	@SuppressWarnings("unchecked")
 	@Inject(method = "init", at = @At("TAIL"))
 	private void addTextureButton(CallbackInfo ci) {
 		switch (ModMenuConfig.GAME_MENU_BUTTON_STYLE.getValue()) {
@@ -34,14 +33,14 @@ public class PauseScreenMixin extends Screen {
 	}
 
 	@Inject(method = "buttonClicked(Lnet/minecraft/client/gui/widget/ButtonWidget;)V", at = @At("TAIL"))
-	private void addTextureButtonHandler(ButtonWidget par1, CallbackInfo ci) {
-		if (par1.id == 700009) {
+	private void addTextureButtonHandler(ButtonWidget clickedButton, CallbackInfo ci) {
+		if (clickedButton.id == 700009) {
 			this.minecraft.openScreen(new TexturePackScreen(this));
 		}
-		if (par1.id == 900009) {
+		if (clickedButton.id == 900009) {
 			minecraft.openScreen(new ScreenshotGalleryScreen(this));
 		}
-		if (par1.id == 900010) {
+		if (clickedButton.id == 900010) {
 			this.minecraft.openScreen(new ColorCheatSheetScreen(this));
 		}
 	}

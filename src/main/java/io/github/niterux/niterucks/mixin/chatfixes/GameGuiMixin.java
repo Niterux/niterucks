@@ -40,18 +40,16 @@ public class GameGuiMixin {
 	private int getHigherMessages(int index) {
 		if (this.minecraft.screen instanceof ChatScreen && chatMessages.size() > 20) {
 			int scroll = Mouse.getDWheel();
-			if (scroll != 0) {
+			if (scroll != 0)
 				messageScrollTotal += (int) (Math.signum(scroll) * 2);
-			}
 			if (messageScrollTotal < 0)
 				messageScrollTotal = 0;
 			if (messageScrollTotal > chatMessages.size() - 20)
 				messageScrollTotal = chatMessages.size() - 20;
-			return index + messageScrollTotal;
 		} else {
 			messageScrollTotal = 0;
 		}
-		return index;
+		return index + messageScrollTotal;
 	}
 
 }

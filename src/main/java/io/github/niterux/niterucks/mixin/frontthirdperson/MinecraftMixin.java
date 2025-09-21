@@ -14,16 +14,10 @@ import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.f
 public class MinecraftMixin {
 	@ModifyExpressionValue(method = "tick()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z", opcode = Opcodes.GETFIELD))
 	private boolean addFrontFacingCamera(boolean original) {
-		if (!original) {
+		if (!original)
 			return false;
-		}
-		if (!frontThirdPersonCamera) {
-			frontThirdPersonCamera = true;
-		} else {
-			frontThirdPersonCamera = false;
-			return true;
-		}
-		return false;
+		frontThirdPersonCamera = !frontThirdPersonCamera;
+		return !frontThirdPersonCamera;
 	}
 
 	@Inject(method = "run()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z", opcode = Opcodes.PUTFIELD, ordinal = 0))
