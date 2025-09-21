@@ -1,8 +1,6 @@
 package io.github.niterux.niterucks.mixin.optimization.signs;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.platform.MemoryTracker;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.BlockEntityRendererDispatcherAccessor;
@@ -81,18 +79,17 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 		hasUpdate = false;
 	}
 
-	@WrapMethod(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V")
-	private void cullSign(SignBlockEntity signBlockEntity, double x, double y, double z, float tickDelta, Operation<Void> original) {
-		if (FrustumAccessor.getInstanceNoCompute().m_9750073(x, y, z, x + 1, y + 1, z + 1))
-			original.call(signBlockEntity, x, y, z, tickDelta);
+	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At("HEAD"), cancellable = true)
+	private void cullSign(SignBlockEntity signBlockEntity, double x, double y, double z, float tickDelta, CallbackInfo ci) {
+		if (!FrustumAccessor.getInstanceNoCompute().m_9750073(x, y, z, x + 1, y + 1, z + 1))
+			ci.cancel();
 	}
 
 	@Unique
 	private float signFacingCalculator(SignBlockEntity currentBlockEntity) {
 		int metadata = currentBlockEntity.getBlockMetadata();
-		if (currentBlockEntity.getBlock() == Block.STANDING_SIGN) {
+		if (currentBlockEntity.getBlock() == Block.STANDING_SIGN)
 			return 22.5f * metadata;
-		}
 		return switch (metadata) {
 			case 3 -> 0f;
 			case 4 -> 90f;
