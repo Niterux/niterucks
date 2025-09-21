@@ -34,14 +34,15 @@ public class PauseScreenMixin extends Screen {
 
 	@Inject(method = "buttonClicked(Lnet/minecraft/client/gui/widget/ButtonWidget;)V", at = @At("TAIL"))
 	private void addTextureButtonHandler(ButtonWidget clickedButton, CallbackInfo ci) {
-		if (clickedButton.id == 700009) {
-			this.minecraft.openScreen(new TexturePackScreen(this));
-		}
-		if (clickedButton.id == 900009) {
-			minecraft.openScreen(new ScreenshotGalleryScreen(this));
-		}
-		if (clickedButton.id == 900010) {
-			this.minecraft.openScreen(new ColorCheatSheetScreen(this));
+		switch (clickedButton.id) {
+			case 700009:
+				minecraft.openScreen(new TexturePackScreen(this));
+				break;
+			case 900009:
+				minecraft.openScreen(new ScreenshotGalleryScreen(this));
+				break;
+			case 900010:
+				minecraft.openScreen(new ColorCheatSheetScreen(this));
 		}
 	}
 
