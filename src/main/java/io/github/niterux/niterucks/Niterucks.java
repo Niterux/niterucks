@@ -18,7 +18,7 @@ import io.github.niterux.niterucks.niterucksfeatures.playerlist.pojos.ModernBeta
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.providers.BetacraftJSONRESTAPIPlayerListProvider;
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.providers.RESTAPIPlayerListProviderConfig;
 import io.github.niterux.niterucks.niterucksfeatures.screenshots.AsyncImageIOReaderWriter;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,7 +37,7 @@ public class Niterucks implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
 	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
 	public static final Gson GSON = new Gson();
-	public static final ObjectArraySet<SignBlockEntity> SIGN_DRAWLIST_OBJECT_CACHE_LIST = new ObjectArraySet<>();
+	public static final ReferenceArraySet<SignBlockEntity> SIGN_DRAWLIST_OBJECT_CACHE_LIST = new ReferenceArraySet<>();
 	public static Config CONFIG;
 
 	static {

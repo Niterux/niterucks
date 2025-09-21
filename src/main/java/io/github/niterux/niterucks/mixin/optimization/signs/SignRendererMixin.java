@@ -31,23 +31,26 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 	@Unique
 	private static final FloatBuffer modelviewMatrix = BufferUtils.createFloatBuffer(16);
 	@Unique
-	private boolean hasUpdate = false;
+	private static boolean hasUpdate = false;
 	@Unique
-	private boolean skipNextRender = false;
+	private static boolean skipNextRender = true;
 
-	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 0, shift = At.Shift.AFTER))
+	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 0, shift = At.Shift.AFTER, remap = false))
 	private void prepareTextRendering(SignBlockEntity currentBlockEntity, double x, double y, double z, float g5, CallbackInfo ci) {
-		skipNextRender = false;
+		skipNextRender = true;
+		hasUpdate = false;
 		BlockEntityRenderDispatcher publicDispatcher = ((BlockEntityRendererDispatcherAccessor) this).getRenderDispatcher();
 		if (currentBlockEntity.squaredDistanceTo(publicDispatcher.cameraX, publicDispatcher.cameraY, publicDispatcher.cameraZ) > 600d) {
-			if (!MinecraftInstanceAccessor.getMinecraft().worldRenderer.globalBlockEntities.contains(this))
-				return;
-			skipNextRender = true;
+			return;
+		}
+		if (!MinecraftInstanceAccessor.getMinecraft().worldRenderer.globalBlockEntities.contains(currentBlockEntity)) {
+			skipNextRender = false;
 			return;
 		}
 		String[] oldLines = ((SignBlockEntityInterface) currentBlockEntity).niterucks$getLinesUpdateChecker();
 		hasUpdate = !Arrays.equals(currentBlockEntity.lines, oldLines);
 		if (hasUpdate) {
+			skipNextRender = false;
 			((SignBlockEntityInterface) currentBlockEntity).niterucks$releaseList();
 			GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrix);
 			GL11.glPopMatrix();
@@ -57,7 +60,6 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 			Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.add(currentBlockEntity);
 			GL11.glNewList(newGLCallList, GL11.GL_COMPILE);
 		} else {
-			skipNextRender = true;
 			GL11.glCallList(((SignBlockEntityInterface) currentBlockEntity).niterucks$getGlCallList());
 		}
 	}
@@ -69,7 +71,7 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 		return original;
 	}
 
-	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 1))
+	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDepthMask(Z)V", ordinal = 1, remap = false))
 	private void renderAfterCompiling(SignBlockEntity currentBlockEntity, double d, double e, double f4, float g5, CallbackInfo ci) {
 		if (!hasUpdate)
 			return;
