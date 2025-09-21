@@ -34,7 +34,7 @@ public class GameGuiMixin extends GuiElement {
 	private Minecraft minecraft;
 
 	@Inject(method = "render(FZII)V", at = @At(value = "TAIL"))
-	private void renderTabMenu(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width, @Local(ordinal = 3) int height) {
+	private void renderTabMenu(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width, @Local(ordinal = 3) int height) {
 		if (!PlayerListControls.playerListKeyDown || !minecraft.isMultiplayer())
 			return;
 		String[] players = getPlayerList();

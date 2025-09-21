@@ -140,7 +140,7 @@ public class DebugMenuMixin extends GuiElement {
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
-	private void addNewInfoText(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
+	private void addNewInfoText(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
 		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset) : 0;
 		if (Niterucks.CONFIG.showSeed.get()) {
 			this.drawString(textRenderer, "Seed: " + minecraft.world.getSeed(), 2, 104, 0xd96e02);

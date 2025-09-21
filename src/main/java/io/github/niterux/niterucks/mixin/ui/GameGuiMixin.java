@@ -43,37 +43,37 @@ public class GameGuiMixin extends GuiElement {
 
 	//hotbar screen safety
 	@Inject(method = "render", at = @At("HEAD"))
-	private void getHotbarHeight(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void getHotbarHeight(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		hotbarHeight = Niterucks.CONFIG.hotbarScreenSafety.get();
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;m_1513977()I", ordinal = 0))
-	private void moveHealthMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveHealthMatrixUp(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, -hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", remap = false, ordinal = 1))
-	private void moveHealthMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveHealthMatrixBackDown(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 0))
-	private void moveHotbarMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveHotbarMatrixUp(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, -hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V", remap = false, ordinal = 1))
-	private void moveHotbarMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveHotbarMatrixBackDown(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, hotbarHeight, 0.0);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", remap = false, ordinal = 0, shift = At.Shift.AFTER))
-	private void moveItemsMatrixUp(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveItemsMatrixUp(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, -hotbarHeight, -50.0); //50 to item rendering over chat
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOff()V", ordinal = 0))
-	private void moveItemsMatrixBackDown(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci) {
+	private void moveItemsMatrixBackDown(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci) {
 		GL11.glTranslated(0.0, hotbarHeight, 50.0);
 	}
 
@@ -92,7 +92,7 @@ public class GameGuiMixin extends GuiElement {
 			remap = false
 		)
 	)
-	private void addDurability(float screenOpen, boolean mouseX, int mouseY, int par4, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
+	private void addDurability(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 3) int height, @Local(ordinal = 2) int width) {
 		ItemStack heldItem = minecraft.player.inventory.getMainHandStack();
 		if (heldItem == null)
 			return;
