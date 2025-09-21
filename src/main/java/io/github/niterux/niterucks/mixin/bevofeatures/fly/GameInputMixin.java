@@ -21,29 +21,23 @@ public class GameInputMixin extends PlayerInput {
 
 	@Inject(method = "m_7792523(IZ)V", at = @At(value = "TAIL"))
 	private void addNewInputs(int keyCode, boolean pushed, CallbackInfo ci) {
-		byte InputNum = -1;
-		if (keyCode == Niterucks.CONFIG.flyButton.get().keyCode) {
-			InputNum = 0;
-		}
-		if (keyCode == this.options.jumpKey.keyCode) {
-			InputNum = 1;
-		}
-		if (keyCode == this.options.sneakKey.keyCode) {
-			InputNum = 2;
-		}
-		if (keyCode == Niterucks.CONFIG.adjustButton.get().keyCode) {
-			InputNum = 3;
-		}
-		if (InputNum > -1) {
-			flyingControls[InputNum] = pushed;
-		}
+		byte inputNum = -1;
+		if (keyCode == Niterucks.CONFIG.flyButton.get().keyCode)
+			inputNum = 0;
+		if (keyCode == this.options.jumpKey.keyCode)
+			inputNum = 1;
+		if (keyCode == this.options.sneakKey.keyCode)
+			inputNum = 2;
+		if (keyCode == Niterucks.CONFIG.adjustButton.get().keyCode)
+			inputNum = 3;
+		if (inputNum > -1)
+			flyingControls[inputNum] = pushed;
 	}
 
 	@Inject(method = "m_6793679()V", at = @At("TAIL"))
 	private void addResetInputs(CallbackInfo ci) {
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < 3; ++i)
 			flyingControls[i] = false;
-		}
 	}
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/player/input/GameInput;sneaking:Z"))
@@ -56,10 +50,7 @@ public class GameInputMixin extends PlayerInput {
 
 	@Inject(method = "tick(Lnet/minecraft/entity/living/player/PlayerEntity;)V", at = @At("TAIL"))
 	private void speedOverride(PlayerEntity playerEntity, CallbackInfo ci) {
-		if (flying) {
+		if (flying)
 			playerEntity.updateVelocity(this.movementSideways, this.movementForward, (float) flySpeed / 20);
-		}
 	}
-
-
 }
