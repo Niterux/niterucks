@@ -44,20 +44,23 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 			skipNextRender = false;
 			return;
 		}
-		String[] oldLines = ((SignBlockEntityInterface) currentBlockEntity).niterucks$getLinesUpdateChecker();
+		SignBlockEntityInterface signInterface = (SignBlockEntityInterface) currentBlockEntity;
+		String[] oldLines = signInterface.niterucks$getLinesUpdateChecker();
 		hasUpdate = !Arrays.equals(currentBlockEntity.lines, oldLines);
 		if (hasUpdate) {
 			skipNextRender = false;
-			((SignBlockEntityInterface) currentBlockEntity).niterucks$releaseList();
+			int newGLCallList = signInterface.niterucks$getGlCallList();
+			if (newGLCallList == -1) {
+				newGLCallList = MemoryTracker.getLists(1);
+				signInterface.niterucks$setGlCallList(newGLCallList);
+			}
+			signInterface.niterucks$copyToUpdateChecker(currentBlockEntity.lines);
+			Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.add(currentBlockEntity);
 			GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrix);
 			GL11.glPopMatrix();
-			((SignBlockEntityInterface) currentBlockEntity).niterucks$copyToUpdateChecker(currentBlockEntity.lines);
-			int newGLCallList = MemoryTracker.getLists(1);
-			((SignBlockEntityInterface) currentBlockEntity).niterucks$setGlCallList(newGLCallList);
-			Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.add(currentBlockEntity);
 			GL11.glNewList(newGLCallList, GL11.GL_COMPILE);
 		} else {
-			GL11.glCallList(((SignBlockEntityInterface) currentBlockEntity).niterucks$getGlCallList());
+			GL11.glCallList(signInterface.niterucks$getGlCallList());
 		}
 	}
 

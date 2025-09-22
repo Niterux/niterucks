@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ClientNetworkHandlerMixin",
+    "ConnectionMixin",
     "CrashPanelMixin",
     "DimensionMixin",
     "FixUnknownWindowsVersionMixin",
@@ -17,7 +18,6 @@
     "NetherDimensionMixin",
     "PlayerInventoryMixin",
     "RenderChunkStorageMixin",
-    "TextRendererMixin",
     "TextureManagerMixin",
     "TorchBlockMixin",
     "WorldRendererMixin",
@@ -71,6 +71,7 @@
     "optimization.MinecraftMixin",
     "optimization.MultiplayerChunkCacheMixin",
     "optimization.ScreenshotUtilsMixin",
+    "optimization.TextRendererMixin",
     "optimization.signs.SignBlockEntityMixin",
     "optimization.signs.SignRendererMixin",
     "optimization.signs.WorldRendererMixin",

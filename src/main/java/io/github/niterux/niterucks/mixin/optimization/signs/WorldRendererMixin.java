@@ -2,6 +2,7 @@ package io.github.niterux.niterucks.mixin.optimization.signs;
 
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.SignBlockEntityInterface;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.render.Culler;
@@ -19,7 +20,7 @@ import java.util.List;
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
 	@Shadow
-	public List<BlockEntity> globalBlockEntities;
+	public List<BlockEntity> globalBlockEntities = new ReferenceArrayList<>();
 
 	@Inject(method = "renderEntities", at = @At("TAIL"))
 	private void removeOldSignDrawLists(Vec3d pos, Culler culler, float tickDelta, CallbackInfo ci) {
