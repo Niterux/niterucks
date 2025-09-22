@@ -96,7 +96,7 @@ public class TextRendererMixin {
 		return instance;
 	}
 
-	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glCallLists(Ljava/nio/IntBuffer;)V", ordinal = 2))
+	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glCallLists(Ljava/nio/IntBuffer;)V", ordinal = 2, remap = false))
 	private void sendBuffer(IntBuffer lists, Operation<Void> original) {
 		BufferBuilder.INSTANCE.end();
 	}

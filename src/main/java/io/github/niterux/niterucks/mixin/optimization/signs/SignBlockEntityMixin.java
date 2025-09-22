@@ -40,5 +40,8 @@ public class SignBlockEntityMixin implements SignBlockEntityInterface {
 		if (glCallList != -1)
 			MemoryTracker.m_1450705(glCallList);
 		glCallList = -1;
+		// Some chunks might still hold a reference to this object and add it
+		// To the global entity list later, force an update.
+		linesUpdateChecker = null;
 	}
 }
