@@ -13,7 +13,7 @@ import java.net.SocketException;
 @Mixin(Connection.class)
 public class ConnectionMixin {
 	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Ljava/net/Socket;setTrafficClass(I)V"))
-	private void thing(Socket socket, String address, PacketHandler listener, CallbackInfo ci) throws SocketException {
+	private void reducePing(Socket socket, String address, PacketHandler listener, CallbackInfo ci) throws SocketException {
 		socket.setTcpNoDelay(true);
 	}
 }
