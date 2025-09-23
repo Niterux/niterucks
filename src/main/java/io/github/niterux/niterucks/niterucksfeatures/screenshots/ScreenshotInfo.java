@@ -14,9 +14,18 @@ public class ScreenshotInfo {
 	private final Path imagePath;
 	private int glId = -1;
 	private BufferedImage image;
+	private boolean broken = false;
 
 	public ScreenshotInfo(Path imagePath) {
 		this.imagePath = imagePath;
+	}
+
+	public boolean isBroken() {
+		return broken;
+	}
+
+	public int getWidth() {
+		return getImage().getWidth();
 	}
 
 	public BufferedImage getImage() {
@@ -28,11 +37,12 @@ public class ScreenshotInfo {
 	private void loadImage() {
 		try {
 			this.image = Objects.requireNonNull(FastScreenshotUtils.getReaderForPath(imagePath)).readImageAsBufferedImage(imagePath);
+			this.broken = false;
 		} catch (Exception e) {
+			this.broken = true;
 			StringWriter stackTrace = new StringWriter();
 			PrintWriter writer = new PrintWriter(stackTrace);
 			e.printStackTrace(writer);
-			e.printStackTrace();
 			BufferedImage error = new BufferedImage(550, 256, BufferedImage.TYPE_INT_RGB);
 			Graphics2D graphics = error.createGraphics();
 			int y = 15;
@@ -42,10 +52,6 @@ public class ScreenshotInfo {
 			}
 			this.image = error;
 		}
-	}
-
-	public int getWidth() {
-		return getImage().getWidth();
 	}
 
 	public int getHeight() {

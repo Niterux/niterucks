@@ -35,10 +35,20 @@ import java.nio.ByteBuffer;
 
 public class Niterucks implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Niterucks");
-	public static final String modVersion = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
+	public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer("niterucks").orElseThrow().getMetadata().getVersion().getFriendlyString();
 	public static final Gson GSON = new Gson();
-	public static final ReferenceArraySet<SignBlockEntity> SIGN_DRAWLIST_OBJECT_CACHE_LIST = new ReferenceArraySet<>();
 	public static Config CONFIG;
+	/* This is used to avoid drawlist memory leaks, we add each sign with a
+	drawlist to this list and each frame we check the globalBlockEntities to see
+	if the worldrenderer still has the sign entity, if it doesn't then we
+	release the list and dereference the sign in our list. blockentities have
+	no method that is called when they are removed from the client/world so
+	asides from manually mixing into every method that removes blockentities
+	(which I don't prefer because that assumes that other mods aren't installed)
+	this is the best that we can do.*/
+	public static final ReferenceArraySet<SignBlockEntity> SIGN_DRAWLIST_OBJECT_CACHE_LIST = new ReferenceArraySet<>();
+	// Used to keep track of the currently connected server domain to avoid
+	// having to use reverse DNS lookups, Minecraft doesn't track this itself.
 	public static String currentServer = "";
 
 	static {

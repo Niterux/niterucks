@@ -21,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -71,19 +72,6 @@ public class FastScreenshotUtils {
 		return newFile;
 	}
 
-	public static boolean isCompatiblePath(Path imagePath) {
-		String filename = imagePath.getFileName().toString();
-		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().containsKey(filename.substring(filename.lastIndexOf('.') + 1));
-	}
-
-	@Nullable
-	public static AsyncScreenshotReaderWriter getReaderForPath(Path imagePath) {
-		if (!isCompatiblePath(imagePath))
-			return null;
-		String filename = imagePath.getFileName().toString();
-		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().get(filename.substring(filename.lastIndexOf('.') + 1));
-	}
-
 	public static BufferedImage getThumbnail(ScreenshotInfo screenshotInfo) {
 		Path cache = getThumbFile(screenshotInfo);
 		if (Files.exists(cache)) {
@@ -94,12 +82,27 @@ public class FastScreenshotUtils {
 			}
 		}
 
+		BufferedImage originalImage = screenshotInfo.getImage();
+		if (screenshotInfo.isBroken()) {
+			screenshotInfo.clearBufferedImage();
+			try {
+				return ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/broken_screenshot.png")));
+			} catch (IOException e) {
+				Niterucks.LOGGER.error("Couldn't load your screenshot thumbnail or the backup file, something has gone horribly wrong!", e);
+				var hailMary = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+				hailMary.setRGB(0, 0, 0xFF00FF);
+				hailMary.setRGB(1, 1, 0xFF00FF);
+				hailMary.setRGB(0, 1, 0x000000);
+				hailMary.setRGB(1, 0, 0x000000);
+				return hailMary;
+			}
+		}
 		int thumbWidth = Math.min(128, screenshotInfo.getWidth());
 		int thumbHeight = (int) Math.min(128, (thumbWidth / (float) screenshotInfo.getWidth()) * screenshotInfo.getHeight());
-		BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, screenshotInfo.getImage().getType());
+		BufferedImage scaled = new BufferedImage(thumbWidth, thumbHeight, originalImage.getType());
 		Graphics2D scaledGraphics = scaled.createGraphics();
 		scaledGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		scaledGraphics.drawImage(screenshotInfo.getImage(), 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
+		scaledGraphics.drawImage(originalImage, 0, 0, thumbWidth, thumbHeight, 0, 0, screenshotInfo.getWidth(), screenshotInfo.getHeight(), null);
 		screenshotInfo.clearBufferedImage();
 		try {
 			ImageIO.write(scaled, "png", Files.newOutputStream(cache));
@@ -132,5 +135,18 @@ public class FastScreenshotUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Nullable
+	public static AsyncScreenshotReaderWriter getReaderForPath(Path imagePath) {
+		if (!isCompatiblePath(imagePath))
+			return null;
+		String filename = imagePath.getFileName().toString();
+		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().get(filename.substring(filename.lastIndexOf('.') + 1));
+	}
+
+	public static boolean isCompatiblePath(Path imagePath) {
+		String filename = imagePath.getFileName().toString();
+		return ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().containsKey(filename.substring(filename.lastIndexOf('.') + 1));
 	}
 }

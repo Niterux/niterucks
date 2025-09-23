@@ -1,6 +1,8 @@
 package io.github.niterux.niterucks.mixin;
 
+import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+import io.github.niterux.niterucks.niterucksfeatures.SignBlockEntityInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.TextureManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,5 +17,11 @@ public class TextureManagerMixin {
 		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 		if (minecraft.worldRenderer != null)
 			MinecraftInstanceAccessor.getMinecraft().worldRenderer.m_6748042();
+		// Avoid drawlists from the previous font from being used.
+		var iterator = Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.iterator();
+		while (iterator.hasNext()) {
+			((SignBlockEntityInterface) iterator.next()).niterucks$releaseList();
+			iterator.remove();
+		}
 	}
 }

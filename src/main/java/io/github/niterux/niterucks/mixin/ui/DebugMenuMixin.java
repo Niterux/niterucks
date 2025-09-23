@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static io.github.niterux.niterucks.Niterucks.modVersion;
+import static io.github.niterux.niterucks.Niterucks.MOD_VERSION;
 
 @Mixin(GameGui.class)
 public class DebugMenuMixin extends GuiElement {
@@ -36,7 +36,7 @@ public class DebugMenuMixin extends GuiElement {
 	@ModifyExpressionValue(method = "render",
 		at = @At(value = "CONSTANT", args = "stringValue=Minecraft Beta 1.7.3 ("))
 	private String replaceGameName(String original) {
-		return String.format("Niterucks Client %s (", modVersion);
+		return String.format("Niterucks Client %s (", MOD_VERSION);
 	}
 
 	@ModifyArg(

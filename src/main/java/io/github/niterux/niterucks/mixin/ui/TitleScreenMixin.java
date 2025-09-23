@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static io.github.niterux.niterucks.Niterucks.modVersion;
+import static io.github.niterux.niterucks.Niterucks.MOD_VERSION;
 
 @Mixin(value = TitleScreen.class, priority = 2000)
 public class TitleScreenMixin extends Screen {
@@ -35,6 +35,6 @@ public class TitleScreenMixin extends Screen {
 
 	@Inject(method = "render(IIF)V", at = @At("TAIL"))
 	private void drawNiterucksVersionText(CallbackInfo ci) {
-		this.drawString(this.textRenderer, "Niterucks Client " + modVersion, 2, this.height - 10, 0x5336A2);
+		this.drawString(this.textRenderer, "Niterucks Client " + MOD_VERSION, 2, this.height - 10, 0x5336A2);
 	}
 }
