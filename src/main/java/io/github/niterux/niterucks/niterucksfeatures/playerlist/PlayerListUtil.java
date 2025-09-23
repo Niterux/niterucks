@@ -27,15 +27,13 @@ public class PlayerListUtil {
 
 	@Nullable
 	public static String[] getPlayerList() {
-		String[] players = null;
 		for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders()) {
-			if (players != null && players.length != 0)
+			String[] players = playerListProvider.getPlayerNames();
+			if (players == null || players.length == 0)
 				continue;
-			players = playerListProvider.getPlayerNames();
+			return players;
 		}
-		if ((players != null ? players.length : 0) == 0)
-			return null;
-		return players;
+		return null;
 	}
 
 	public static int getMaxPlayers() {

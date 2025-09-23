@@ -40,9 +40,9 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 			return;
 		totalRequestsThisSession = 0;
 		totalErrorsThisSession = 0;
+		enabled = false;
 		if (periodicDataRetriever != null)
 			periodicDataRetriever.cancel(true);
-		enabled = false;
 	}
 
 	@Override
@@ -55,7 +55,6 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 	}
 
 	private void dataReadingHandler(String serverAddress) {
-
 		HttpResponse<String> response;
 		try {
 			totalRequestsThisSession++;
