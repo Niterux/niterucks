@@ -37,6 +37,11 @@ public class ChatUtils {
 		localChatHistory.add(message);
 	}
 
+	public static String cutTextToClipboard(String messageText, int caretPos, int selectionPos) {
+		copyToClipboard(messageText, caretPos, selectionPos);
+		return cutText(messageText, caretPos, selectionPos);
+	}
+
 	public static void copyToClipboard(String messageText, int caretPos, int selectionPos) {
 		int start = Math.min(messageText.length() - caretPos, messageText.length() - selectionPos);
 		int end = Math.max(messageText.length() - caretPos, messageText.length() - selectionPos);
@@ -45,31 +50,25 @@ public class ChatUtils {
 		clipboard.setContents(data, data);
 	}
 
-	public static String cutTextToClipboard(String messageText, int caretPos, int selectionPos) {
-		copyToClipboard(messageText, caretPos, selectionPos);
-		return cutText(messageText, caretPos, selectionPos);
+	public static String cutText(String text, int caretPos, int selectionPos) {
+		int start = Math.min(text.length() - caretPos, text.length() - selectionPos);
+		int end = Math.max(text.length() - caretPos, text.length() - selectionPos);
+		return text.substring(0, start) + text.substring(end);
 	}
 
 	public static String pasteFromClipboard(String messageText, int caretPos) {
 		String result;
 		Transferable contents = clipboard.getContents(null);
 		boolean hasStringText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-		if (hasStringText) {
-			try {
-				result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-				return messageText.substring(0, messageText.length() - caretPos) + result + messageText.substring(messageText.length() - caretPos);
-			} catch (UnsupportedFlavorException | IOException ex) {
-				Niterucks.LOGGER.error("An error occurred: ", ex);
-				return messageText;
-			}
+		if (!hasStringText)
+			return messageText;
+		try {
+			result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			return messageText.substring(0, messageText.length() - caretPos) + result + messageText.substring(messageText.length() - caretPos);
+		} catch (UnsupportedFlavorException | IOException ex) {
+			Niterucks.LOGGER.error("An error occurred: ", ex);
+			return messageText;
 		}
-		return messageText;
-	}
-
-	public static String cutText(String text, int caretPos, int selectionPos) {
-		int start = Math.min(text.length() - caretPos, text.length() - selectionPos);
-		int end = Math.max(text.length() - caretPos, text.length() - selectionPos);
-		return text.substring(0, start) + text.substring(end);
 	}
 
 	public static String findMatchingPlayers(String message, int caretPos) {
@@ -88,9 +87,8 @@ public class ChatUtils {
 		if (players == null)
 			return message;
 		for (String player : players) {
-			if (player.toLowerCase().startsWith(word)) {
+			if (player.toLowerCase().startsWith(word))
 				return message.substring(0, (message.length() - caretPos) - word.length() - nonWordChars) + player + ' ' + message.substring(message.length() - caretPos);
-			}
 		}
 		return message;
 	}
@@ -101,20 +99,16 @@ public class ChatUtils {
 		boolean isRight = (direction == ChatUtils.direction.RIGHT);
 
 		if (isRight) {
-			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) == ' ') {
+			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) == ' ')
 				--cursorPosition;
-			}
-			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) != ' ') {
+			while (cursorPosition > 0 && text.charAt(textLength - cursorPosition) != ' ')
 				--cursorPosition;
-			}
 			return cursorPosition;
 		}
-		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) == ' ') {
+		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) == ' ')
 			++cursorPosition;
-		}
-		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) != ' ') {
+		while (cursorPosition < textLength && text.charAt(textLength - cursorPosition - 1) != ' ')
 			++cursorPosition;
-		}
 		return cursorPosition;
 	}
 

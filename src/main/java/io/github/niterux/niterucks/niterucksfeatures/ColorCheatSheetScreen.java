@@ -15,17 +15,6 @@ public class ColorCheatSheetScreen extends Screen {
 	}
 
 	@Override
-	public void init() {
-		//noinspection unchecked
-		this.buttons.add(new ButtonWidget(6, this.width / 2 - 49, this.height / 4 + 100, 98, 20, "Back"));
-	}
-
-	@Override
-	protected void buttonClicked(ButtonWidget button) {
-		this.minecraft.openScreen(this.parent);
-	}
-
-	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		this.renderBackground();
 
@@ -44,5 +33,15 @@ public class ColorCheatSheetScreen extends Screen {
 		for (int i = 0; i < colors.length; i++)
 			this.drawCenteredString(this.textRenderer, "§" + colors[i] + '&' + colors[i], this.width / 2 + ((i >> 3 & 1) * 140) - 70, this.height / 4 + (i & 7) * 10, 0xFFFFFF);
 		super.render(mouseX, mouseY, tickDelta);
+	}
+
+	@Override
+	protected void buttonClicked(ButtonWidget button) {
+		this.minecraft.openScreen(this.parent);
+	}
+
+	@Override
+	public void init() {
+		this.buttons.add(new ButtonWidget(6, this.width / 2 - 49, this.height / 4 + 100, 98, 20, "Back"));
 	}
 }

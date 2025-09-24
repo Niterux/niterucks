@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-// This at worst doubles fps in super sign dense areas, at best it can triple or quadruple
+// Adds frustum culling, distance culling, and puts the text into a cached drawlist
 @Mixin(SignRenderer.class)
 public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEntity> {
 	@Unique
@@ -47,21 +47,21 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 		SignBlockEntityInterface signInterface = (SignBlockEntityInterface) currentBlockEntity;
 		String[] oldLines = signInterface.niterucks$getLinesUpdateChecker();
 		hasUpdate = !Arrays.equals(currentBlockEntity.lines, oldLines);
-		if (hasUpdate) {
-			skipNextRender = false;
-			int newGLCallList = signInterface.niterucks$getGlCallList();
-			if (newGLCallList == -1) {
-				newGLCallList = MemoryTracker.getLists(1);
-				signInterface.niterucks$setGlCallList(newGLCallList);
-			}
-			signInterface.niterucks$copyToUpdateChecker(currentBlockEntity.lines);
-			Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.add(currentBlockEntity);
-			GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrix);
-			GL11.glPopMatrix();
-			GL11.glNewList(newGLCallList, GL11.GL_COMPILE);
-		} else {
+		if (!hasUpdate) {
 			GL11.glCallList(signInterface.niterucks$getGlCallList());
+			return;
 		}
+		skipNextRender = false;
+		int newGLCallList = signInterface.niterucks$getGlCallList();
+		if (newGLCallList == -1) {
+			newGLCallList = MemoryTracker.getLists(1);
+			signInterface.niterucks$setGlCallList(newGLCallList);
+		}
+		signInterface.niterucks$copyToUpdateChecker(currentBlockEntity.lines);
+		Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.add(currentBlockEntity);
+		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelviewMatrix);
+		GL11.glPopMatrix();
+		GL11.glNewList(newGLCallList, GL11.GL_COMPILE);
 	}
 
 	@ModifyExpressionValue(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At(value = "CONSTANT", args = "intValue=0", ordinal = 3))

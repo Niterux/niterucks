@@ -32,30 +32,12 @@ public class ScreenshotViewerScreen extends Screen {
 	}
 
 	@Override
-	public void init() {
-		imageDisplayHeight = Math.min(image.getHeight(), height - 80);
-		imageDisplayWidth = Math.min(width - 105, imageDisplayHeight * image.getWidth() / image.getHeight());
-		imageDisplayHeight = Math.min(imageDisplayWidth * image.getHeight() / image.getWidth(), imageDisplayHeight);
-		x = width / 2 - imageDisplayWidth / 2;
-		y = height / 2 - imageDisplayHeight / 2;
-		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
-		buttons.add(new ButtonWidget(1, x + imageDisplayWidth + 2, y, 50, 20, "Copy"));
-		if (Desktop.isDesktopSupported())
-			buttons.add(new ButtonWidget(2, x + imageDisplayWidth + 2, y + 24, 50, 20, "Open"));
-	}
-
-	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		renderBackground();
-
 		minecraft.textureManager.bind(glId);
-
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-
 		TextureUtil.renderTexturePortion(x, y, imageDisplayWidth + x, y + imageDisplayHeight, 0, 0, imageVMax, imageUMax);
-
 		drawCenteredString(minecraft.textRenderer, image.getImagePath().getFileName().toString(), width / 2, 20, -1);
-
 		super.render(mouseX, mouseY, tickDelta);
 	}
 
@@ -76,14 +58,29 @@ public class ScreenshotViewerScreen extends Screen {
 	}
 
 	@Override
+	public void init() {
+		imageDisplayHeight = Math.min(image.getHeight(), height - 80);
+		imageDisplayWidth = Math.min(width - 105, imageDisplayHeight * image.getWidth() / image.getHeight());
+		imageDisplayHeight = Math.min(imageDisplayWidth * image.getHeight() / image.getWidth(), imageDisplayHeight);
+		x = width / 2 - imageDisplayWidth / 2;
+		y = height / 2 - imageDisplayHeight / 2;
+		buttons.add(new ButtonWidget(0, width / 2 - 75, height - 35, 150, 20, "Back"));
+		buttons.add(new ButtonWidget(1, x + imageDisplayWidth + 2, y, 50, 20, "Copy"));
+		if (Desktop.isDesktopSupported())
+			buttons.add(new ButtonWidget(2, x + imageDisplayWidth + 2, y + 24, 50, 20, "Open"));
+	}
+
+	@Override
 	public void handleKeyboard() {
-		if (Keyboard.getEventKey() == 1) {
-			image.release();
-			this.minecraft.openScreen(null);
-			this.minecraft.closeScreen();
-			return;
+		switch (Keyboard.getEventKey()) {
+			case 1:
+				image.release();
+				this.minecraft.openScreen(null);
+				this.minecraft.closeScreen();
+				break;
+			default:
+				super.handleKeyboard();
 		}
-		super.handleKeyboard();
 	}
 
 	private void copyImageToClipboard() {
@@ -122,8 +119,6 @@ public class ScreenshotViewerScreen extends Screen {
 	}
 
 	private void openImage() {
-		if (!Desktop.isDesktopSupported())
-			throw new IllegalStateException("openImage called when the awt desktop isn't supported!");
 		try {
 			Desktop.getDesktop().open(image.getImagePath().toFile());
 		} catch (IOException | IllegalArgumentException e) {

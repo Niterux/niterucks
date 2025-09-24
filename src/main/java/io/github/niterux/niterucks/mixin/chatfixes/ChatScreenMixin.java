@@ -211,6 +211,6 @@ public class ChatScreenMixin extends Screen {
 	private void clickToMoveCaret(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 		if (mouseY <= this.height - 14)
 			return;
-		moveCaret(this.lastChatMessage.length() - MiscUtils.fastTextPosGet(this.lastChatMessage, mouseX - this.textRenderer.getWidth("> ") - 4, this.textRenderer));
+		moveCaret(this.lastChatMessage.length() - MiscUtils.getCharacterRenderedXPositionInAString(this.lastChatMessage, mouseX - this.textRenderer.getWidth("> ") - 4, this.textRenderer));
 	}
 }

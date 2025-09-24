@@ -28,6 +28,22 @@ import java.util.concurrent.CompletableFuture;
  * A multithreaded better performing version of Minecraft's built in ScreenshotUtils
  */
 public class FastScreenshotUtils {
+	private static final BufferedImage missingScreenshot;
+
+	static {
+		BufferedImage missingScreenshot1;
+		try {
+			missingScreenshot1 = ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/broken_screenshot.png")));
+		} catch (IOException e) {
+			Niterucks.LOGGER.error("Couldn't read the broken screenshot placeholder file!", e);
+			missingScreenshot1 = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+			missingScreenshot1.setRGB(0, 0, 0xFF00FF);
+			missingScreenshot1.setRGB(1, 1, 0xFF00FF);
+			missingScreenshot1.setRGB(0, 1, 0x000000);
+			missingScreenshot1.setRGB(1, 0, 0x000000);
+		}
+		missingScreenshot = missingScreenshot1;
+	}
 
 	public static void takeScreenshot() {
 		AsyncScreenshotReaderWriter screenshotReaderWriter = ScreenshotFormatRegistry.getRegisteredScreenshotReaderWriters().get(Niterucks.CONFIG.screenshotFormat.get());
@@ -85,17 +101,7 @@ public class FastScreenshotUtils {
 		BufferedImage originalImage = screenshotInfo.getImage();
 		if (screenshotInfo.isBroken()) {
 			screenshotInfo.clearBufferedImage();
-			try {
-				return ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/broken_screenshot.png")));
-			} catch (IOException e) {
-				Niterucks.LOGGER.error("Couldn't load your screenshot thumbnail or the backup file, something has gone horribly wrong!", e);
-				var hailMary = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
-				hailMary.setRGB(0, 0, 0xFF00FF);
-				hailMary.setRGB(1, 1, 0xFF00FF);
-				hailMary.setRGB(0, 1, 0x000000);
-				hailMary.setRGB(1, 0, 0x000000);
-				return hailMary;
-			}
+			return missingScreenshot;
 		}
 		int thumbWidth = Math.min(128, screenshotInfo.getWidth());
 		int thumbHeight = (int) Math.min(128, (thumbWidth / (float) screenshotInfo.getWidth()) * screenshotInfo.getHeight());

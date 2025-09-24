@@ -59,9 +59,8 @@ public class ScreenshotInfo {
 	}
 
 	public int getGlId() {
-		if (glId == -1) {
+		if (glId == -1)
 			glId = TextureUtil.putBufferedImageIntoGlId(getImage());
-		}
 		return glId;
 	}
 
@@ -70,10 +69,10 @@ public class ScreenshotInfo {
 	}
 
 	public void release() {
-		if (glId != -1) {
-			GL11.glDeleteTextures(glId);
-			glId = -1;
-		}
+		if (glId == -1)
+			return;
+		GL11.glDeleteTextures(glId);
+		glId = -1;
 	}
 
 	public void clearBufferedImage() {

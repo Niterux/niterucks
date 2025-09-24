@@ -3,10 +3,8 @@ package io.github.niterux.niterucks.bevofeatures;
 import com.google.gson.JsonSyntaxException;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.slf4j.Logger;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class BetaEVOPacketDecoder {
 	private static final Logger logger = Niterucks.LOGGER;
@@ -14,9 +12,8 @@ public class BetaEVOPacketDecoder {
 	public static void decode(String PacketData) {
 		try {
 			BetaEVOPacketPOJO[] data = Niterucks.GSON.fromJson(PacketData, BetaEVOPacketPOJO[].class);
-			for (BetaEVOPacketPOJO datum : data) {
+			for (BetaEVOPacketPOJO datum : data)
 				decodeUpdate(datum);
-			}
 		} catch (JsonSyntaxException e) {
 			logger.warn("Invalid BetaEvo packet data received! Outdated client?");
 		}
@@ -40,8 +37,7 @@ public class BetaEVOPacketDecoder {
 				basicNameTagUpdate(data);
 				break;
 			case "playerList":
-				if (data.protocol == 1)
-					playerListUpdate(data.players);
+				playerListUpdate(data.players);
 				break;
 			case "privileges":
 				if (data.protocol == 3)
@@ -88,35 +84,32 @@ public class BetaEVOPacketDecoder {
 		addNameTagData(data.player, realColor, isRainbow);
 	}
 
-	private static void addNameTagData(String name, int color, boolean rainbow) {
-		if (BetaEVO.playerList.containsKey(name)) {
-			PlayerNameStatus currPlayer = BetaEVO.playerList.get(name);
-			currPlayer.color = color;
-			currPlayer.isRainbow = rainbow;
-			BetaEVO.playerList.put(name, currPlayer);
-		} else {
-			BetaEVO.playerList.put(name, new PlayerNameStatus(name, color, rainbow));
+	private static void playerListUpdate(PlayerPOJO[] players) {
+		BetaEVO.playerListPacketReceived = true;
+		ObjectArrayList<String> playersNames = new ObjectArrayList<>(players.length);
+		for (PlayerPOJO player : players)
+			playersNames.add(player.name);
+		var iterator = BetaEVO.playerList.object2ObjectEntrySet().fastIterator();
+		while (iterator.hasNext()) {
+			var entry = iterator.next();
+			var name = entry.getKey();
+			if (!playersNames.contains(name)) {
+				iterator.remove();
+				continue;
+			}
+			PlayerPOJO player = players[playersNames.indexOf(name)];
+			entry.setValue(new PlayerNameStatus(player.name, player.displayName, player.prefix));
 		}
 	}
 
-	private static void playerListUpdate(PlayerPOJO[] players) {
-		Niterucks.LOGGER.info("RECEIVED PLAYER LIST UPDATE!!!!!!!!!");
-		BetaEVO.playerListPacketReceived = true;
-		Set<String> playersToRemove = new HashSet<>(BetaEVO.playerList.keySet());
-		PlayerNameStatus currPlayer;
-		for (PlayerPOJO player : players) {
-			if (BetaEVO.playerList.containsKey(player.name)) {
-				playersToRemove.remove(player.name);
-				currPlayer = BetaEVO.playerList.get(player.name);
-				currPlayer.prefix = player.prefix;
-				currPlayer.nickname = player.displayName;
-				BetaEVO.playerList.put(player.name, currPlayer);
-			} else {
-				BetaEVO.playerList.put(player.name, new PlayerNameStatus(player.name, player.displayName, player.prefix));
-			}
+	private static void addNameTagData(String name, int color, boolean rainbow) {
+		if (!BetaEVO.playerList.containsKey(name)) {
+			BetaEVO.playerList.put(name, new PlayerNameStatus(name, color, rainbow));
+			return;
 		}
-		for (String player : playersToRemove) {
-			BetaEVO.playerList.remove(player);
-		}
+		PlayerNameStatus currPlayer = BetaEVO.playerList.get(name);
+		currPlayer.color = color;
+		currPlayer.isRainbow = rainbow;
+		BetaEVO.playerList.put(name, currPlayer);
 	}
 }

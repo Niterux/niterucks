@@ -28,19 +28,19 @@ public class ScreenshotWidget extends ButtonWidget {
 
 	@Override
 	public void render(Minecraft minecraft, int mouseX, int mouseY) {
-		if (this.visible) {
-			hovered = this.isMouseOver(minecraft, mouseX, mouseY);
-			DrawUtil.outlineRect(this.x, this.y, width, height, hovered ? -1 : Colors.foreground().toInt());
+		if (!this.visible)
+			return;
+		hovered = this.isMouseOver(minecraft, mouseX, mouseY);
+		DrawUtil.outlineRect(this.x, this.y, width, height, hovered ? -1 : Colors.foreground().toInt());
 
-			GlStateManager.color3f(1, 1, 1);
-			if (glId != -1) {
-				GlStateManager.enableTexture();
-				minecraft.textureManager.bind(glId);
-				renderTexturePortion(this.x + 1, imageY, this.x + imageWidth, imageY + imageHeight, 0, 0,
-					getPowerOf2Ratio(resolvedImageWidth), getPowerOf2Ratio(resolvedImageHeight));
-			}
-			DrawUtil.drawScrollingText(message, x + 1, y + height - 11, width - 2, 10, Colors.accent());
-		}
+		GlStateManager.color3f(1, 1, 1);
+		DrawUtil.drawScrollingText(message, x + 1, y + height - 11, width - 2, 10, Colors.accent());
+		if (glId == -1)
+			return;
+		GlStateManager.enableTexture();
+		minecraft.textureManager.bind(glId);
+		renderTexturePortion(this.x + 1, imageY, this.x + imageWidth, imageY + imageHeight, 0, 0,
+			getPowerOf2Ratio(resolvedImageWidth), getPowerOf2Ratio(resolvedImageHeight));
 	}
 
 	public void clearBufferedImage() {

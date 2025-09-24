@@ -21,9 +21,8 @@ public class MiscUtils {
 		int[] is = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
 		ByteBuffer byteBuffer = ByteBuffer.allocate(4 * is.length);
 
-		for (int k : is) {
+		for (int k : is)
 			byteBuffer.putInt(k << 8 | k >> 24 & 0xFF);
-		}
 
 		byteBuffer.flip();
 		return byteBuffer;
@@ -33,9 +32,8 @@ public class MiscUtils {
 		int stringLength = textRenderer.getWidth(text);
 		double insertionPoints = (double) stringLength / (colorCodes.length);
 		text = insertText(text, "§" + colorCodes[0], 0);
-		for (int i = 1; i < colorCodes.length; i++) {
-			text = insertText(text, "§" + colorCodes[i], fastTextPosGet(text, (int) Math.round(insertionPoints * i), textRenderer));
-		}
+		for (int i = 1; i < colorCodes.length; i++)
+			text = insertText(text, "§" + colorCodes[i], getCharacterRenderedXPositionInAString(text, (int) Math.round(insertionPoints * i), textRenderer));
 		return text;
 	}
 
@@ -45,35 +43,28 @@ public class MiscUtils {
 		return text.substring(0, index) + textToInsert + text.substring(index);
 	}
 
-	public static int fastTextPosGet(String text, int xPos, TextRenderer textRenderer) {
+	public static int getCharacterRenderedXPositionInAString(String text, int xPos, TextRenderer textRenderer) {
 		int newWidth;
-		if (text == null) {
+		if (text == null)
 			return 0;
-		} else {
-			if (xPos > textRenderer.getWidth(text)) {
-				return text.length();
-			}
-			int textWidth = 0;
+		if (xPos > textRenderer.getWidth(text))
+			return text.length();
+		int textWidth = 0;
 
-			int currentCharacter;
-			for (currentCharacter = 0; currentCharacter < text.length(); ++currentCharacter) {
-				if (text.charAt(currentCharacter) == 167) {
-					++currentCharacter;
-				} else {
-					int validCharacter = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(text.charAt(currentCharacter));
-					if (validCharacter >= 0) {
-						newWidth = textWidth + ((TextRendererCharacterWidthsAccessor) textRenderer).getCharacterWidths()[validCharacter + 32];
-						if (newWidth > xPos) {
-							return currentCharacter;
-						} else {
-							textWidth = newWidth;
-						}
-					}
-				}
-			}
-
-			return currentCharacter;
+		int currentCharacter;
+		for (currentCharacter = 0; currentCharacter < text.length(); ++currentCharacter) {
+			if (text.charAt(currentCharacter) == '§')
+				continue;
+			int validCharacter = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(text.charAt(currentCharacter));
+			if (validCharacter < 0)
+				continue;
+			newWidth = textWidth + ((TextRendererCharacterWidthsAccessor) textRenderer).getCharacterWidths()[validCharacter + 32];
+			if (newWidth > xPos) {
+				return currentCharacter;
+			} else
+				textWidth = newWidth;
 		}
+		return currentCharacter;
 	}
 
 	public static String insertText(String text, char textToInsert, int index) {

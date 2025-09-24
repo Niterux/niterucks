@@ -31,7 +31,6 @@ public class NiterucksAuthMeScreen extends io.github.axolotlclient.AxolotlClient
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		super.render(mouseX, mouseY, delta);
-
 		drawCenteredString(MinecraftInstanceAccessor.getMinecraft().textRenderer,
 			getTitle(), width / 2, 15, -1);
 	}
@@ -41,12 +40,12 @@ public class NiterucksAuthMeScreen extends io.github.axolotlclient.AxolotlClient
 		int x = Mouse.getEventX() * this.width / this.minecraft.width;
 		int y = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
 		int button = Mouse.getEventButton();
+		// TODO make nicer
 		if (Mouse.getEventButtonState()) {
 			this.lastButton = button;
 			this.lastUpdateTime = System.currentTimeMillis();
 			this.mouseClicked(x, y, this.lastButton);
 		} else if (button != -1) {
-
 			this.lastButton = -1;
 			this.mouseReleased(x, y, button);
 		} else if (this.lastButton != -1 && this.lastUpdateTime > 0L) {

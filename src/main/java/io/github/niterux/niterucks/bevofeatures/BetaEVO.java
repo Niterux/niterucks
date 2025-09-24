@@ -1,8 +1,8 @@
 package io.github.niterux.niterucks.bevofeatures;
 
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class BetaEVO {
-	public static HashMap<String, PlayerNameStatus> playerList = new HashMap<>();
+	public static Object2ObjectOpenHashMap<String, PlayerNameStatus> playerList = new Object2ObjectOpenHashMap<>();
 	public static boolean playerListPacketReceived = false;
 }
