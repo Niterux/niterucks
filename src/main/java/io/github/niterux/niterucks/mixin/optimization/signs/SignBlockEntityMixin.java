@@ -11,7 +11,19 @@ public class SignBlockEntityMixin implements SignBlockEntityInterface {
 	@Unique
 	private int glCallList = -1;
 	@Unique
+	private boolean renderCheck = false;
+	@Unique
 	private String[] linesUpdateChecker = new String[]{"", "", "", ""};
+
+	@Override
+	public boolean niterucks$getRenderCheck() {
+		return renderCheck;
+	}
+
+	@Override
+	public void niterucks$setRenderCheck(boolean renderCheck) {
+		this.renderCheck = renderCheck;
+	}
 
 	@Override
 	public int niterucks$getGlCallList() {

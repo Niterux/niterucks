@@ -83,7 +83,8 @@ public abstract class SignRendererMixin extends BlockEntityRenderer<SignBlockEnt
 	}
 
 	@Inject(method = "render(Lnet/minecraft/block/entity/SignBlockEntity;DDDF)V", at = @At("HEAD"), cancellable = true)
-	private void cullSign(SignBlockEntity signBlockEntity, double x, double y, double z, float tickDelta, CallbackInfo ci) {
+	private void cullSign(SignBlockEntity currentBlockEntity, double x, double y, double z, float tickDelta, CallbackInfo ci) {
+		((SignBlockEntityInterface) currentBlockEntity).niterucks$setRenderCheck(true);
 		if (!FrustumAccessor.getInstanceNoCompute().m_9750073(x, y, z, x + 1, y + 1, z + 1))
 			ci.cancel();
 	}
