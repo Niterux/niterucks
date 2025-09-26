@@ -2,6 +2,7 @@ package io.github.niterux.niterucks.mixin.playerlist;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.NameSort;
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListControls;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
@@ -40,7 +41,7 @@ public class GameGuiMixin extends GuiElement {
 		String[] players = getPlayerList();
 		if (players == null)
 			return;
-		Arrays.sort(players);
+		Arrays.sort(players, NameSort.INSTANCE);
 		int playerListDrawY = Math.max(height / (VERTICAL_MARGINAL_AREA * 2), PLAYER_COUNT_Y_OFFSET);
 		int playerListMaxHeight = height * (VERTICAL_MARGINAL_AREA - 2) / VERTICAL_MARGINAL_AREA;
 		int maxPlayersInAColumn = playerListMaxHeight / VERTICAL_SPACING;
