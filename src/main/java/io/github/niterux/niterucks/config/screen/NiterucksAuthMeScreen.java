@@ -9,7 +9,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Vanil
 import io.github.niterux.niterucks.config.optionstorage.AuthMeWholeListOptionStorage;
 import io.github.niterux.niterucks.config.widget.AuthMeListWidget;
 import io.github.niterux.niterucks.config.widget.NiterucksCategoryListWidget;
-import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.resource.language.I18n;
 import org.lwjgl.input.Mouse;
@@ -31,7 +30,7 @@ public class NiterucksAuthMeScreen extends io.github.axolotlclient.AxolotlClient
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		super.render(mouseX, mouseY, delta);
-		drawCenteredString(MinecraftInstanceAccessor.getMinecraft().textRenderer,
+		drawCenteredString(minecraft.textRenderer,
 			getTitle(), width / 2, 15, -1);
 	}
 
@@ -69,7 +68,7 @@ public class NiterucksAuthMeScreen extends io.github.axolotlclient.AxolotlClient
 	public void init() {
 		this.addDrawableChild(new AuthMeListWidget(this.configManager, this.category, this.width, this.height, 35, this.height - 45, 25));
 		this.addDrawableChild(new NiterucksCategoryListWidget(this.configManager, this.category, Math.min(width / 4, 410), this.height, 35, this.height - 45, 25));
-		this.addDrawableChild(new VanillaButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20, I18n.translate("gui.back"), (w) -> MinecraftInstanceAccessor.getMinecraft().openScreen(parent)));
+		this.addDrawableChild(new VanillaButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20, I18n.translate("gui.back"), (w) -> minecraft.openScreen(parent)));
 	}
 
 	@Override

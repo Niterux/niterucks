@@ -16,7 +16,7 @@ public class TextureManagerMixin {
 	private void reloadChunks(CallbackInfo ci) {
 		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 		if (minecraft.worldRenderer != null)
-			MinecraftInstanceAccessor.getMinecraft().worldRenderer.m_6748042();
+			minecraft.worldRenderer.m_6748042();
 		// Avoid drawlists from the previous font from being used.
 		var iterator = Niterucks.SIGN_DRAWLIST_OBJECT_CACHE_LIST.iterator();
 		while (iterator.hasNext()) {

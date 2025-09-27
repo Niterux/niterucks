@@ -34,24 +34,4 @@ public class ScreenshotUtilsMixin {
 		FastScreenshotUtils.takeScreenshot();
 		return null;
 	}
-/*
-	//I can't capture the BufferedImage using @Local or @ModifyVariable for some reason, tried really hard I promise, unfortunately this is the only way.
-	//New multithreading by Wagyourtail
-	@WrapOperation(method = "saveScreenshot", at = @At(value = "INVOKE", target = "Ljava/awt/image/BufferedImage;setRGB(IIII[III)V"))
-	private static void onSaveScreenshot(BufferedImage instance, int off, int y, int i, int startX, int[] startY, int w, int h, Operation<Void> original, @Share("future") LocalRef<CompletableFuture<Void>> future) {
-		future.set(CompletableFuture.runAsync(() -> original.call(instance, off, y, i, startX, startY, w, h)));
-	}
-
-	@WrapOperation(method = "saveScreenshot", at = @At(value = "INVOKE", target = "Ljavax/imageio/ImageIO;write(Ljava/awt/image/RenderedImage;Ljava/lang/String;Ljava/io/File;)Z"))
-	private static boolean onSave(RenderedImage im, String formatName, File output, Operation<Boolean> original, @Share("future") LocalRef<CompletableFuture<Void>> future) {
-		future.get().thenRun(() -> {
-			try {
-				original.call(im, formatName, output);
-			} catch (Exception e) {
-				Niterucks.LOGGER.error("Failed to save screenshot", e);
-				MinecraftInstanceAccessor.getMinecraft().gui.addChatMessage(MessageFormat.format("Failed to save screenshot {0}", e));
-			}
-		});
-		return true;
-	}*/
 }

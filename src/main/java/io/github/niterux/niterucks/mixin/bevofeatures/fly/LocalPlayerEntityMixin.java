@@ -1,7 +1,6 @@
 package io.github.niterux.niterucks.mixin.bevofeatures.fly;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.InputPlayerEntity;
@@ -33,7 +32,7 @@ public class LocalPlayerEntityMixin extends InputPlayerEntity {
 		} else if (this.onGround) {
 			flyingTouchedGround = true;
 		}
-		if (MinecraftInstanceAccessor.getMinecraft().screen == null) {
+		if (minecraft.screen == null) {
 			if (flyingControls[0]) {
 				if (flyAllowed & !flyingButtonHeld)
 					flying = !flying;

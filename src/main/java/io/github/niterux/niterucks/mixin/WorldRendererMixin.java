@@ -1,10 +1,11 @@
 package io.github.niterux.niterucks.mixin;
 
 import io.github.niterux.niterucks.Niterucks;
-import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import io.github.niterux.niterucks.niterucksfeatures.RainbowManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.world.WorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -12,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
+	@Shadow
+	private Minecraft minecraft;
+
 	@ModifyArgs(method = "renderBlockOutline(Lnet/minecraft/entity/living/player/PlayerEntity;Lnet/minecraft/world/HitResult;ILnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glColor4f(FFFF)V", remap = false))
 	private void rainbowOutline(Args args) {
 		if (!Niterucks.CONFIG.rainbowBlockOutline.get())
@@ -25,6 +29,6 @@ public class WorldRendererMixin {
 
 	@ModifyArg(method = "renderBlockOutline(Lnet/minecraft/entity/living/player/PlayerEntity;Lnet/minecraft/world/HitResult;ILnet/minecraft/item/ItemStack;F)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glLineWidth(F)V", remap = false))
 	private float fixWidth(float width) {
-		return width * MinecraftInstanceAccessor.getMinecraft().height / 480f;
+		return width * minecraft.height / 480f;
 	}
 }
