@@ -1,17 +1,20 @@
 package io.github.niterux.niterucks.bevofeatures;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.client.Minecraft;
 import org.slf4j.Logger;
 
 public class BetaEVOPacketDecoder {
 	private static final Logger logger = Niterucks.LOGGER;
+	private static final Gson gson = Niterucks.GSON;
 
 	public static void decode(String PacketData) {
 		try {
-			BetaEVOPacketPOJO[] data = Niterucks.GSON.fromJson(PacketData, BetaEVOPacketPOJO[].class);
+			BetaEVOPacketPOJO[] data = gson.fromJson(PacketData, BetaEVOPacketPOJO[].class);
 			for (BetaEVOPacketPOJO datum : data)
 				decodeUpdate(datum);
 		} catch (JsonSyntaxException e) {
@@ -20,13 +23,16 @@ public class BetaEVOPacketDecoder {
 	}
 
 	private static void decodeUpdate(BetaEVOPacketPOJO data) {
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 		switch (data.updateType) {
 			case "handshake":
-				if (data.protocol == 2)
-					MinecraftInstanceAccessor.getMinecraft().getNetworkHandler().sendPacket(new BetaEVOPacket("[{\"protocol\":3,\"clientBrand\":\"Niterucks\",\"updateType\":\"handshake\"}]"));
+				if (data.protocol >= 2) {
+					var responsePacket = new BetaEVOPacket(gson.toJson(new HandshakeResponse[]{new HandshakeResponse()}));
+					minecraft.getNetworkHandler().sendPacket(responsePacket);
+				}
 				break;
 			case "fly":
-				if (data.protocol == 1)
+				if (data.protocol >= 1)
 					BetaEVOFlyHelper.flyAllowed = data.enabled;
 				break;
 			case "complexNameTagUpdate":
@@ -40,7 +46,7 @@ public class BetaEVOPacketDecoder {
 				playerListUpdate(data.players);
 				break;
 			case "privileges":
-				if (data.protocol == 3)
+				if (data.protocol >= 3)
 					BetaEVOFlyHelper.flyAllowed = data.privileges.fly;
 				break;
 			case "none":
