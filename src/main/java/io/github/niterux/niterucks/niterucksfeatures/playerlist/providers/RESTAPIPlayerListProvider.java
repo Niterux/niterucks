@@ -38,6 +38,7 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 	public void onDisconnectedFromServer() {
 		if (!enabled)
 			return;
+		players = null;
 		totalRequestsThisSession = 0;
 		totalErrorsThisSession = 0;
 		enabled = false;
@@ -61,10 +62,9 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			this.players = dataHandler(response.body(), serverAddress);
 		} catch (Exception e) {
-			totalErrorsThisSession++;
-			players = null;
-			Niterucks.LOGGER.warn("Receiving data from player list api failed! {}", e.getClass().getName());
-			if ((totalRequestsThisSession + 5) / totalErrorsThisSession <= 2) {
+			this.players = null;
+			Niterucks.LOGGER.warn("Receiving data from player list api failed! {}, from {}", e.getClass().getName(), config.toString());
+			if ((totalRequestsThisSession + 5) / (totalErrorsThisSession++) <= 2) {
 				Niterucks.LOGGER.info("Stopping problematic RESTAPIPlayerListProvider {}", config.toString());
 				Niterucks.LOGGER.info("totalRequestsThisSession: {}, totalErrorsThisSession: {}", totalRequestsThisSession, totalErrorsThisSession);
 				Niterucks.LOGGER.debug("Stacktrace for API error: ", e);

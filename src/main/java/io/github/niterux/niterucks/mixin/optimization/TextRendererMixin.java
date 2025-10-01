@@ -84,14 +84,13 @@ public class TextRendererMixin {
 	@WrapOperation(method = "drawLayer(Ljava/lang/String;IIIZ)V", at = @At(value = "INVOKE", target = "Ljava/nio/IntBuffer;put(I)Ljava/nio/IntBuffer;", ordinal = 1))
 	private IntBuffer manuallyDrawChar(IntBuffer instance, int drawListIndex, Operation<IntBuffer> original, @Share("characterXOffset") LocalIntRef characterXOffset) {
 		var bufferBuilder = BufferBuilder.INSTANCE;
-		double[] charVertices = new double[16];
 		int pageIndex = drawListIndex - boundPage;
 		int xOffset = characterXOffset.get();
-		vertices.getElements(pageIndex * 16, charVertices, 0, 16);
-		bufferBuilder.vertex(charVertices[0] + xOffset, charVertices[1], 0, charVertices[2], charVertices[3]);
-		bufferBuilder.vertex(charVertices[4] + xOffset, charVertices[5], 0, charVertices[6], charVertices[7]);
-		bufferBuilder.vertex(charVertices[8] + xOffset, charVertices[9], 0, charVertices[10], charVertices[11]);
-		bufferBuilder.vertex(charVertices[12] + xOffset, charVertices[13], 0, charVertices[14], charVertices[15]);
+		int index = pageIndex * 16;
+		bufferBuilder.vertex(vertices.getDouble(index) + xOffset, vertices.getDouble(index + 1), 0, vertices.getDouble(index + 2), vertices.getDouble(index + 3));
+		bufferBuilder.vertex(vertices.getDouble(index + 4) + xOffset, vertices.getDouble(index + 5), 0, vertices.getDouble(index + 6), vertices.getDouble(index + 7));
+		bufferBuilder.vertex(vertices.getDouble(index + 8) + xOffset, vertices.getDouble(index + 9), 0, vertices.getDouble(index + 10), vertices.getDouble(index + 11));
+		bufferBuilder.vertex(vertices.getDouble(index + 12) + xOffset, vertices.getDouble(index + 13), 0, vertices.getDouble(index + 14), vertices.getDouble(index + 15));
 		characterXOffset.set(xOffset + characterWidths[pageIndex]);
 		return instance;
 	}

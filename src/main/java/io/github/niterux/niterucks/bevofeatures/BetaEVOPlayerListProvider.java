@@ -1,9 +1,9 @@
 package io.github.niterux.niterucks.bevofeatures;
 
 import io.github.niterux.niterucks.api.playerlist.PlayerListProvider;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class BetaEVOPlayerListProvider implements PlayerListProvider {
@@ -11,7 +11,7 @@ public class BetaEVOPlayerListProvider implements PlayerListProvider {
 	public @Nullable String[] getPlayerNames() {
 		if (BetaEVO.playerList.isEmpty() || !BetaEVO.playerListPacketReceived)
 			return null;
-		ArrayList<String> players = new ArrayList<>();
+		ObjectArrayList<String> players = new ObjectArrayList<>(BetaEVO.playerList.size());
 		for (PlayerNameStatus playerNameStatus : BetaEVO.playerList.values()) {
 			String playerName = "";
 			if (playerNameStatus.getName() != null)

@@ -1,16 +1,16 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
 import io.github.niterux.niterucks.Niterucks;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getPlayerList;
 
 public class ChatUtils {
-	private static final ArrayList<String> localChatHistory = new ArrayList<>();
+	private static final ObjectArrayList<String> localChatHistory = new ObjectArrayList<>(100);
 	private static final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
 	public static int makeIndexValid(int index) {
@@ -57,13 +57,12 @@ public class ChatUtils {
 	}
 
 	public static String pasteFromClipboard(String messageText, int caretPos) {
-		String result;
-		Transferable contents = clipboard.getContents(null);
-		boolean hasStringText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-		if (!hasStringText)
-			return messageText;
 		try {
-			result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			Transferable contents = clipboard.getContents(null);
+			boolean hasStringText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+			if (!hasStringText)
+				return messageText;
+			String result = (String) contents.getTransferData(DataFlavor.stringFlavor);
 			return messageText.substring(0, messageText.length() - caretPos) + result + messageText.substring(messageText.length() - caretPos);
 		} catch (UnsupportedFlavorException | IOException ex) {
 			Niterucks.LOGGER.error("An error occurred: ", ex);
