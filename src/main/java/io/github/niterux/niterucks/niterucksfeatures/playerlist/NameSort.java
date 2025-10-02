@@ -9,19 +9,15 @@ public class NameSort implements Comparator<String> {
 	public int compare(String string1, String string2) {
 		if (string1.equals(string2))
 			return 0;
-		char[] string1AsChars = new char[string1.length()];
-		char[] string2AsChars = new char[string2.length()];
-		string1.getChars(0, string1.length(), string1AsChars, 0);
-		string2.getChars(0, string2.length(), string2AsChars, 0);
 		int capitalizationDifference = 0;
 		// Geyser Bedrock default config starts names with .
-		int string1BeginsWithDot = string1AsChars[0] == '.' ? 1 : 0;
-		int string2BeginsWithDot = string2AsChars[0] == '.' ? 1 : 0;
-		int minimumStringLength = Math.min(string1AsChars.length - string1BeginsWithDot, string2AsChars.length - string2BeginsWithDot);
+		int string1BeginsWithDot = string1.charAt(0) == '.' ? 1 : 0;
+		int string2BeginsWithDot = string2.charAt(0) == '.' ? 1 : 0;
+		int minimumStringLength = Math.min(string1.length() - string1BeginsWithDot, string2.length() - string2BeginsWithDot);
 
 		for (int i = 0; i < minimumStringLength; i++) {
-			char string1IndexedChar = string1AsChars[i + string1BeginsWithDot];
-			char string2IndexedChar = string2AsChars[i + string2BeginsWithDot];
+			char string1IndexedChar = string1.charAt(i + string1BeginsWithDot);
+			char string2IndexedChar = string2.charAt(i + string2BeginsWithDot);
 			if (string1IndexedChar == string2IndexedChar)
 				continue;
 			char string1IndexedCharLowerCase = Character.toLowerCase(string1IndexedChar);
@@ -36,7 +32,7 @@ public class NameSort implements Comparator<String> {
 		if (capitalizationDifference != 0)
 			return capitalizationDifference;
 
-		int longerString = string1AsChars.length - string2AsChars.length;
+		int longerString = string1.length() - string2.length();
 		// sort .a aa as .a aa
 		if (longerString == 0)
 			return -1 << string2BeginsWithDot;
