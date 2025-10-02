@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 
 import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getMaxPlayers;
@@ -51,9 +50,9 @@ public class GameGuiMixin extends GuiElement {
 		int playerListDrawX = width / 2 - playerListWidth / 2;
 
 		int maxPlayerCount = getMaxPlayers();
-		String playerCountFormatted = MessageFormat.format("Players: {0}", players.length);
+		String playerCountFormatted = "Players: " + players.length;
 		if (maxPlayerCount > 0)
-			playerCountFormatted = MessageFormat.format("Players: {0}/{1}", players.length, maxPlayerCount);
+			playerCountFormatted = "Players: " + players.length + '/' + maxPlayerCount;
 		this.drawCenteredString(textRenderer, playerCountFormatted, width / 2, playerListDrawY - PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
 		//noinspection SuspiciousNameCombination
 		fill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
