@@ -5,10 +5,18 @@ import java.util.Comparator;
 public class NameSort implements Comparator<String> {
 	public static NameSort INSTANCE = new NameSort();
 
+	/*
+	pizza, Pizza = 32
+	sauce, .sauc = -2147483648
+	pepperoni, pineapple = -4
+	new String("cheese"), new String("cheese") = 0
+	cheese, cheese = 0
+	Fully sorted would be: cheese, cheese, cheese, cheese, pepperoni, pineapple, Pizza, pizza, sauce, .sauc
+	 */
 	@Override
 	public int compare(String string1, String string2) {
-		// Only time 0 should be returned
-		if (string1.equals(string2))
+		//noinspection StringEquality
+		if (string1 == string2)
 			return 0;
 		// Geyser Bedrock default config starts names with .
 		int string1BeginsWithDot = string1.charAt(0) == '.' ? 1 : 0;
@@ -33,9 +41,11 @@ public class NameSort implements Comparator<String> {
 			return capitalizationDifference;
 
 		int longerString = string1.length() - string2.length();
-		// sort .a aa as .a aa
-		if (longerString == 0)
-			return -1 >>> string2BeginsWithDot;
-		return longerString;
+		if (longerString != 0)
+			return longerString;
+		if (string1BeginsWithDot == string2BeginsWithDot)
+			return 0;
+		// sort .a aa as aa .a
+		return 0x40000000 << string2BeginsWithDot;
 	}
 }
