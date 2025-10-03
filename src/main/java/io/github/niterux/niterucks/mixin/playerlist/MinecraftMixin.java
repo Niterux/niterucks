@@ -18,15 +18,15 @@ public abstract class MinecraftMixin {
 
 	@Inject(method = "run()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Box;resetCache()V"))
 	private void jankyConnectionChecker(CallbackInfo ci) {
-		if (this.isMultiplayer() != connectionStatus) {
-			if (connectionStatus) {
-				for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
-					playerListProvider.onDisconnectedFromServer();
-			} else
-				for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
-					playerListProvider.onConnectedToServer(Niterucks.currentServer);
-			connectionStatus = !connectionStatus;
-		}
+		if (this.isMultiplayer() == connectionStatus)
+			return;
+		if (connectionStatus) {
+			for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
+				playerListProvider.onDisconnectedFromServer();
+		} else
+			for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
+				playerListProvider.onConnectedToServer(Niterucks.currentServer);
+		connectionStatus = !connectionStatus;
 	}
 
 	@Shadow
