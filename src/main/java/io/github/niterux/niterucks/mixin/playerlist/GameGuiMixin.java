@@ -1,6 +1,7 @@
 package io.github.niterux.niterucks.mixin.playerlist;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.platform.MemoryTracker;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.NameSort;
 import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListControls;
@@ -8,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,6 +32,12 @@ public class GameGuiMixin extends GuiElement {
 	private final static int VERTICAL_SPACING = 10;
 	@Unique
 	private final static int VERTICAL_MARGINAL_AREA = 6;
+	@Unique
+	private static String[] cachedPlayerList;
+	@Unique
+	private static int cachedMaxPlayers;
+	@Unique
+	private static final int assignedDrawList = MemoryTracker.getLists(1);
 	@Shadow
 	private Minecraft minecraft;
 
@@ -40,6 +48,13 @@ public class GameGuiMixin extends GuiElement {
 		String[] players = getPlayerList();
 		if (players == null)
 			return;
+		int maxPlayerCount = getMaxPlayers();
+		if (Arrays.equals(players, cachedPlayerList) && cachedMaxPlayers == maxPlayerCount) {
+			GL11.glCallList(assignedDrawList);
+			return;
+		}
+		cachedMaxPlayers = maxPlayerCount;
+		cachedPlayerList = Arrays.copyOf(players, players.length);
 		Arrays.sort(players, NameSort.INSTANCE);
 		int playerListDrawY = Math.max(height / (VERTICAL_MARGINAL_AREA * 2), PLAYER_COUNT_Y_OFFSET);
 		int playerListMaxHeight = height * (VERTICAL_MARGINAL_AREA - 2) / VERTICAL_MARGINAL_AREA;
@@ -49,10 +64,12 @@ public class GameGuiMixin extends GuiElement {
 		int playerListHeight = Math.min(players.length, maxPlayersInAColumn) * VERTICAL_SPACING + 1;
 		int playerListDrawX = width / 2 - playerListWidth / 2;
 
-		int maxPlayerCount = getMaxPlayers();
-		String playerCountFormatted = "Players: " + players.length;
-		if (maxPlayerCount > 0)
+		String playerCountFormatted;
+		if (maxPlayerCount > 0) {
 			playerCountFormatted = "Players: " + players.length + '/' + maxPlayerCount;
+		} else
+			playerCountFormatted = "Players: " + players.length;
+		GL11.glNewList(assignedDrawList, GL11.GL_COMPILE_AND_EXECUTE);
 		this.drawCenteredString(textRenderer, playerCountFormatted, width / 2, playerListDrawY - PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
 		//noinspection SuspiciousNameCombination
 		fill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
@@ -66,5 +83,6 @@ public class GameGuiMixin extends GuiElement {
 				nameDrawY,
 				0xFFFFFF);
 		}
+		GL11.glEndList();
 	}
 }
