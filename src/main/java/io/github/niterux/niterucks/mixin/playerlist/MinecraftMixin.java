@@ -25,7 +25,7 @@ public abstract class MinecraftMixin {
 			} else
 				for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
 					playerListProvider.onConnectedToServer(Niterucks.currentServer);
-			connectionStatus = this.isMultiplayer();
+			connectionStatus = !connectionStatus;
 		}
 	}
 
