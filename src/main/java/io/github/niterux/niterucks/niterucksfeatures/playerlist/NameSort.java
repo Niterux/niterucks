@@ -7,13 +7,14 @@ public class NameSort implements Comparator<String> {
 
 	@Override
 	public int compare(String string1, String string2) {
+		// Only time 0 should be returned
 		if (string1.equals(string2))
 			return 0;
-		int capitalizationDifference = 0;
 		// Geyser Bedrock default config starts names with .
 		int string1BeginsWithDot = string1.charAt(0) == '.' ? 1 : 0;
 		int string2BeginsWithDot = string2.charAt(0) == '.' ? 1 : 0;
 		int minimumStringLength = Math.min(string1.length() - string1BeginsWithDot, string2.length() - string2BeginsWithDot);
+		int capitalizationDifference = 0;
 
 		for (int i = 0; i < minimumStringLength; i++) {
 			char string1IndexedChar = string1.charAt(i + string1BeginsWithDot);
@@ -35,7 +36,7 @@ public class NameSort implements Comparator<String> {
 		int longerString = string1.length() - string2.length();
 		// sort .a aa as .a aa
 		if (longerString == 0)
-			return -1 << string2BeginsWithDot;
+			return -1 >>> string2BeginsWithDot;
 		return longerString;
 	}
 }
