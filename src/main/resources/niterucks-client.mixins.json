@@ -83,6 +83,7 @@
     "playerlist.ConnectionMixin",
     "playerlist.GameGuiMixin",
     "playerlist.GameInputMixin",
+    "playerlist.MinecraftMixin",
     "ui.DebugMenuMixin",
     "ui.GameGuiMixin",
     "ui.InventoryMenuScreenMixin",

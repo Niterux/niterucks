@@ -55,15 +55,28 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 		}
 	}
 
+	public boolean isSupportedServer(String serverAddress) {
+		for (String supportedServerAddress : config.supportedServerAddresses()) {
+			if (supportedServerAddress.equals(serverAddress))
+				return true;
+		}
+		return false;
+	}
+
 	private void dataReadingHandler(String serverAddress) {
-		HttpResponse<String> response;
+		HttpResponse<String> response = null;
 		try {
 			totalRequestsThisSession++;
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() != 200)
+				Niterucks.LOGGER.warn("Received non 200 status code from {}", config.RESTAPIEndpoint().toString());
 			this.players = dataHandler(response.body(), serverAddress);
+		} catch (InterruptedException e) {//Everything is going to be okay, relax
 		} catch (Exception e) {
 			this.players = null;
-			Niterucks.LOGGER.warn("Receiving data from player list api failed! {}, from {}", e.getClass().getName(), config.toString());
+			Niterucks.LOGGER.warn("Receiving data from player list api failed! {}, from {}", e.getClass().getName(), config.RESTAPIEndpoint().toString());
+			if (response != null)
+				Niterucks.LOGGER.warn(response.body());
 			if ((totalRequestsThisSession + 5) / (totalErrorsThisSession++) <= 2) {
 				Niterucks.LOGGER.info("Stopping problematic RESTAPIPlayerListProvider {}", config.toString());
 				Niterucks.LOGGER.info("totalRequestsThisSession: {}, totalErrorsThisSession: {}", totalRequestsThisSession, totalErrorsThisSession);
@@ -72,15 +85,6 @@ public abstract class RESTAPIPlayerListProvider implements PlayerListProvider {
 			}
 		}
 
-	}
-
-	public boolean isSupportedServer(String serverAddress) {
-		for (String supportedServerAddress : config.supportedServerAddresses()) {
-			if (supportedServerAddress.equals(serverAddress)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public abstract String[] dataHandler(String data, String serverAddress);
