@@ -23,12 +23,10 @@ public class NameSort implements Comparator<String> {
 				continue;
 			char string1IndexedCharLowerCase = Character.toLowerCase(string1IndexedChar);
 			char string2IndexedCharLowerCase = Character.toLowerCase(string2IndexedChar);
-			if (string1IndexedCharLowerCase == string2IndexedCharLowerCase) {
-				if (capitalizationDifference == 0)
-					capitalizationDifference = string1IndexedChar - string2IndexedChar;
-				continue;
-			}
-			return string1IndexedCharLowerCase - string2IndexedCharLowerCase;
+			if (string1IndexedCharLowerCase != string2IndexedCharLowerCase)
+				return string1IndexedCharLowerCase - string2IndexedCharLowerCase;
+			if (capitalizationDifference == 0)
+				capitalizationDifference = string1IndexedChar - string2IndexedChar;
 		}
 		// capitals go first
 		if (capitalizationDifference != 0)
