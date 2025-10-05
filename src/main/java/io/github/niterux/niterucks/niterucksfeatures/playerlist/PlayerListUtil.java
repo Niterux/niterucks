@@ -10,9 +10,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class PlayerListUtil {
-	public static String[] cachedPlayerList;
+	private static String[] cachedPlayerList;
+
+	public static boolean updateCacheReturnsFalseIfInvalidated(String[] players) {
+		boolean valid = Arrays.equals(players, cachedPlayerList);
+		if (valid)
+			return true;
+		cachedPlayerList = Arrays.copyOf(players, players.length);
+		return false;
+	}
+
+	public static void invalidateDrawListCache() {
+		cachedPlayerList = null;
+	}
 
 	public static void simpleRegisterJSONPlayerListProvider(String server, String url, Class<? extends JSONDataPlayerListPOJO> dataPOJO) {
 		simpleRegisterJSONPlayerListProvider(new String[]{server}, url, dataPOJO);

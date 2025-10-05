@@ -41,6 +41,8 @@ public class GameGuiMixin extends GuiElement {
 	private static int cachedMaxPlayers;
 	@Shadow
 	private Minecraft minecraft;
+	@Unique
+	private static int lastKnownGUIScale;
 
 	@Inject(method = "render(FZII)V", at = @At(value = "TAIL"))
 	private void renderTabMenu(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width, @Local(ordinal = 3) int height) {
@@ -50,13 +52,13 @@ public class GameGuiMixin extends GuiElement {
 		if (players == null)
 			return;
 		int maxPlayerCount = getMaxPlayers();
-		if (cachedMaxPlayers == maxPlayerCount && Arrays.equals(players, cachedPlayerList)) {
+		if (lastKnownGUIScale == minecraft.options.guiScale && cachedMaxPlayers == maxPlayerCount && updateCacheReturnsFalseIfInvalidated(players)) {
 			GL11.glCallList(assignedDrawList);
 			return;
 		}
 		players = Arrays.copyOf(players, players.length);
-		cachedPlayerList = Arrays.copyOf(players, players.length);
 		cachedMaxPlayers = maxPlayerCount;
+		lastKnownGUIScale = minecraft.options.guiScale;
 		for (int i = 0; i < players.length; i++)
 			players[i] = MiscUtils.replaceAllAmpersandsWithColorCharacter(players[i]);
 		Arrays.sort(players, NameSort.INSTANCE);
