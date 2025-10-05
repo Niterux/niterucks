@@ -39,7 +39,7 @@ public class GameOptionsMixin {
 
 	@WrapOperation(method = "setValue(Lnet/minecraft/client/options/GameOptions$Option;I)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;guiScale:I", ordinal = 0, opcode = Opcodes.PUTFIELD))
 	private void fixMaxGuiScale(GameOptions instance, int value, Operation<Void> original, @Local(ordinal = 0, argsOnly = true) int increment) {
-		original.call(instance, (instance.guiScale + increment) % (Math.min(minecraft.width / 320, minecraft.height / 240)));
+		original.call(instance, (instance.guiScale + increment) % (Math.min(minecraft.width / 320, minecraft.height / 240) + 1));
 	}
 
 	@ModifyExpressionValue(method = "translateValue(Lnet/minecraft/client/options/GameOptions$Option;)Ljava/lang/String;", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;guiScale:I"))
