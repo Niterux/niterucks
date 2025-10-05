@@ -18,6 +18,10 @@ public abstract class MinecraftMixin {
 	@Unique
 	private boolean connectionStatus = false;
 
+	/*
+	There's not really a better way to do this in Beta 1.7.3 due to how multiple
+	multiplayer connections can coexist.
+	 */
 	@Inject(method = "run()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/Box;resetCache()V"))
 	private void jankyConnectionChecker(CallbackInfo ci) {
 		if (this.isMultiplayer() == connectionStatus)
