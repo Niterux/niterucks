@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.optimization;
+package io.github.niterux.niterucks.mixin.optimization.screenshots;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;

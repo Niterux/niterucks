@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.optimization;
+package io.github.niterux.niterucks.mixin.optimization.textrenderer;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;

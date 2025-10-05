@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.optimization;
+package io.github.niterux.niterucks.mixin.optimization.fastutil;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.world.chunk.ServerChunkCache;

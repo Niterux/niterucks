@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.optimization;
+package io.github.niterux.niterucks.mixin.optimization.screenshots;
 
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.niterucksfeatures.screenshots.FastScreenshotUtils;
