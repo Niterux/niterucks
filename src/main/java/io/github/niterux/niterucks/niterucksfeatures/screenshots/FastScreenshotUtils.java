@@ -35,7 +35,7 @@ public class FastScreenshotUtils {
 		try {
 			missingScreenshot1 = ImageIO.read(Objects.requireNonNull(Niterucks.class.getResource("/assets/niterucks/broken_screenshot.png")));
 		} catch (IOException e) {
-			Niterucks.LOGGER.error("Couldn't read the broken screenshot placeholder file!", e);
+			Niterucks.LOGGER.error("Failed to read the placeholder file for broken screenshots!", e);
 			missingScreenshot1 = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 			missingScreenshot1.setRGB(0, 0, 0xFF00FF);
 			missingScreenshot1.setRGB(1, 1, 0xFF00FF);
