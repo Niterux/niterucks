@@ -1,7 +1,6 @@
-package io.github.niterux.niterucks.mixin;
+package io.github.niterux.niterucks.mixin.playerlist;
 
-import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
-import net.minecraft.client.Minecraft;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil;
 import net.minecraft.client.render.texture.TextureManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,9 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TextureManager.class)
 public class TextureManagerMixin {
 	@Inject(method = "reload()V", at = @At("TAIL"))
-	private void reloadChunks(CallbackInfo ci) {
-		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
-		if (minecraft.worldRenderer != null)
-			minecraft.worldRenderer.m_6748042();
+	private void invalidatePlayerListGuiCache(CallbackInfo ci) {
+		PlayerListUtil.cachedPlayerList = null;
 	}
 }

@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class PlayerListUtil {
+	public static String[] cachedPlayerList;
+
 	public static void simpleRegisterJSONPlayerListProvider(String server, String url, Class<? extends JSONDataPlayerListPOJO> dataPOJO) {
 		simpleRegisterJSONPlayerListProvider(new String[]{server}, url, dataPOJO);
 	}
