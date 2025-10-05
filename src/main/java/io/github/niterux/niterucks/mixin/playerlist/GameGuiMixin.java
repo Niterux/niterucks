@@ -25,7 +25,11 @@ import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerLis
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
 	@Unique
-	private final static int HORIZONTAL_SPACING = 120;
+	private final static int MINIMUM_COLUMN_WIDTH = 40;
+	@Unique
+	private final static int NAME_WIDTH_MARGIN = 10;
+	@Unique
+	private final static int HORIZONTAL_BG_MARGIN = 5;
 	@Unique
 	private final static int PLAYER_COUNT_Y_OFFSET = 14;
 	@Unique
@@ -33,11 +37,11 @@ public class GameGuiMixin extends GuiElement {
 	@Unique
 	private final static int VERTICAL_MARGINAL_AREA = 6;
 	@Unique
+	private static final int assignedDrawList = MemoryTracker.getLists(1);
+	@Unique
 	private static String[] cachedPlayerList;
 	@Unique
 	private static int cachedMaxPlayers;
-	@Unique
-	private static final int assignedDrawList = MemoryTracker.getLists(1);
 	@Shadow
 	private Minecraft minecraft;
 
@@ -49,40 +53,58 @@ public class GameGuiMixin extends GuiElement {
 		if (players == null)
 			return;
 		int maxPlayerCount = getMaxPlayers();
-		if (Arrays.equals(players, cachedPlayerList) && cachedMaxPlayers == maxPlayerCount) {
+		if (cachedMaxPlayers == maxPlayerCount && Arrays.equals(players, cachedPlayerList)) {
 			GL11.glCallList(assignedDrawList);
 			return;
 		}
-		cachedMaxPlayers = maxPlayerCount;
+		players = Arrays.copyOf(players, players.length);
 		cachedPlayerList = Arrays.copyOf(players, players.length);
+		cachedMaxPlayers = maxPlayerCount;
+		for (int i = 0; i < players.length; i++)
+			players[i] = MiscUtils.replaceAllAmpersandsWithColorCharacter(players[i]);
 		Arrays.sort(players, NameSort.INSTANCE);
-		int playerListDrawY = Math.max(height / (VERTICAL_MARGINAL_AREA * 2), PLAYER_COUNT_Y_OFFSET);
+		int playerListDrawY = Math.max(height / (VERTICAL_MARGINAL_AREA << 1), PLAYER_COUNT_Y_OFFSET);
 		int playerListMaxHeight = height * (VERTICAL_MARGINAL_AREA - 2) / VERTICAL_MARGINAL_AREA;
 		int maxPlayersInAColumn = playerListMaxHeight / VERTICAL_SPACING;
-
-		int playerListWidth = (int) (Math.ceil((double) players.length / maxPlayersInAColumn) * HORIZONTAL_SPACING);
+		int columns = (int) Math.ceil((double) players.length / maxPlayersInAColumn);
 		int playerListHeight = Math.min(players.length, maxPlayersInAColumn) * VERTICAL_SPACING + 1;
-		int playerListDrawX = width / 2 - playerListWidth / 2;
-
+		int[] playerNameWidthStorage = new int[players.length];
+		int[] playerNameDrawXPosStorage = new int[players.length];
+		int playerListWidth = 0;
+		for (int i = 0; i < columns; i++) {
+			int index = i * maxPlayersInAColumn;
+			int end = Math.min(players.length, index + maxPlayersInAColumn);
+			int maximum = MINIMUM_COLUMN_WIDTH;
+			for (int j = index; j < end; j++) {
+				int nameWidth = textRenderer.getWidth(players[j]);
+				playerNameWidthStorage[j] = nameWidth;
+				maximum = Math.max(nameWidth + NAME_WIDTH_MARGIN, maximum);
+			}
+			for (int j = index; j < end; j++)
+				playerNameDrawXPosStorage[j] = playerListWidth + ((maximum - playerNameWidthStorage[j]) >> 1);
+			playerListWidth += maximum;
+		}
+		int playerListDrawX = (width - playerListWidth) >> 1;
 		String playerCountFormatted;
 		if (maxPlayerCount > 0) {
 			playerCountFormatted = "Players: " + players.length + '/' + maxPlayerCount;
 		} else
 			playerCountFormatted = "Players: " + players.length;
 		GL11.glNewList(assignedDrawList, GL11.GL_COMPILE_AND_EXECUTE);
-		this.drawCenteredString(textRenderer, playerCountFormatted, width / 2, playerListDrawY - PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
-		//noinspection SuspiciousNameCombination
-		fill(playerListDrawX, playerListDrawY, playerListDrawX + playerListWidth, playerListDrawY + playerListHeight, 0x80000000);
+		GL11.glPushMatrix();
+		GL11.glTranslated(playerListDrawX, playerListDrawY, 0);
+		this.drawCenteredString(textRenderer, playerCountFormatted, playerListWidth >> 1, -PLAYER_COUNT_Y_OFFSET, 0xFFFFFFFF);
+		fill(-HORIZONTAL_BG_MARGIN, 0, playerListWidth + HORIZONTAL_BG_MARGIN, playerListHeight, 0x80000000);
 
 		for (int i = 0; i < players.length; i++) {
-			int nameDrawX = playerListDrawX + i / maxPlayersInAColumn * HORIZONTAL_SPACING;
-			int nameDrawY = playerListDrawY + i % maxPlayersInAColumn * VERTICAL_SPACING + 1;
-			this.drawCenteredString(textRenderer,
-				MiscUtils.replaceAllAmpersandsWithColorCharacter(players[i]),
-				nameDrawX + (HORIZONTAL_SPACING / 2),
+			int nameDrawY = i % maxPlayersInAColumn * VERTICAL_SPACING + 1;
+			this.drawString(textRenderer,
+				players[i],
+				playerNameDrawXPosStorage[i],
 				nameDrawY,
 				0xFFFFFF);
 		}
+		GL11.glPopMatrix();
 		GL11.glEndList();
 	}
 }

@@ -7,7 +7,7 @@ public class NameSort implements Comparator<String> {
 
 	/*
 	pizza, Pizza = 32
-	.sauc, sauce = 2147483647
+	.sauc, sauce = 1
 	pepperoni, pineapple = -4
 	new String("cheese"), new String("cheese") = 0
 	cheese, cheese = 0
@@ -19,8 +19,8 @@ public class NameSort implements Comparator<String> {
 		if (string1 == string2)
 			return 0;
 		// Geyser Bedrock default config starts names with .
-		int string1DotOffset = string1.charAt(0) == '.' ? 1 : 0;
-		int string2DotOffset = string2.charAt(0) == '.' ? 1 : 0;
+		final int string1DotOffset = string1.charAt(0) == '.' ? 1 : 0;
+		final int string2DotOffset = string2.charAt(0) == '.' ? 1 : 0;
 		int minimumStringLength = Math.min(string1.length() - string1DotOffset, string2.length() - string2DotOffset);
 		int capitalizationDifference = 0;
 
@@ -43,9 +43,7 @@ public class NameSort implements Comparator<String> {
 		int longerString = string1.length() - string2.length();
 		if (longerString != 0)
 			return longerString;
-		if (string1DotOffset == string2DotOffset)
-			return 0;
-		// sort .a aa as aa .a
-		return -1 >>> string1DotOffset;
+		// sort .a aa as aa .a / return 0 for equal strings
+		return string1DotOffset - string2DotOffset;
 	}
 }
