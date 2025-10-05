@@ -3,6 +3,7 @@ package io.github.niterux.niterucks.mixin.playerlist;
 import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.api.playerlist.PlayerListProvider;
 import io.github.niterux.niterucks.api.playerlist.PlayerListProviderRegistry;
+import io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,6 +28,11 @@ public abstract class MinecraftMixin {
 			for (PlayerListProvider playerListProvider : PlayerListProviderRegistry.getRegisteredPlayerListProviders())
 				playerListProvider.onConnectedToServer(Niterucks.currentServer);
 		connectionStatus = !connectionStatus;
+	}
+
+	@Inject(method = "onResolutionChanged(II)V", at = @At(value = "HEAD"))
+	private void invalidatePlayerListGuiCache(int width, int height, CallbackInfo ci){
+		PlayerListUtil.cachedPlayerList = null;
 	}
 
 	@Shadow

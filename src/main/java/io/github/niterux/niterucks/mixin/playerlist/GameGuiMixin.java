@@ -19,8 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 
-import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getMaxPlayers;
-import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.getPlayerList;
+import static io.github.niterux.niterucks.niterucksfeatures.playerlist.PlayerListUtil.*;
 
 @Mixin(GameGui.class)
 public class GameGuiMixin extends GuiElement {
@@ -38,8 +37,6 @@ public class GameGuiMixin extends GuiElement {
 	private final static int VERTICAL_MARGINAL_AREA = 6;
 	@Unique
 	private static final int assignedDrawList = MemoryTracker.getLists(1);
-	@Unique
-	private static String[] cachedPlayerList;
 	@Unique
 	private static int cachedMaxPlayers;
 	@Shadow
