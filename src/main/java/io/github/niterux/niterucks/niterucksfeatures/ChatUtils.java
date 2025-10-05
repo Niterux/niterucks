@@ -74,13 +74,13 @@ public class ChatUtils {
 		if (message.trim().isEmpty())
 			return message;
 		int nonWordChars = 0;
-		while (("" + message.charAt(message.length() - caretPos - nonWordChars - 1)).matches("\\W")) {
+		while (("" + message.charAt(message.length() - caretPos - nonWordChars - 1)).matches("\\s")) {
 			nonWordChars++;
 			if (nonWordChars == message.length())
 				return message;
 		}
 
-		String[] words = message.substring(0, message.length() - caretPos).split("\\W");
+		String[] words = message.substring(0, message.length() - caretPos).split("\\s");
 		String word = words[words.length - 1].toLowerCase();
 		String[] players = getPlayerList();
 		if (players == null)
