@@ -6,7 +6,6 @@ import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.living.mob.hostile.HostileEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
@@ -38,7 +37,7 @@ public class EntityRenderDispatcherMixin {
 			x = dx - entity.x;
 			y = dy - entity.y;
 			z = dz - entity.z;
-			pitch = entity.prevYaw + (entity.yaw - entity.prevYaw) * tickDelta;
+			pitch = entity.prevPitch + (entity.pitch - entity.prevPitch) * tickDelta;
 		} else
 			yaw = entity.yaw;
 
@@ -63,9 +62,7 @@ public class EntityRenderDispatcherMixin {
 		bufferBuilder.color(255, 255, 255);
 		drawHorizontalSquare(collisionBox.minX, collisionBox.minZ, collisionBox.maxX, collisionBox.maxZ, lookingOriginY, bufferBuilder);
 
-		double lookingDistance = 1.4142135623730950488016887242097d;
-		if (!(entity instanceof HostileEntity))
-			lookingDistance = entity.shape.getAverageSideLength() * 1.5d;
+		double lookingDistance = entity.shape.getAverageSideLength() * 1.5d;
 		float yawThing = (float) (Math.toRadians(-yaw) - Math.PI);
 		float pitchThing = (float) (Math.toRadians(-pitch));
 		double forwardBack = MathHelper.cos(yawThing);
