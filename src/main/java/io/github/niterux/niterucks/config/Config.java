@@ -31,6 +31,7 @@ public class Config {
 	public final OptionCategory controls = OptionCategory.create("Controls");
 	public final OptionCategory accessibility = OptionCategory.create("Accessibility");
 	public final OptionCategory miscellaneous = OptionCategory.create("Miscellaneous");
+	public final OptionCategory debug = OptionCategory.create("Debug");
 	public final OptionCategory staff = OptionCategory.create("Staff");
 	public final OptionCategory screenshots = OptionCategory.create("Screenshots");
 	public final OptionCategory authMe = new AuthMeCategory();
@@ -50,11 +51,21 @@ public class Config {
 	public DoubleOption rainbowSpeed = new DoubleOption("Rainbow Speed", "Sets the speed of rainbow rotation in rotations per second.", 0.5, 0.1, 2.0);
 	public BooleanOption wolfNameTags = new BooleanOption("Wolf Name Tags", true);
 	public BooleanOption useBetacraftAPI = new BooleanOption("Use Betacraft API", "Run the Betacraft API in the background<br>to get a list of players for the servers<br>that you join.<br>Some servers provide their own APIs<br>that can be used to get a player list<br>but this will always run in the background<br>if it is enabled.", false);
-	public BooleanOption useHTTPS = new BooleanOption("Use HTTPS", "Use HTTPS for authentication and other",true);
+	public BooleanOption useHTTPS = new BooleanOption("Use HTTPS", "Use HTTPS for authentication and other", true);
 	public BooleanOption pitchBillboarding = new BooleanOption("Billboard Items on Pitch", "Billboard item entities on pitch, makes them face the camera.", false);
 	public BooleanOption showItemIDs = new BooleanOption("Show Item ID's", "Shows the ID and metadata value of items in<br>your inventory when hovered over.", false);
 	public BooleanOption newSkeleton = new BooleanOption("Beta 1.8 Skeleton Model", true);
 	public FloatOption viewmodelFov = new FloatOption("Viewmodel FOV", 70.0F, 30.0F, 130.0F);
+	public BooleanOption interpolateHitboxes = new BooleanOption("Interpolate Hitbox Rendering", "Whether or not to smooth out hitbox movement.<br>§4Smoothed hitbox movement isn't accurate to how it is processed.", false);
+	public KeyBindOption chunkBoundariesButton = new KeyBindOption("Chunk Boundaries HotKey", Keyboard.KEY_G);
+	public KeyBindOption clearChatButton = new KeyBindOption("Clear Chat HotKey", Keyboard.KEY_D);
+	public KeyBindOption hideChatButton = new KeyBindOption("Hide Chat HotKey", Keyboard.KEY_M);
+	public KeyBindOption reloadAssetsButton = new KeyBindOption("Reload Assets HotKey", Keyboard.KEY_S);
+	public KeyBindOption reloadChunksButton = new KeyBindOption("Reload Chunks HotKey", Keyboard.KEY_A);
+	public KeyBindOption showHelpButton = new KeyBindOption("Show Help HotKey", Keyboard.KEY_Q);
+	public KeyBindOption showHitboxesButton = new KeyBindOption("Show Hitboxes HotKey", Keyboard.KEY_B);
+	public KeyBindOption snapCameraButton = new KeyBindOption("Snap Camera HotKey", Keyboard.KEY_R);
+
 	public KeyBindOption flyButton = new KeyBindOption("fly_button", Keyboard.KEY_R);
 	public KeyBindOption adjustButton = new KeyBindOption("adjust_fly_speed", Keyboard.KEY_LCONTROL);
 	public IntegerOption defaultFlySpeed = new IntegerOption("Default Flight Speed", 6, 0, 14);
@@ -66,8 +77,9 @@ public class Config {
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
 		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov, useBetacraftAPI, useHTTPS, pitchBillboarding);
+		debug.add(interpolateHitboxes, chunkBoundariesButton, clearChatButton, hideChatButton, reloadAssetsButton, reloadChunksButton, showHelpButton, showHitboxesButton, snapCameraButton);
 		staff.add(flyButton, adjustButton, defaultFlySpeed);
 		screenshots.add(enableScreenshotEnhancements, screenshotFormat);
-		niterucks.add(controls, accessibility, miscellaneous, staff, screenshots, authMe);
+		niterucks.add(controls, accessibility, miscellaneous, debug, staff, screenshots, authMe);
 	}
 }

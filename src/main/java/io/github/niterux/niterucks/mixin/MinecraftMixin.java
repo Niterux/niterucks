@@ -6,37 +6,26 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
-import net.minecraft.client.render.texture.TextureManager;
-import net.minecraft.client.render.world.WorldRenderer;
-import net.minecraft.entity.living.LivingEntity;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.PixelFormat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Slice;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
-import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.chunkBordersEnabled;
-import static io.github.niterux.niterucks.niterucksfeatures.GameFeaturesStates.hitboxEnabled;
-
 @Mixin(value = Minecraft.class, priority = 1005)
 public class MinecraftMixin {
 	@Shadow
 	public GameGui gui;
-	@Shadow
-	public WorldRenderer worldRenderer;
-	@Shadow
-	public TextureManager textureManager;
-	@Shadow
-	public LivingEntity camera;
 
 	//this will only do anything once issue #888 in fabric-loader is solved
 	//You might also notice that this is strangely a redirect and not an inject, for some reason injects kept failing, no idea why
@@ -61,50 +50,6 @@ public class MinecraftMixin {
 		return original;
 	}
 
-	@Inject(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventKey()I", ordinal = 0, remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;handleKeyboard()V", ordinal = 0)))
-	private void addNewKeybinds(CallbackInfo ci) {
-		if (!Keyboard.isKeyDown(Keyboard.KEY_F3))
-			return;
-		switch (Keyboard.getEventKey()) {
-			case Keyboard.KEY_D:
-				gui.clearChat();
-				break;
-			case Keyboard.KEY_Q:
-				printDebugKeys(gui);
-				break;
-			case Keyboard.KEY_A:
-				worldRenderer.m_6748042();
-				break;
-			case Keyboard.KEY_G:
-				chunkBordersEnabled = !chunkBordersEnabled;
-				break;
-			case Keyboard.KEY_B:
-				hitboxEnabled = !hitboxEnabled;
-				break;
-			case Keyboard.KEY_P:
-				snapCamera();
-				break;
-		}
-	}
-
-	@Unique
-	private static void printDebugKeys(GameGui gui) {
-		gui.addChatMessage("§e[Debug]:§f Key bindings:");
-		gui.addChatMessage("F3 + A = Reload chunks");
-		gui.addChatMessage("F3 + B = Show hitboxes");
-		gui.addChatMessage("F3 + D = Clear chat");
-		gui.addChatMessage("F3 + G = Show chunk boundaries");
-		gui.addChatMessage("F3 + Q = Show this list");
-		gui.addChatMessage("F3 + S = Reload all assets");
-		gui.addChatMessage("F3 + P = Snap the camera to the nearest 45 degree angle");
-	}
-
-	@Unique
-	private void snapCamera() {
-		camera.yaw = Math.round(camera.yaw / 45) * 45;
-		camera.pitch = Math.round(camera.pitch / 45) * 45;
-	}
-
 	@ModifyVariable(method = "m_1075084(I)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private int swapMouseButtons(int button) {
 		if (Niterucks.CONFIG.swapMouseButtons.get() && (button == 0 || button == 1)) {
@@ -116,10 +61,5 @@ public class MinecraftMixin {
 	@ModifyArg(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;isButtonDown(I)Z", remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;m_1075084(I)V", ordinal = 3)), index = 0)
 	private int swapMiningMouseButton(int button) {
 		return Niterucks.CONFIG.swapMouseButtons.get() ? 1 : button;
-	}
-
-	@Inject(method = "forceReload()V", at = @At("TAIL"))
-	private void addTexturesReloading(CallbackInfo ci) {
-		textureManager.reload();
 	}
 }

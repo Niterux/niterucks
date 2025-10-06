@@ -1,4 +1,4 @@
-package io.github.niterux.niterucks.mixin.ui;
+package io.github.niterux.niterucks.mixin.debugmenu;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static io.github.niterux.niterucks.Niterucks.MOD_VERSION;
 
 @Mixin(GameGui.class)
-public class DebugMenuMixin extends GuiElement {
+public class GameGuiMixin extends GuiElement {
 	@Unique
 	private static final String[] directions = {
 		"South (Towards Positive Z)",
@@ -142,15 +142,15 @@ public class DebugMenuMixin extends GuiElement {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	private void addNewInfoText(float tickDelta, boolean screenOpen, int mouseX, int mouseY, CallbackInfo ci, @Local(ordinal = 0) TextRenderer textRenderer, @Local(ordinal = 2) int width) {
 		// Precise enough? 🤞
-		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset) : 0;
+		double eyeOffset = Niterucks.CONFIG.useFeetCoordinates.get() ? Math.nextUp(Double.sum(minecraft.player.y, -Double.sum(minecraft.player.eyeHeight, -minecraft.player.eyeHeightSneakOffset))) : minecraft.player.y;
 
-		if (Niterucks.CONFIG.showSeed.get()) {
+		if (Niterucks.CONFIG.showSeed.get())
 			this.drawString(textRenderer, "Seed: " + minecraft.world.getSeed(), 2, 104, 0xd96e02);
-		}
+
 		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
 		this.drawString(textRenderer, biomeString, width - textRenderer.getWidth(biomeString) - 2, 22, 0x46a848);
-		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(Math.nextUp(Double.sum(minecraft.player.y, -eyeOffset))), MathHelper.floor(minecraft.player.z));
+		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(eyeOffset), MathHelper.floor(minecraft.player.z));
 		this.drawString(textRenderer, lightString, width - textRenderer.getWidth(lightString) - 2, 32, 0x46a848);
 
 		if (minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY) {

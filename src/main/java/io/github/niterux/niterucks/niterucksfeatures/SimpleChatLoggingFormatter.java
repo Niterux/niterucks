@@ -1,16 +1,18 @@
 package io.github.niterux.niterucks.niterucksfeatures;
 
-import java.text.MessageFormat;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SimpleChatLoggingFormatter extends Formatter {
+	private static final Matcher replacementMatcher = Pattern.compile("§.?").matcher("");
+
 	@Override
 	public String format(LogRecord record) {
 		String message = record.getMessage();
 		if (message == null)
 			return null;
-		message = message.replaceAll("§.", "");
-		return MessageFormat.format("Chat: {0}\n", message);
+		return "Chat: " + replacementMatcher.reset(message).replaceAll("") + '\n';
 	}
 }
