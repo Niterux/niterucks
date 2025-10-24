@@ -10,6 +10,7 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.HitResult;
+import net.minecraft.world.chunk.WorldChunk;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -150,12 +151,14 @@ public class GameGuiMixin extends GuiElement {
 		this.drawString(textRenderer, "For help: press F3 + Q", 2, 96, 0xd96e02);
 		String biomeString = "Biome: " + minecraft.world.getBiomeSource().getBiome(MathHelper.floor(minecraft.player.x), MathHelper.floor(minecraft.player.z)).name;
 		this.drawString(textRenderer, biomeString, width - textRenderer.getWidth(biomeString) - 2, 22, 0x46a848);
-		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(eyeOffset), MathHelper.floor(minecraft.player.z));
+		String lightString = "Light: " + minecraft.world.getRawBrightness(MathHelper.floor(minecraft.player.x), MathHelper.floor(eyeOffset), MathHelper.floor(minecraft.player.z), false);
 		this.drawString(textRenderer, lightString, width - textRenderer.getWidth(lightString) - 2, 32, 0x46a848);
 
-		if (minecraft.crosshairTarget != null && minecraft.crosshairTarget.type != HitResult.Type.ENTITY) {
-			int targetBlockID = minecraft.world.getBlock(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
-			int targetBlockMetadata = minecraft.world.getBlockMetadata(minecraft.crosshairTarget.x, minecraft.crosshairTarget.y, minecraft.crosshairTarget.z);
+		HitResult target = minecraft.crosshairTarget;
+		if (target != null && target.type == HitResult.Type.BLOCK) {
+			WorldChunk targetChunk = minecraft.world.getChunk(target.x, target.z);
+			int targetBlockID = targetChunk.getBlockAt(target.x & 0xF, target.y, target.z & 0xF);
+			int targetBlockMetadata = targetChunk.getBlockMetadataAt(target.x & 0xF, target.y, target.z & 0xF);
 			String blockString = "Block: " + targetBlockID + ":" + targetBlockMetadata;
 			this.drawString(textRenderer, blockString, width - textRenderer.getWidth(blockString) - 2, 42, 0x46a848);
 		}
@@ -213,7 +216,7 @@ public class GameGuiMixin extends GuiElement {
 
 	@Unique
 	private double truncate(double coord) {
-		return (double) Math.round(coord * 1000) / 1000;
+		return Math.round(coord * 1000d) / 1000d;
 	}
 
 	@ModifyExpressionValue(

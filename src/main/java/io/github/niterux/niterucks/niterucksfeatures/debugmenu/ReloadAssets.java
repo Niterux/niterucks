@@ -4,6 +4,7 @@ import io.github.niterux.niterucks.Niterucks;
 import io.github.niterux.niterucks.mixin.invokers.ForceReloadInvoker;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ReloadAssets implements KeyCombo {
 	@Override
@@ -17,7 +18,12 @@ public class ReloadAssets implements KeyCombo {
 	}
 
 	@Override
+	public @Nullable String getMessage() {
+		return "Reloaded sounds and textures";
+	}
+
+	@Override
 	public @NotNull String actionDescription() {
-		return "Reload all assets";
+		return "Reload sounds and textures";
 	}
 }

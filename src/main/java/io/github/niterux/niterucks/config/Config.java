@@ -55,6 +55,7 @@ public class Config {
 	public BooleanOption pitchBillboarding = new BooleanOption("Billboard Items on Pitch", "Billboard item entities on pitch, makes them face the camera.", false);
 	public BooleanOption showItemIDs = new BooleanOption("Show Item ID's", "Shows the ID and metadata value of items in<br>your inventory when hovered over.", false);
 	public BooleanOption newSkeleton = new BooleanOption("Beta 1.8 Skeleton Model", true);
+	public BooleanOption renderStutterFix = new BooleanOption("Rendering Stutter Fix", "Fixes the render stutter at far distances.", true);
 	public FloatOption viewmodelFov = new FloatOption("Viewmodel FOV", 70.0F, 30.0F, 130.0F);
 	public BooleanOption interpolateHitboxes = new BooleanOption("Interpolate Hitbox Rendering", "Whether or not to smooth out hitbox movement.<br>§4Smoothed hitbox movement isn't accurate to how it is processed.", false);
 	public KeyBindOption chunkBoundariesButton = new KeyBindOption("Chunk Boundaries HotKey", Keyboard.KEY_G);
@@ -76,7 +77,7 @@ public class Config {
 		niterucks.add(fov, showSeed, useFeetCoordinates, entityDistance, cloudHeight, hotbarScreenSafety, useVSync, rainbowBlockOutline);
 		controls.add(zoomButton, playerListButton, swapMouseButtons);
 		accessibility.add(rainbowSpeed);
-		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov, useBetacraftAPI, useHTTPS, pitchBillboarding);
+		miscellaneous.add(wolfNameTags, showItemIDs, newSkeleton, viewmodelFov, useBetacraftAPI, useHTTPS, pitchBillboarding, renderStutterFix);
 		debug.add(interpolateHitboxes, chunkBoundariesButton, clearChatButton, hideChatButton, reloadAssetsButton, reloadChunksButton, showHelpButton, showHitboxesButton, snapCameraButton);
 		staff.add(flyButton, adjustButton, defaultFlySpeed);
 		screenshots.add(enableScreenshotEnhancements, screenshotFormat);
