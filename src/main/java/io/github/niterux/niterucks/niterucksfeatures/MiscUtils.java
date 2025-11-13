@@ -30,10 +30,9 @@ public class MiscUtils {
 
 	public static String textGradientGenerator(String text, char[] colorCodes, TextRenderer textRenderer) {
 		int stringLength = textRenderer.getWidth(text);
-		double insertionPoints = (double) stringLength / (colorCodes.length);
-		text = insertText(text, "§" + colorCodes[0], 0);
-		for (int i = 1; i < colorCodes.length; i++)
-			text = insertText(text, "§" + colorCodes[i], getCharacterRenderedXPositionInAString(text, (int) Math.round(insertionPoints * i), textRenderer));
+		double insertionPoints = stringLength / ((double) colorCodes.length);
+		for (int i = 0; i < colorCodes.length; i++)
+			text = insertText(text, "§" + colorCodes[i], getIndexOfCharacterRenderedAtXPositionInString(text, (int) Math.round(insertionPoints * i), textRenderer));
 		return text;
 	}
 
@@ -43,28 +42,29 @@ public class MiscUtils {
 		return text.substring(0, index) + textToInsert + text.substring(index);
 	}
 
-	public static int getCharacterRenderedXPositionInAString(String text, int xPos, TextRenderer textRenderer) {
-		int newWidth;
+	public static int getIndexOfCharacterRenderedAtXPositionInString(String text, int xPos, TextRenderer textRenderer) {
 		if (text == null)
 			return 0;
 		if (xPos > textRenderer.getWidth(text))
 			return text.length();
 		int textWidth = 0;
 
-		int currentCharacter;
-		for (currentCharacter = 0; currentCharacter < text.length(); ++currentCharacter) {
-			if (text.charAt(currentCharacter) == '§')
+		int characterIndex;
+		for (characterIndex = 0; characterIndex < text.length(); characterIndex++) {
+			char currentCharacter = text.charAt(characterIndex);
+			if (currentCharacter == '§') {
+				characterIndex++;
 				continue;
-			int validCharacter = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(text.charAt(currentCharacter));
-			if (validCharacter < 0)
+			}
+			int validCharacterIndex = SharedConstants.VALID_CHAT_CHARACTERS.indexOf(currentCharacter);
+			if (validCharacterIndex < 0)
 				continue;
-			newWidth = textWidth + ((TextRendererCharacterWidthsAccessor) textRenderer).getCharacterWidths()[validCharacter + 32];
-			if (newWidth > xPos) {
-				return currentCharacter;
-			} else
-				textWidth = newWidth;
+
+			textWidth += ((TextRendererCharacterWidthsAccessor) textRenderer).getCharacterWidths()[validCharacterIndex + 32];
+			if (textWidth > xPos)
+				return characterIndex;
 		}
-		return currentCharacter;
+		return characterIndex;
 	}
 
 	public static String insertText(String text, char textToInsert, int index) {
