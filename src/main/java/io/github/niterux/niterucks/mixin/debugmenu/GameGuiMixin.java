@@ -1,6 +1,8 @@
 package io.github.niterux.niterucks.mixin.debugmenu;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.niterux.niterucks.Niterucks;
 import net.minecraft.client.Minecraft;
@@ -202,21 +204,9 @@ public class GameGuiMixin extends GuiElement {
 		}
 	}
 
-	@ModifyExpressionValue(
-		method = "render",
-		at = @At(
-			value = "FIELD",
-			target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;x:D",
-			opcode = Opcodes.GETFIELD
-		)
-	)
-	private double roundCoordsX(double x) {
-		return truncate(x);
-	}
-
-	@Unique
-	private double truncate(double coord) {
-		return Math.round(coord * 1000d) / 1000d;
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/lang/StringBuilder;append(D)Ljava/lang/StringBuilder;", remap = false))
+	private StringBuilder truncateCoordinates(StringBuilder instance, double coord, Operation<StringBuilder> original){
+		return instance.append(String.format("%,.3f", coord));
 	}
 
 	@ModifyExpressionValue(
@@ -227,20 +217,8 @@ public class GameGuiMixin extends GuiElement {
 			opcode = Opcodes.GETFIELD
 		)
 	)
-	private double roundCoordsY(double y) {
+	private double eyeHeightOffsetInCoordinates(double y) {
 		y = Niterucks.CONFIG.useFeetCoordinates.get() ? y - (minecraft.player.eyeHeight - minecraft.player.eyeHeightSneakOffset) : y;
-		return truncate(y);
-	}
-
-	@ModifyExpressionValue(
-		method = "render",
-		at = @At(
-			value = "FIELD",
-			target = "Lnet/minecraft/client/entity/living/player/InputPlayerEntity;z:D",
-			opcode = Opcodes.GETFIELD
-		)
-	)
-	private double roundCoordsZ(double z) {
-		return truncate(z);
+		return y;
 	}
 }
