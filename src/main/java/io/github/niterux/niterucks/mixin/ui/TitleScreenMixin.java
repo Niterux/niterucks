@@ -1,5 +1,6 @@
 package io.github.niterux.niterucks.mixin.ui;
 
+import io.github.niterux.niterucks.mixin.accessors.MinecraftInstanceAccessor;
 import io.github.niterux.niterucks.niterucksfeatures.MiscUtils;
 import io.github.niterux.niterucks.niterucksfeatures.screenshots.ScreenshotGalleryScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -20,11 +21,10 @@ import static io.github.niterux.niterucks.Niterucks.MOD_VERSION;
 
 @Mixin(value = TitleScreen.class, priority = 2000)
 public class TitleScreenMixin extends Screen {
-	@Shadow
-	private String splashText;
-
 	@Unique
 	private static final int SCREENSHOT_ID = 12421;
+	@Shadow
+	private String splashText;
 
 	@Inject(method = "<init>()V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/TitleScreen;splashText:Ljava/lang/String;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER, ordinal = 1))
 	private void splashInject(CallbackInfo info) {
@@ -36,7 +36,7 @@ public class TitleScreenMixin extends Screen {
 		if (Math.random() < 0.083)
 			splashText = "Trans rights!";
 		if (month == Month.NOVEMBER && day >= 13 && day <= 20)
-			splashText = MiscUtils.textGradientGenerator("Trans lives matter!", new char[]{'b', 'd', 'f', 'd', 'b'}, this.textRenderer);
+			splashText = MiscUtils.textGradientGenerator("Trans lives matter!", new char[]{'b', 'd', 'f', 'd', 'b'}, MinecraftInstanceAccessor.getMinecraft().textRenderer);
 	}
 
 	@Inject(method = "render(IIF)V", at = @At("TAIL"))
